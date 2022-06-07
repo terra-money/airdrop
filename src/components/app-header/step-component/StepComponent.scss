@@ -1,0 +1,29 @@
+.StepComponent {
+    display: flex;
+    align-items: center;
+
+
+    .StepData {
+        display: flex;
+        flex-direction: column;
+
+        .StepInfo {
+            margin-top: 0.5em;
+            margin-bottom: 0.25em;
+
+        }
+    
+        .StepCompleted {
+            text-align: start;
+            max-width: 150px;
+
+            h5 {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                margin: 0 0.5em 0 0;
+
+            }
+        }
+    }
+}

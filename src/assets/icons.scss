@@ -1,0 +1,45 @@
+.icon {
+    background: round;
+    width: 32px;
+    height: 32px;
+
+    // Wallets
+    &.metamask {
+        background-image: url("./img/wallets/metamask.svg");
+    }
+
+    &.walletconnect {
+        background-image: url("./img/wallets/walletconnect.svg");
+
+    }
+
+    &.phantom {
+        background-image: url("./img/wallets/phantom.svg");
+
+    }
+
+    &.station {
+        background-image: url("./img/wallets/station.svg");
+
+    }
+
+    // Networks
+    &.terraclassic {
+        background-image: url("./img/networks/terraclassic.svg");
+    }
+
+    &.ethereum {
+        background-image: url("./img/networks/ethereum.svg");
+
+    }
+
+    &.avalanche {
+        background-image: url("./img/networks/avalanche.svg");
+
+    }
+
+    &.solana {
+        background-image: url("./img/networks/solana.svg");
+
+    }
+}

@@ -1,0 +1,65 @@
+[
+    {
+        "id": "terraclassic",
+        "name": "Terra Classic",
+        "icon": "terraclassic",
+        "wallets": [
+            {
+                "id": "station",
+                "name": "Terra Station",
+                "icon": "station"
+            },
+            {
+                "id": "walletconnect",
+                "name": "Wallet Connect",
+                "icon": "walletconnect"
+            }
+        ]
+    },
+    {
+        "id": "eth",
+        "name": "Ethereum",
+        "icon": "ethereum",
+        "wallets": [
+            {
+                "id": "metamask",
+                "name": "MetaMask",
+                "icon": "metamask"
+            },
+            {
+                "id": "walletconnect",
+                "name": "Wallet Connect",
+                "icon": "walletconnect"
+            }
+        ]
+    },
+    {
+        "id": "avax",
+        "name": "Avalanche",
+        "icon": "avalanche",
+        "wallets": [
+            {
+                "id": "metamask",
+                "name": "MetaMask",
+                "icon": "metamask"
+            },
+            {
+                "id": "walletconnect",
+                "name": "Wallet Connect",
+                "icon": "walletconnect"
+            }
+        ]
+    },
+    {
+        "id": "sol",
+        "name": "Solana",
+        "icon": "solana",
+        "wallets": [
+            {
+                "id": "phantom",
+                "name": "Phantom",
+                "icon": "phantom"
+            }
+        ]
+    }
+]

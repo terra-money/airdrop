@@ -1,0 +1,19 @@
+.OriginNetwork {
+
+    .FormControl {
+        margin-bottom: 1em;
+        
+    }
+}
+
+#OriginNetworkDropdown,
+#WalletDropdown,
+.DropdownItem {
+    display: flex;
+    align-items: center;
+    
+    .icon {
+        margin-right: 1em;
+
+    }
+}

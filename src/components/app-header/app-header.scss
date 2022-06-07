@@ -1,0 +1,16 @@
+.AppHeader {
+    flex-direction: row !important;
+    align-items: center;
+    padding: 0 1em;
+
+    .Title {    
+        margin: 1.6em;
+        margin-right: 1em;
+    }
+
+    .StepperWrapper {
+        display: flex;
+        flex-grow: 1;
+        
+    }
+}
