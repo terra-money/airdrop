@@ -31,7 +31,8 @@ export const OriginNetworks = (props: OriginNetworksType) => {
         if (selectedNetwork) {
             setNetworkId(event.target.value);
             setSelectedNetwork(selectedNetwork);
-            setWallets(selectedNetwork.wallets)
+            setWallets(selectedNetwork.wallets);
+            setWalletId("");
         }
     };
 
@@ -41,53 +42,47 @@ export const OriginNetworks = (props: OriginNetworksType) => {
 
     return (
         <div className='OriginNetwork'>
-            <Card>
-                <CardHeader title="Select origin network" />
-                <CardContent>
-                    <FormControl className='FormControl' fullWidth>
-                        <InputLabel id="OriginNetworkDropdownLabel">Origin Network</InputLabel>
-                        <Select
-                            id="OriginNetworkDropdown"
-                            labelId="OriginNetworkDropdown"
-                            value={networkId}
-                            label="Origin Network"
-                            onChange={handleSelectNetwork}>
-                            {originNetworks.map((network, index) => (
-                                <MenuItem
-                                    className="DropdownItem"
-                                    key={index}
-                                    value={network.id}>
-                                    <div className={"icon " + network.icon} />
-                                    <span>{network.name}</span>
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {wallets.length
-                        ? <FormControl className='FormControl' fullWidth>
-                            <InputLabel id="WalletLabel">Select Wallet</InputLabel>
-                            <Select
-                                id="WalletDropdown"
-                                labelId="Wallet"
-                                value={walletId}
-                                label="Select Wallet"
-                                onChange={handleSelectWallet}>
-                                {wallets.map((wallet, index) => (
-                                    <MenuItem
-                                        className="DropdownItem"
-                                        key={index}
-                                        value={wallet.id}>
-                                        <div className={"icon " + wallet.icon} />
-                                        <span>{wallet.name}</span>
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        : <></>
-                    }
-
-                </CardContent>
-            </Card>
+            <FormControl className='FormControl' fullWidth>
+                <InputLabel id="OriginNetworkDropdownLabel">Origin Network</InputLabel>
+                <Select
+                    id="OriginNetworkDropdown"
+                    labelId="OriginNetworkDropdown"
+                    value={networkId}
+                    label="Origin Network"
+                    onChange={handleSelectNetwork}>
+                    {originNetworks.map((network, index) => (
+                        <MenuItem
+                            className="DropdownItem"
+                            key={index}
+                            value={network.id}>
+                            <div className={"icon " + network.icon} />
+                            <span>{network.name}</span>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            {wallets.length
+                ? <FormControl className='FormControl' fullWidth>
+                    <InputLabel id="WalletLabel">Select Wallet</InputLabel>
+                    <Select
+                        id="WalletDropdown"
+                        labelId="Wallet"
+                        value={walletId}
+                        label="Select Wallet"
+                        onChange={handleSelectWallet}>
+                        {wallets.map((wallet, index) => (
+                            <MenuItem
+                                className="DropdownItem"
+                                key={index}
+                                value={wallet.id}>
+                                <div className={"icon " + wallet.icon} />
+                                <span>{wallet.name}</span>
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                : <></>
+            }
         </div>
     )
 }

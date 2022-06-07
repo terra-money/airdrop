@@ -16,12 +16,10 @@ export const StepComponent = (props: StepType) => {
 
     return (
         <StepButton disabled className='StepComponent'>
-            <div className='StepData'>
-                <h4 className='StepInfo'>{label}</h4>
-                <div className='StepCompleted'
-                    style={{display: completed ? "none" : "block"}}>
-                    <h5>* {completedLabel}</h5>
-                </div>
+            <h4 className='StepInfo'>{label}</h4>
+            <div className='StepCompleted'
+                style={{display: completed ? "block" : "none"}}>
+                <h5>* {completedLabel}</h5>
             </div>
         </StepButton>
     )

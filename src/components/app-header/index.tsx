@@ -6,17 +6,16 @@ import { useState } from 'react';
 import { StepComponent, StepData } from './step-component';
 
 type AppHeaderType = {
-    steps: Array<StepData>
+    steps: Array<StepData>,
+    activeStep: number
 }
 
 export const AppHeader = (props: AppHeaderType) => {
-    const [activeStep, setActiveStep] = useState(0);
-    const [completed, setCompleted] = useState<{[k: number]: boolean}>({});
-    const { steps } = props;
+    const { steps, activeStep} = props;
 
     return (
         <AppBar position="fixed" className='AppHeader'>
-            <h3 className='Title'>Terra 2.0 Airdrop</h3>
+            <h3 className='AppTitle'>Terra 2.0 Airdrop</h3>
             <Stepper className='StepperWrapper' activeStep={activeStep}>
                 {steps.map((step, index) => (
                     <Step key={index} completed={step.completed}>
