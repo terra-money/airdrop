@@ -1,6 +1,6 @@
 .StepComponent {
     text-align: start;
-    width: 150px;
+    width: 200px;
 
     .StepInfo {
         margin-top: 0.5em;
@@ -9,7 +9,7 @@
     }
 
     .StepCompleted {
-        max-width: 120px;
+        max-width: 160px;
 
         h5 {
             text-overflow: ellipsis;

@@ -6,8 +6,9 @@ type StepType = {
 }
 
 export type StepData = {
-    completedLabel?: string,
+    id: number,
     label: string,
+    completedLabel?: string,
     completed?: boolean
 }
 
