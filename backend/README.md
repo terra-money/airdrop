@@ -10,7 +10,7 @@ This express app helps with the claiming process. Features:
 
 ## Frontend endpoints
 
-Note: the possible chains should match with the network id from /frontend/src/networks.json which currently are "terraclassic" | "eth" | "avax" | "sol".
+Note: the possible chains should match with the network id from /frontend/src/chains.json which currently are "terraclassic" | "eth" | "avax" | "sol".
 
 ### GET:/allocation/{chain}/{address}
 
