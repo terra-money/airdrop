@@ -65,7 +65,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     const handleConnectWallet = async () => {
         try{
             if(wallet && chain) {
-                await connect(wallet);
+                wallet.connectedWalletReference = await connect(wallet);
                 onWalletConnected(wallet, chain)
             }
         }

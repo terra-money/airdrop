@@ -23,7 +23,10 @@ function App() {
         disableNavigateNext
     } = useSteps();
 
-    const [state, setState]  = useState<{wallet?: Wallet, chain?: Chain}>({});
+    const [state, setState]  = useState<{
+        wallet?: Wallet, 
+        chain?: Chain
+    }>({});
 
     const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
         steps[activeStep].completedLabel = `${chain.name}-${wallet.name}`;
@@ -40,7 +43,7 @@ function App() {
 
                 <CardContent>
                     {activeStep === 0 && <ConnectWallet chains={chains} onWalletConnected={handleWalletConnected}/>}
-                    {activeStep === 1 && <CheckAllocation/>}
+                    {activeStep === 1 && state.chain && state.wallet && <CheckAllocation chain={state.chain} wallet={state.wallet}/>}
                     {activeStep === 2 && <ClaimAirdrop/>}
                 </CardContent>
 

@@ -1,12 +1,12 @@
 import { useMetaMask } from "metamask-react";
-import { ConnectType, useWallet } from "@terra-money/wallet-provider";
+import { ConnectType, useWallet} from "@terra-money/wallet-provider";
 import { Wallet } from "../models/Wallet";
 
 const useWallets = () => {
     const metamask = useMetaMask();
     const station = useWallet();
 
-    const isInstalled = (wallet: Wallet) : boolean => {
+    const isInstalled = (wallet: Wallet): boolean => {
         switch (wallet.id) {
             case "station":
                 return !!station.availableConnectTypes.find(connectType => connectType === ConnectType.EXTENSION);
@@ -16,37 +16,61 @@ const useWallets = () => {
                 return metamask.status !== "unavailable";
             case "phantom":
                 return (window as any).solana?.isPhantom;
-            default: 
+            default:
                 throw Error(`Unknown wallet with id '${wallet.id}'`);
         }
     }
 
-    const isConnected = (wallet: Wallet) : boolean => {
+    const isConnected = (wallet: Wallet): boolean => {
         switch (wallet.id) {
             case "station":
+                if (station?.connection?.type === ConnectType.WALLETCONNECT) {
+                    station.disconnect();
+                }
                 return station?.connection?.type === ConnectType.EXTENSION;
             case "walletconnect":
+                if (station?.connection?.type === ConnectType.EXTENSION) {
+                    station.disconnect();
+                }
                 return station?.connection?.type === ConnectType.WALLETCONNECT;
             case "metamask":
                 return metamask.status === "connected";
             case "phantom":
                 return (window as any).solana.isConnected;
-            default: 
+            default:
                 throw Error(`Unknown wallet with id '${wallet.id}'`);
         }
     }
 
-    const connect = async (wallet: Wallet) : Promise<any> => {
+    const connect = async (wallet: Wallet): Promise<any> => {
         switch (wallet.id) {
             case "station":
                 return station.connect(ConnectType.EXTENSION);
             case "walletconnect":
                 return station.connect(ConnectType.WALLETCONNECT);
             case "metamask":
-                return metamask.connect();
+                await metamask.connect();
+                return metamask;
             case "phantom":
-                return (window as any).solana?.connect();
-            default: 
+                await (window as any).solana?.connect();
+                return (window as any).solana;
+            default:
+                throw Error(`Unknown wallet with id '${wallet.id}'`);
+        }
+    }
+
+    const getAddress = (wallet: Wallet): string => {
+        console.log(station);
+        switch (wallet.id) {
+            case "station":
+                return station.wallets[0]?.terraAddress;
+            case "walletconnect":
+                return station.wallets[0]?.terraAddress;
+            case "metamask":
+                return metamask.account as string;
+            case "phantom":
+                return (window as any).solana?.publicKey.toString();
+            default:
                 throw Error(`Unknown wallet with id '${wallet.id}'`);
         }
     }
@@ -54,7 +78,8 @@ const useWallets = () => {
     return {
         isInstalled,
         isConnected,
-        connect
+        connect,
+        getAddress
     }
 }
 
