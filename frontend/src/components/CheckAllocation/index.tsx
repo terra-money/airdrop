@@ -1,4 +1,4 @@
-import "./check-allocation.scss"
+import "./CheckAllocation.scss"
 
 type CheckAllocationType = {
     

@@ -1,6 +1,6 @@
-import { Wallet } from "../components/connect-wallet";
 import { useMetaMask } from "metamask-react";
 import { ConnectType, useWallet } from "@terra-money/wallet-provider";
+import { Wallet } from "../models/Wallet";
 
 const useWallets = () => {
     const metamask = useMetaMask();

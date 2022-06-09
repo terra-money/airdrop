@@ -1,4 +1,4 @@
-import "./claim-airdrop.scss"
+import "./ClaimAirdrop.scss"
 
 type ClaimAirdropType = {
     

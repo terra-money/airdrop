@@ -1,13 +1,18 @@
 import './App.scss';
-import { AppHeader } from './components/app-header';
-import { ConnectWallet, Network, Wallet } from './components/connect-wallet';
 import { Button, Card, CardActions, CardContent, CardHeader } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { CheckAllocation } from './components/check-allocation';
-import { ClaimAirdrop } from './components/claim-airdrop';
-import useSteps from './hooks/useSteps';
-import networks from './networks.json';
 import { useState } from 'react';
+
+import { CheckAllocation } from './components/CheckAllocation';
+import { ClaimAirdrop } from './components/ClaimAirdrop';
+import { AppHeader } from './components/AppHeader';
+import { ConnectWallet } from './components/ConnectWallet';
+
+import useSteps from './hooks/useSteps';
+import chains from './chains.json';
+import { Wallet } from './models/Wallet';
+import { Chain } from './models/Chain';
+
 
 function App() {
     const {
@@ -18,13 +23,13 @@ function App() {
         disableNavigateNext
     } = useSteps();
 
-    const [state, setState]  = useState<{wallet?: Wallet, network?: Network}>({});
+    const [state, setState]  = useState<{wallet?: Wallet, chain?: Chain}>({});
 
-    const handleWalletConnected = (wallet: Wallet, network: Network) => {
-        steps[activeStep].completedLabel = `${network.name}-${wallet.name}`;
+    const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
+        steps[activeStep].completedLabel = `${chain.name}-${wallet.name}`;
         nextStep(true);
         updateSteps(steps);
-        setState({wallet, network});
+        setState({wallet, chain});
     }
     
     return (
@@ -34,7 +39,7 @@ function App() {
                 <CardHeader title={<span>{steps[activeStep].label}</span>} />
 
                 <CardContent>
-                    {activeStep === 0 && <ConnectWallet networks={networks} onWalletConnected={handleWalletConnected}/>}
+                    {activeStep === 0 && <ConnectWallet chains={chains} onWalletConnected={handleWalletConnected}/>}
                     {activeStep === 1 && <CheckAllocation/>}
                     {activeStep === 2 && <ClaimAirdrop/>}
                 </CardContent>

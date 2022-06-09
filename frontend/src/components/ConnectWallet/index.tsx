@@ -2,40 +2,27 @@ import { Alert, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/m
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import useWallets from '../../hooks/useWallets';
-import './connect-wallet.scss'
+import { Chain } from '../../models/Chain';
+import { Wallet } from '../../models/Wallet';
+import './ConnectWallet.scss'
 
-type ConnectWalletType = {
-    networks: Array<Network>,
-    onWalletConnected: (wallet: Wallet, network: Network) => void
+export type ConnectWalletType = {
+    chains: Array<Chain>,
+    onWalletConnected: (wallet: Wallet, chain: Chain) => void
 }
-
-export type Network = {
-    id: NetworkId,
-    name: string,
-    icon: string,
-    wallets: Array<Wallet>
-}
-
-export type NetworkId = 'terraclassic' | 'eth' | 'avax' | 'sol' | string;
-
-export type Wallet = {
-    id: WalletId,
-    name: string,
-    icon: string,
-}
-
-export type WalletId = 'station' | 'walletconnect' | 'metamask' | 'phantom' | string;
 
 export const ConnectWallet = (props: ConnectWalletType) => {
     const { 
-        networks, 
+        chains, 
         onWalletConnected
     } = props;
 
-    const [networkId, setNetworkId] = useState('');
-    const [network, setNetwork] = useState<Network | null>();
+    const [chainId, setChainId] = useState('');
+    const [chain, setChain] = useState<Chain | null>();
+
     const [wallets, setWallets] = useState(new Array<Wallet>());
     const [walletId, setWalletId] = useState('');
+
     const [wallet, setWallet] = useState<Wallet | null>();
     const [walletInstalled, setWalletInstalled] = useState<boolean>();
     
@@ -46,15 +33,15 @@ export const ConnectWallet = (props: ConnectWalletType) => {
         connect
     } = useWallets();
 
-    const handleSelectNetwork = (event: any) => {
-        const selectedNetwork = networks.find(network => network.id === event.target.value);
+    const handleSelectChain = (event: any) => {
+        const selectedChain = chains.find(chain => chain.id === event.target.value);
         setWallet(null);
         setWalletId('');
 
-        if (selectedNetwork) {
-            setNetwork(selectedNetwork);
-            setNetworkId(event.target.value);
-            setWallets(selectedNetwork.wallets);
+        if (selectedChain) {
+            setChain(selectedChain);
+            setChainId(event.target.value);
+            setWallets(selectedChain.wallets);
             setWalletInstalled(false);
         }
     };
@@ -62,7 +49,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     const handleSelectWallet = (event: any) => {
         const selectedWallet = wallets.find(wallet => wallet.id === event.target.value);
 
-        if (selectedWallet && network) {
+        if (selectedWallet && chain) {
             setWalletId(event.target.value);
             setWallet(selectedWallet);
 
@@ -70,16 +57,16 @@ export const ConnectWallet = (props: ConnectWalletType) => {
             setWalletInstalled(walletInstalled);
 
             if(isConnected(selectedWallet)) {
-                onWalletConnected(selectedWallet, network)
+                onWalletConnected(selectedWallet, chain)
             }
         }
     };
 
     const handleConnectWallet = async () => {
         try{
-            if(wallet && network) {
+            if(wallet && chain) {
                 await connect(wallet);
-                onWalletConnected(wallet, network)
+                onWalletConnected(wallet, chain)
             }
         }
         catch(e) {
@@ -90,8 +77,8 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     const handleCleanSelections = () => {
         setWallet(null);
         setWalletId('');
-        setNetwork(null);
-        setNetworkId('');
+        setChain(null);
+        setChainId('');
         setWallets([]);
         setWalletInstalled(false);
     }
@@ -99,25 +86,25 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     return (
         <div className='ConnectWallet'>
             <FormControl className='FormControl' fullWidth>
-                <InputLabel id='OriginNetworkDropdownLabel'>Origin Network</InputLabel>
+                <InputLabel id='OriginChainDropdownLabel'>Origin Chain</InputLabel>
                 <Select
-                    id='OriginNetworkDropdown'
-                    labelId='OriginNetworkDropdown'
-                    value={networkId}
-                    label='Origin Network'
-                    onChange={handleSelectNetwork}>
-                    {networks.map((network, index) => (
+                    id='OriginChainDropdown'
+                    labelId='OriginChainDropdown'
+                    value={chainId}
+                    label='Origin Chain'
+                    onChange={handleSelectChain}>
+                    {chains.map((chain, index) => (
                         <MenuItem
                             className='DropdownItem'
                             key={index}
-                            value={network.id}>
-                            <div className={'icon ' + network.icon} />
-                            <span>{network.name}</span>
+                            value={chain.id}>
+                            <div className={'icon ' + chain.icon} />
+                            <span>{chain.name}</span>
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
-            {network
+            {chain
                 ? <FormControl className='FormControl' fullWidth>
                     <InputLabel id='WalletLabel'>Select Wallet</InputLabel>
                     <Select
@@ -144,9 +131,9 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                     {walletInstalled 
                         ? <Button variant='outlined' 
                             onClick={() => handleConnectWallet()}>
-                                Use {wallet.name} with {network?.name}
+                                Use {wallet.name} with {chain?.name}
                             </Button>
-                        : <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to {network?.name}</Alert>
+                        : <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to {chain?.name}</Alert>
                     }
                     
                 </div>

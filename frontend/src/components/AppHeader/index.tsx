@@ -1,9 +1,8 @@
 import { AppBar } from '@mui/material'
-import "./app-header.scss";
+import "./AppHeader.scss";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
-import { useState } from 'react';
-import { StepComponent, StepData } from './step-component';
+import { StepComponent, StepData } from './StepComponent';
 
 type AppHeaderType = {
     steps: Array<StepData>,

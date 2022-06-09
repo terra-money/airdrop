@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StepData } from "../components/app-header/step-component";
+import { StepData } from "../components/AppHeader/StepComponent";
 
 const useSteps = () => {
     const [disableNavigateNext, setDisableNavigateNext] = useState(true);
