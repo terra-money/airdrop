@@ -18,17 +18,23 @@ const useSteps = () => {
         completed: false
     }]);
 
-    const nextStep = (forwards: boolean) => {
-        const nextStep = forwards ? activeStep + 1 : activeStep - 1;
-        if(forwards) {
-            steps[activeStep].completed = true;
-        }
-        else {
-            steps[activeStep].completed = false;
-            delete steps[activeStep].completedLabel;
-            steps[nextStep].completed = false;
-            delete steps[nextStep].completedLabel;
-        }
+    const nextStep = () => {
+        const nextStep = activeStep + 1;
+       
+        steps[activeStep].completed = true;
+       
+        setActiveStep(nextStep)
+        setSteps(steps);
+    }
+
+    const previousStep = () => {
+        const nextStep = activeStep - 1;
+        
+        steps[activeStep].completed = false;
+        delete steps[activeStep].completedLabel;
+        steps[nextStep].completed = false;
+        delete steps[nextStep].completedLabel;
+
         setActiveStep(nextStep)
         setSteps(steps);
     }
@@ -41,6 +47,7 @@ const useSteps = () => {
 
     return {
         nextStep,
+        previousStep,
         updateSteps,
         activeStep,
         steps,

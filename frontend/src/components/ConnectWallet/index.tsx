@@ -78,7 +78,8 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                 await connect(wallet);
 
                 // For station and wallet connect 
-                // the status must be checked on an imperative way.
+                // the status must be checked on 
+                // an imperative way thru useEffect
                 if (wallet.id !== "station" && wallet.id !== "walletconnect") {
                     onWalletConnected(wallet, chain);
                 }
@@ -150,7 +151,6 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                         </Button>
                         : <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to {chain?.name}</Alert>
                     }
-
                 </div>
             }
         </div>

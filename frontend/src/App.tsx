@@ -17,10 +17,10 @@ import { Chain } from './models/Chain';
 function App() {
     const {
         nextStep,
+        previousStep,
         steps,
         updateSteps,
-        activeStep,
-        disableNavigateNext
+        activeStep
     } = useSteps();
 
     const [state, setState]  = useState<{
@@ -30,9 +30,15 @@ function App() {
 
     const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
         steps[activeStep].completedLabel = `${chain.name}-${wallet.name}`;
-        nextStep(true);
+        nextStep();
         updateSteps(steps);
         setState({wallet, chain});
+    }
+
+    const handleCollectAllocation = (address: string) => {
+        steps[activeStep].completedLabel = address;
+        updateSteps(steps);
+        nextStep();
     }
     
     return (
@@ -43,7 +49,9 @@ function App() {
 
                 <CardContent>
                     {activeStep === 0 && <ConnectWallet chains={chains} onWalletConnected={handleWalletConnected}/>}
-                    {activeStep === 1 && state.chain && state.wallet && <CheckAllocation chain={state.chain} wallet={state.wallet}/>}
+                    {activeStep === 1 && state.chain && state.wallet 
+                        && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
+                    }
                     {activeStep === 2 && <ClaimAirdrop/>}
                 </CardContent>
 
@@ -51,15 +59,8 @@ function App() {
                     <Button startIcon={<ArrowBackIos />}
                         variant="outlined"
                         disabled={activeStep === 0}
-                        onClick={() => nextStep(false)}>
+                        onClick={() => previousStep()}>
                         Back
-                    </Button>
-
-                    <Button endIcon={<ArrowForwardIos />}
-                        variant="outlined"
-                        disabled={disableNavigateNext}
-                        onClick={() => nextStep(true)}>
-                        Next
                     </Button>
                 </CardActions>
             </Card>

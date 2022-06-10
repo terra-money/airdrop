@@ -8,7 +8,8 @@ const useApi = () => {
         chain: ChainId, 
         address: string
     ): Promise<AllocationResponse> => {
-        const { data } = await axios.get(`/allocations/${chain}/${address}`);
+        const { data } = await axios.get(`http://localhost:3333/allocation/${chain}/${address}`);
+        data.allocation = Number(data.allocation);
         return data;
     }
 
@@ -17,7 +18,7 @@ const useApi = () => {
         address: string,
         requestData: ClaimAllocationRequest
     ): Promise<ClaimAllocationResponse> => {
-        const { data } = await axios.post(`/claim/${chain}/${address}`, requestData);
+        const { data } = await axios.post(`http://localhost:3333/claim/${chain}/${address}`, requestData);
         return data;
     }
 

@@ -1,10 +1,11 @@
 import { ChainId } from "./Chain"
 
 export type AllocationResponse = {
-    allocation: string,
-    has_claimed: boolean,
-    chain: ChainId,
-    address: string
+    allocation?: number,
+    has_claimed?: boolean,
+    chain?: ChainId,
+    address?: string,
+    message?: any
 }
 
 export type ClaimAllocationRequest = {
