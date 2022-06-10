@@ -14,7 +14,8 @@ export const AppHeader = (props: AppHeaderType) => {
 
     return (
         <AppBar position="fixed" className='AppHeader'>
-            <h3 className='AppTitle'>Terra 2.0 Airdrop</h3>
+            <div className='AppLogo logo terra'/>
+            <h3 className='AppTitle'>Terra 2 Airdrop</h3>
             <Stepper className='StepperWrapper' activeStep={activeStep}>
                 {steps.map((step, index) => (
                     <Step key={index} completed={step.completed}>
