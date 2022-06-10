@@ -1,5 +1,6 @@
 import express from "express";
 import { readdirSync } from "fs";
+import morgan from "morgan";
 import { Config } from "./config";
 import { MainController } from "./controller";
 import { errorHandler } from "./helpers/error-handler";
@@ -9,6 +10,7 @@ export const CreateApp = (): express.Express => {
   // App setup
   const app = express();
   app.use(express.json());
+  app.use(morgan("combined"));
 
   // Create airdrop service and add airdrop files
   const airdropService = new AirdropService();
