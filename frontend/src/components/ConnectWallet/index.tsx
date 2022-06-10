@@ -1,6 +1,7 @@
 import { Alert, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useWallets from '../../hooks/useWallets';
 import { Chain } from '../../models/Chain';
 import { Wallet } from '../../models/Wallet';
@@ -12,8 +13,8 @@ export type ConnectWalletType = {
 }
 
 export const ConnectWallet = (props: ConnectWalletType) => {
-    const { 
-        chains, 
+    const {
+        chains,
         onWalletConnected
     } = props;
 
@@ -25,13 +26,22 @@ export const ConnectWallet = (props: ConnectWalletType) => {
 
     const [wallet, setWallet] = useState<Wallet | null>();
     const [walletInstalled, setWalletInstalled] = useState<boolean>();
-    
+
     const { enqueueSnackbar } = useSnackbar();
-    const { 
+    const {
         isInstalled,
         isConnected,
         connect
     } = useWallets();
+    const connectedWallet = useConnectedWallet();
+
+    // Imperative way to detect if station is connected
+    useEffect(() => {
+        if (connectedWallet && wallet && chain) {
+            onWalletConnected(wallet, chain)
+        }
+    }, [connectedWallet])
+
 
     const handleSelectChain = (event: any) => {
         const selectedChain = chains.find(chain => chain.id === event.target.value);
@@ -56,21 +66,26 @@ export const ConnectWallet = (props: ConnectWalletType) => {
             const walletInstalled = isInstalled(selectedWallet);
             setWalletInstalled(walletInstalled);
 
-            if(isConnected(selectedWallet)) {
+            if (isConnected(selectedWallet)) {
                 onWalletConnected(selectedWallet, chain)
             }
         }
     };
 
     const handleConnectWallet = async () => {
-        try{
-            if(wallet && chain) {
-                wallet.connectedWalletReference = await connect(wallet);
-                onWalletConnected(wallet, chain)
+        try {
+            if (wallet && chain) {
+                await connect(wallet);
+
+                // For station and wallet connect 
+                // the status must be checked on an imperative way.
+                if (wallet.id !== "station" && wallet.id !== "walletconnect") {
+                    onWalletConnected(wallet, chain);
+                }
             }
         }
-        catch(e) {
-            enqueueSnackbar("Operation cancelled", { variant: "error"});
+        catch (e) {
+            enqueueSnackbar("Operation cancelled", { variant: "error" });
         }
     }
 
@@ -128,14 +143,14 @@ export const ConnectWallet = (props: ConnectWalletType) => {
             }
             {wallet &&
                 <div className='ConnectWalletFooter'>
-                    {walletInstalled 
-                        ? <Button variant='outlined' 
+                    {walletInstalled
+                        ? <Button variant='outlined'
                             onClick={() => handleConnectWallet()}>
-                                Use {wallet.name} with {chain?.name}
-                            </Button>
+                            Use {wallet.name} with {chain?.name}
+                        </Button>
                         : <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to {chain?.name}</Alert>
                     }
-                    
+
                 </div>
             }
         </div>

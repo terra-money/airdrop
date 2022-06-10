@@ -3,6 +3,5 @@ export type Wallet = {
     id: WalletId,
     name: string,
     icon: string,
-    connectedWalletReference?: any;
 }
 

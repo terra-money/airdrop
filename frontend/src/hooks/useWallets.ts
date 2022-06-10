@@ -5,7 +5,6 @@ import { Wallet } from "../models/Wallet";
 const useWallets = () => {
     const metamask = useMetaMask();
     const station = useWallet();
-
     const isInstalled = (wallet: Wallet): boolean => {
         switch (wallet.id) {
             case "station":
@@ -24,14 +23,8 @@ const useWallets = () => {
     const isConnected = (wallet: Wallet): boolean => {
         switch (wallet.id) {
             case "station":
-                if (station?.connection?.type === ConnectType.WALLETCONNECT) {
-                    station.disconnect();
-                }
                 return station?.connection?.type === ConnectType.EXTENSION;
             case "walletconnect":
-                if (station?.connection?.type === ConnectType.EXTENSION) {
-                    station.disconnect();
-                }
                 return station?.connection?.type === ConnectType.WALLETCONNECT;
             case "metamask":
                 return metamask.status === "connected";
@@ -42,25 +35,22 @@ const useWallets = () => {
         }
     }
 
-    const connect = async (wallet: Wallet): Promise<any> => {
+    const connect = (wallet: Wallet): Promise<any> => {
         switch (wallet.id) {
             case "station":
-                return station.connect(ConnectType.EXTENSION);
+                return Promise.resolve(station.connect(ConnectType.EXTENSION));
             case "walletconnect":
-                return station.connect(ConnectType.WALLETCONNECT);
+                return Promise.resolve(station.connect(ConnectType.WALLETCONNECT));
             case "metamask":
-                await metamask.connect();
-                return metamask;
+                return metamask.connect();
             case "phantom":
-                await (window as any).solana?.connect();
-                return (window as any).solana;
+                return (window as any).solana?.connect();
             default:
                 throw Error(`Unknown wallet with id '${wallet.id}'`);
         }
     }
 
     const getAddress = (wallet: Wallet): string => {
-        console.log(station);
         switch (wallet.id) {
             case "station":
                 return station.wallets[0]?.terraAddress;
