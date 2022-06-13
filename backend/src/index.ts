@@ -5,6 +5,8 @@ import { Config } from "./config";
 import { MainController } from "./controller";
 import { errorHandler } from "./helpers/error-handler";
 import { AirdropService } from "./services/airdrop.service";
+import { ClaimService } from "./services/claim.service";
+import { VerificationService } from "./services/verification.service";
 
 export const CreateApp = (): express.Express => {
   // App setup
@@ -22,8 +24,15 @@ export const CreateApp = (): express.Express => {
     }
   }
 
+  const verificationService = new VerificationService();
+  const claimService = new ClaimService(airdropService);
+
   // Register controllers
-  const mainController = new MainController(airdropService);
+  const mainController = new MainController(
+    airdropService,
+    verificationService,
+    claimService
+  );
   mainController.registerRoutes(app);
 
   app.use(errorHandler);

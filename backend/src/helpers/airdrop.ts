@@ -43,6 +43,18 @@ export class Airdrop {
       .map((v) => v.replace("0x", ""));
   }
 
+  public getMerkleProofByAddress(
+    address: string
+  ): [string, string[], Error | null] {
+    const [allocation, err] = this.getAllocation(address);
+    if (err || !allocation) {
+      return ["", [], err];
+    }
+    const proofs = this.getMerkleProof(allocation);
+    const allocationString = Airdrop.allocationToString(allocation);
+    return [allocationString, proofs, null];
+  }
+
   public verify(proof: string[], a: Allocation): boolean {
     let hashBuf = this.hashFromAllocation(a);
 
@@ -69,8 +81,10 @@ export class Airdrop {
 
   private hashFromAllocation(alloc: Allocation): Buffer {
     const a = validateAndClean(alloc, AllocationValidation);
-    return keccak256(
-      `${a.address},${a.amount1},${a.amount2},${a.amount3},${a.amount4}`
-    );
+    return keccak256(Airdrop.allocationToString(a));
+  }
+
+  private static allocationToString(a: Allocation): string {
+    return `${a.address},${a.amount1},${a.amount2},${a.amount3},${a.amount4}`;
   }
 }
