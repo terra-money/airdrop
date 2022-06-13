@@ -16,7 +16,7 @@ export class MainController {
         const { params } = req;
         setTimeout(() => {
             return res.send({
-                "allocation": "0.2",
+                "allocation": "0.1",
                 "has_claimed": false,
                 "chain": params.chain,
                 "address": params.address
@@ -25,15 +25,12 @@ export class MainController {
     }
 
     private claim(req: Request, res: Response) {
-        const { params } = req;
-
         setTimeout(() => {
-            return res.send({
-                "allocation": "0.123456",
-                "has_claimed": false,
-                "chain": params.chain,
-                "address": params.address
-            });
+            return res.send(
+                {
+                    "has_claimed": false,
+                    "transaction_hash": "3A41C57DDBFA6F68052947BC3204CE9DB64767CA907E899D9EDF9DB88E0896C5"
+                });
         }, 1000)
 
     }
