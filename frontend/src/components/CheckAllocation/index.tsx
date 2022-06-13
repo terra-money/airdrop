@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import useApi from "../../hooks/useApi"
+import useAirdropApi from "../../hooks/useAirdropApi"
 import useWallets from "../../hooks/useWallets"
 import { AllocationResponse } from "../../models/Api"
 import { Chain } from "../../models/Chain"
@@ -24,7 +24,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
     const [loading, setLoading] = useState(true);
     const [allocationResponse, setAllocationResponse] = useState<AllocationResponse>();
 
-    const { checkAllocation } = useApi();
+    const { checkAllocation } = useAirdropApi();
     const { getAddress } = useWallets();
 
     useEffect(() => {
@@ -65,7 +65,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                             <h3>{address}</h3>
                         </>
                         : <>
-                            {allocationResponse?.allocation && !allocationResponse?.message && <>
+                            {!!allocationResponse?.allocation && !allocationResponse?.message && <>
                                 <InfoOutlinedIcon className="AllocationIcon info" />
                                 <h4>There is</h4>
                                 <h3>{allocationResponse?.allocation} LUNA</h3>
@@ -76,6 +76,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                                     Claim airdrop
                                 </Button>
                             </>}
+
                             {!allocationResponse?.allocation && !allocationResponse?.message && <>
                                 <ErrorOutlineIcon className="AllocationIcon error" />
                                 <h4>There is no airdrop to be claimed for address</h4>

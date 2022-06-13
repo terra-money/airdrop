@@ -14,6 +14,7 @@ export type ClaimAllocationRequest = {
 }
 
 export type ClaimAllocationResponse = {
-    has_claimed: boolean,
-    transaction_hash: string
+    has_claimed?: boolean,
+    transaction_hash?: string,
+    message?: any
 }

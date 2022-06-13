@@ -1,5 +1,5 @@
 import './App.scss';
-import { Button, Card, CardActions, CardContent, CardHeader } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, Step } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useState } from 'react';
 
@@ -12,6 +12,7 @@ import useSteps from './hooks/useSteps';
 import chains from './chains.json';
 import { Wallet } from './models/Wallet';
 import { Chain } from './models/Chain';
+import { StepData } from './components/AppHeader/StepComponent';
 
 
 function App() {
@@ -20,7 +21,8 @@ function App() {
         previousStep,
         steps,
         updateSteps,
-        activeStep
+        activeStep,
+        gotToFirstStep
     } = useSteps();
 
     const [state, setState]  = useState<{
@@ -41,6 +43,20 @@ function App() {
         nextStep();
     }
     
+    const handleCheckAnotherWallet = () => {
+        setState({});
+        const _steps : Array<StepData> = steps.map(step => {
+            return {
+                ...step,
+                completedLabel: "",
+                completed: false
+            }
+        });
+        updateSteps(_steps);
+        gotToFirstStep();
+        
+    }
+    
     return (
         <div className="App">
             <AppHeader steps={steps} activeStep={activeStep} />
@@ -52,7 +68,8 @@ function App() {
                     {activeStep === 1 && state.chain && state.wallet 
                         && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
                     }
-                    {activeStep === 2 && <ClaimAirdrop/>}
+                    {activeStep === 2 && state.chain && state.wallet 
+                        && <ClaimAirdrop wallet={state.wallet} chain={state.chain} onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
 
                 <CardActions className='AppActions'>

@@ -14,7 +14,7 @@ const useSteps = () => {
         completed: false
     }, {
         id: 2,
-        label: "Claim",
+        label: "Claim airdrop",
         completed: false
     }]);
 
@@ -39,6 +39,11 @@ const useSteps = () => {
         setSteps(steps);
     }
 
+
+    const gotToFirstStep = () => {
+        setActiveStep(0);
+    }
+
     const updateSteps = (steps : Array<StepData>) => {
         setSteps(steps);
         setDisableNavigateNext(!!steps[activeStep].completed);
@@ -51,6 +56,7 @@ const useSteps = () => {
         updateSteps,
         activeStep,
         steps,
+        gotToFirstStep,
         disableNavigateNext
     }
 }

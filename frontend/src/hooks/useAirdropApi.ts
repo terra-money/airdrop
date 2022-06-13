@@ -2,7 +2,7 @@ import { ChainId } from "../models/Chain";
 import axios from 'axios';
 import { AllocationResponse, ClaimAllocationRequest, ClaimAllocationResponse } from "../models/Api";
 
-const useApi = () => {
+const useAirdropApi = () => {
 
     const checkAllocation = async (
         chain: ChainId, 
@@ -22,10 +22,7 @@ const useApi = () => {
         return data;
     }
 
-    return {
-        checkAllocation,
-        claimAllocation
-    }
+    return { checkAllocation, claimAllocation }
 }
 
-export default useApi;
+export default useAirdropApi;
