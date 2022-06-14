@@ -14,11 +14,12 @@ import "./ClaimAirdrop.scss"
 type ClaimAirdropType = {
     wallet: Wallet,
     chain: Chain,
+    onClaimAirdropSuccessfully: () => void,
     onCheckAnotherWallet: () => void
 }
 
 export const ClaimAirdrop = (props: ClaimAirdropType) => {
-    const { wallet, chain, onCheckAnotherWallet } = props;
+    const { wallet, chain, onCheckAnotherWallet, onClaimAirdropSuccessfully } = props;
 
     const [newTerraAddress, setNewTerraAddress] = useState("");
     const [isValidAccount, setIsValidAccount] = useState<boolean | null>(null);
@@ -52,6 +53,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         { new_terra_address: newTerraAddress, signature }
                     );
                     setClaimResponse(claimResponse);
+                    onClaimAirdropSuccessfully();
                 }
                 catch (e : any) {
                     if (e?.response?.data?.message) {
@@ -99,7 +101,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                 severity="error">
                                 <div>This address is invalid, use a different address</div>
                                 <a className="AlertLink"
-                                    href={"https://finder.terra.money/mainnet/address/" + newTerraAddress}
+                                    href={`https://finder.terra.money/mainnet/address/${newTerraAddress}`}
                                     target="_blank"
                                     rel="noreferrer">
                                     <div className="AlertText">Check address in Finder</div>
@@ -119,11 +121,11 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         {!claimResponse?.message
                             ? <>
                                 <DoneAllIcon className="AllocationIcon success" />
-                                <h4>Airdrop successfully claimed</h4>
+                                <h4>Airdrop claimed, transaction is being broadcasted</h4>
                                 <h3>
-                                    <a href={`https://finder.terra.money/mainnet/tx/${claimResponse?.transaction_hash}`}
+                                    <a href={`https://finder.terra.money/mainnet/address/${newTerraAddress}`}
                                         target="_blank"
-                                        rel="noreferrer"> Check transaction in Finder
+                                        rel="noreferrer"> Check your address in Finder
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>
