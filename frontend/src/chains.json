@@ -25,11 +25,6 @@
                 "id": "metamask",
                 "name": "MetaMask",
                 "icon": "metamask"
-            },
-            {
-                "id": "walletconnect",
-                "name": "Wallet Connect",
-                "icon": "walletconnect"
             }
         ]
     },
@@ -42,11 +37,6 @@
                 "id": "metamask",
                 "name": "MetaMask",
                 "icon": "metamask"
-            },
-            {
-                "id": "walletconnect",
-                "name": "Wallet Connect",
-                "icon": "walletconnect"
             }
         ]
     },
