@@ -9,7 +9,6 @@ import { Chain } from "../../models/Chain";
 import { Wallet } from "../../models/Wallet";
 import { Loader } from "../Loader";
 import DoneAllIcon from "@mui/icons-material/DoneAll"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
 import "./ClaimAirdrop.scss"
 
 type ClaimAirdropType = {
@@ -55,7 +54,6 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     setClaimResponse(claimResponse);
                 }
                 catch (e : any) {
-                    console.error(e);
                     if (e?.response?.data?.message) {
                         setClaimResponse({
                             message: e?.response?.data?.message
@@ -63,16 +61,15 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     }
                     else {
                         setClaimResponse({
-                            message: "Something went wrong"
+                            message: "Something went wrong claiming the airdrop. Try again or"
                         })
                     }
                     
-                    enqueueSnackbar("Something went wrong", { variant: "error" });
+                    enqueueSnackbar("Something went wrong claiming the airdrop. Try again", { variant: "error" });
                 }
             }
             catch (e) {
-                console.error(e);
-                enqueueSnackbar("Airdrop signature was cancelled", { variant: "error" });
+                enqueueSnackbar("Something went wrong signing the transaction. Try again", { variant: "error" });
             }
         }
 
@@ -142,7 +139,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                     <a href="https://discord.com/invite/sTmERSFnYW"
                                         target="_blank"
                                         rel="noreferrer">
-                                        Go to Terra 2 Discord for help
+                                        Check Terra 2 Discord for help
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>

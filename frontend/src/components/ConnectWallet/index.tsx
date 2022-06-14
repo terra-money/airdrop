@@ -86,6 +86,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
             }
         }
         catch (e) {
+            console.log(e);
             enqueueSnackbar("Operation cancelled", { variant: "error" });
         }
     }

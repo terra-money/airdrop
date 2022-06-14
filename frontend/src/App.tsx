@@ -1,6 +1,6 @@
 import './App.scss';
-import { Button, Card, CardActions, CardContent, CardHeader, Step } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { Button, Card, CardActions, CardContent, CardHeader } from '@mui/material';
+import { ArrowBackIos } from '@mui/icons-material';
 import { useState } from 'react';
 
 import { CheckAllocation } from './components/CheckAllocation';

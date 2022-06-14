@@ -10,6 +10,11 @@
                 "icon": "station"
             },
             {
+                "id": "keplr",
+                "name": "Keplr",
+                "icon": "keplr"
+            },
+            {
                 "id": "walletconnect",
                 "name": "Wallet Connect",
                 "icon": "walletconnect"
