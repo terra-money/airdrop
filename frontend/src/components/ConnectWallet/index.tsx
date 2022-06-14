@@ -102,6 +102,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
 
     return (
         <div className='ConnectWallet'>
+            <h4>Select a network to connect one of the available wallets. Check the airdrop eligibility for the connected address. Sign a transaction to prove the ownership to claim the airdrop. (<b>the transaction you will have to sign  is free of charge</b>).</h4>
             <FormControl className='FormControl' fullWidth>
                 <InputLabel id='OriginChainDropdownLabel'>Origin Chain</InputLabel>
                 <Select
@@ -147,6 +148,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                 <div className='ConnectWalletFooter'>
                     {walletInstalled
                         ? <Button variant='outlined'
+                            fullWidth
                             onClick={() => handleConnectWallet()}>
                             Use {wallet.name} with {chain?.name}
                         </Button>

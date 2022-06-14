@@ -84,7 +84,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 ? <>{claimResponse === null
                     ? <div className="ClaimForm">
                         <h4 className="ClaimAirdropTitle">
-                            Define a Terra 2 address to collect the tokens. <br />
+                            Add a Terra 2 address where you want to get the tokens. <br />
                             This address must be new (without previous transactions)
                         </h4>
 
@@ -131,6 +131,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                 </h3>
 
                                 <Button variant="outlined"
+                                    fullWidth
                                     onClick={() => onCheckAnotherWallet()}>
                                     Check another address
                                 </Button>
@@ -150,7 +151,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     </div>}
                 </>
                 : <div className="LoadingAllocation">
-                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Claiming airdrop</h4>} />
+                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Signing transaction to claim the airdrop</h4>} />
                 </div>}
         </div>
     )

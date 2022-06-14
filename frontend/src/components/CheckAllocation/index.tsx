@@ -72,6 +72,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                                 <h4>to be claimed for address</h4>
                                 <h3>{address}</h3>
                                 <Button variant="outlined"
+                                    fullWidth
                                     onClick={() => onCollectAllocation(address)}>
                                     Claim airdrop
                                 </Button>
