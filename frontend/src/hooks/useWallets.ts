@@ -1,8 +1,8 @@
 import { useMetaMask } from "metamask-react";
 import { ConnectType, useWallet } from "@terra-money/wallet-provider";
 import { Wallet } from "../models/Wallet";
-import { ClaimAllocationRequest } from "../models/Api";
-import { TextEncoder } from "util";
+import { ethers } from 'ethers';
+import { Coins, MsgSend } from "@terra-money/terra.js";
 
 const useWallets = () => {
     const metamask = useMetaMask();
@@ -72,12 +72,12 @@ const useWallets = () => {
         wallet: Wallet,
         newTerraAddress: string
     ): Promise<{ signature: string, signerAddress: string }> => {
-        let signature; 
+        let signature;
 
         switch (wallet.id) {
             case "station":
             case "walletconnect":
-                signature = await _signAddressWithStation(newTerraAddress);
+                signature = await _signAddressWithStation(wallet, newTerraAddress);
                 break;
             case "metamask":
                 signature = await _signAddressWithMetamask(newTerraAddress);
@@ -95,70 +95,32 @@ const useWallets = () => {
         }
     }
 
-    const _signAddressWithStation = async (new_terra_address: string): Promise<string> => {
-        return new Promise(async (resolve, reject) => {
-            const params = Buffer.from(JSON.stringify({
-                domain: {},
-                message: { new_terra_address },
-                primaryType: 'TerraAddress',
-                types: {
-                    TerraAddress: [{ name: 'new_terra_address', type: 'string' }]
-                },
-            }));
-            try {
-                const response = await station.signBytes(params);
-                
-                return resolve(Buffer.from(response.result.signature).toString('base64'))
-            }
-            catch(e) {
-                return reject(e);
-            }
-        })
+    const _signAddressWithStation = async (wallet: Wallet, newTerraAddress: string): Promise<string> => {
+        const result = await station.sign({
+            msgs: [
+                new MsgSend(
+                    getAddress(wallet),
+                    newTerraAddress, 
+                    Coins.fromString("1uluna")
+                )
+            ],
+            memo: newTerraAddress
+        });
+
+        return JSON.stringify(result);
     };
 
-    const _signAddressWithMetamask = (new_terra_address: string): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const params = [metamask.ethereum.selectedAddress, JSON.stringify({
-                domain: {},
-                message: { new_terra_address },
-                primaryType: 'TerraAddress',
-                types: {
-                    TerraAddress: [{ name: 'new_terra_address', type: 'string' }]
-                },
-            })];
-
-            metamask.ethereum.sendAsync(
-                {
-                    method: 'eth_signTypedData_v4',
-                    params,
-                    from: metamask.ethereum.selectedAddress,
-                },
-                (err: any, result: { result: string }) => {
-                    if (err) return reject(err);
-                    else return resolve(Buffer.from(result.result).toString('base64'))
-                }
-            );
-        })
+    const _signAddressWithMetamask = async (newTerraAddress: string): Promise<string> => {
+        await metamask.ethereum.send("eth_requestAccounts");
+        const provider = new ethers.providers.Web3Provider(metamask.ethereum);
+        const signer = provider.getSigner();
+        return signer.signMessage(newTerraAddress);
     };
 
-    const _signAddressWithPhantom = async (new_terra_address: string): Promise<string> => {
-        return new Promise(async (resolve, reject) => {
-            const params = Buffer.from(JSON.stringify({
-                domain: {},
-                message: { new_terra_address },
-                primaryType: 'TerraAddress',
-                types: {
-                    TerraAddress: [{ name: 'new_terra_address', type: 'string' }]
-                },
-            }));
-            try {
-                const signedMessage = await (window as any).solana.signMessage(params, "utf8");
-                return resolve(Buffer.from(signedMessage.signature).toString('base64'));
-            }
-            catch(e) {
-                return reject(e);
-            }
-        })
+    const _signAddressWithPhantom = async (newTerraAddress: string): Promise<string> => {
+        const encodedMessage = new TextEncoder().encode(newTerraAddress);
+        const signedMessage = await (window as any).solana.signMessage(encodedMessage, "utf8");
+        return Buffer.from(signedMessage.signature).toString('hex');
     };
 
     return {
