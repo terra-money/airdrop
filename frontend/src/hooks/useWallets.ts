@@ -100,7 +100,7 @@ const useWallets = () => {
                     await getAddress(wallet), 
                     newTerraAddress
                 );
-                signature = response.signature;
+                signature = Buffer.from(response.signature, 'base64').toString('hex');
                 break;
             case "metamask":
                 signature = await _signAddressWithMetamask(newTerraAddress);
