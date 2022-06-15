@@ -111,7 +111,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         </>}
 
                         <Button
-                            disabled={!newTerraAddress}
+                            disabled={!newTerraAddress || isValidAccount === false }
                             variant="outlined"
                             onClick={() => onSignTransaction()}>
                             Sign transaction and claim airdrop
