@@ -53,11 +53,20 @@ const useWalletsHelpers = () => {
                 coinDenom: "INJ",
                 coinMinimalDenom: "inj",
                 coinDecimals: 18,
-                coinGeckoId: "injective-protocol",
-                coinImageUrl: "/tokens/inj.svg",
-                isStakeCurrency: true,
-                isFeeCurrency: true,
+                coinGeckoId: "injective-protocol"
             }],
+            feeCurrencies: [{
+                coinDenom: "INJ",
+                coinMinimalDenom: "inj",
+                coinDecimals: 18,
+                coinGeckoId: "injective-protocol",
+            }],
+            stakeCurrency: {
+                coinDenom: "INJ",
+                coinMinimalDenom: "inj",
+                coinDecimals: 18,
+                coinGeckoId: "injective-protocol"
+            },
             gasPriceStep: {
                 low: 0.0005,
                 average: 0.0007,
