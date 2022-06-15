@@ -1,4 +1,7 @@
+use bech32::{encode, ToBase32};
 use cosmwasm_std::{Api, StdError, StdResult};
+use ripemd::{Digest as RipeDigest, Ripemd160};
+use sha2::Sha256;
 use sha3::{Digest, Keccak256};
 use std::convert::TryInto;
 
@@ -53,6 +56,58 @@ pub fn ethereum_address_raw(pubkey: &[u8]) -> StdResult<[u8; 20]> {
 
     let hash = Keccak256::digest(data);
     Ok(hash[hash.len() - 20..].try_into().unwrap())
+}
+
+pub fn compress_public_key(p: &[u8]) -> StdResult<[u8; 33]> {
+    let (tag, data) = match p.split_first() {
+        Some(pair) => pair,
+        None => return Err(StdError::generic_err("Public key must not be empty")),
+    };
+    if *tag != 0x04 {
+        return Err(StdError::generic_err("Public key must start with 0x04"));
+    }
+    if data.len() != 64 {
+        return Err(StdError::generic_err("Public key must be 65 bytes long"));
+    }
+
+    // incomplete function
+    // 1. check if the last 32 bytes is odd or even (y value of the key)
+    // 2. need to take the first 32 bytes (x value of the key) without the tag
+    // 3. prefix (2) with the tag from (1)
+    // 4. return the compress public key
+    let (last, _) = match p.split_last() {
+        Some(pair) => pair,
+        None => return Err(StdError::generic_err("Public key must not be empty")),
+    };
+    let last_byte = [*last];
+    let l = u8::from_be_bytes(last_byte);
+    let prefix: u8;
+    if l % 2 == 0 {
+        prefix = 2
+    } else {
+        prefix = 3
+    }
+    let mut ret = [0u8; 33];
+    ret[1..].copy_from_slice(&data[..32]);
+    ret[0] = prefix;
+    return Ok(ret);
+}
+
+pub fn public_key_to_address(k: &[u8], prefix: &str) -> StdResult<String> {
+    let mut hasher = Ripemd160::new();
+    let mut sha = Sha256::new();
+    // let mut sha_result: [u8; 32] = [0; 32];
+    // let mut ripe_result: [u8; 20] = [0; 20];
+    sha.update(k);
+    let sha_result = sha.finalize();
+    hasher.update(&sha_result);
+    let ripe_result = hasher.finalize();
+    encode(
+        prefix,
+        ripe_result.as_slice().to_base32(),
+        bech32::Variant::Bech32,
+    )
+    .map_err(|_| StdError::generic_err("bech32 encoding failed"))
 }
 
 pub fn decode_address(input: &str) -> StdResult<[u8; 20]> {

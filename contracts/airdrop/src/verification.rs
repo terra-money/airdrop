@@ -1,13 +1,61 @@
-use crate::ethereum::{decode_address, ethereum_address_raw, get_recovery_param};
-use cosmwasm_std::{
-    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, QueryResponse, Response,
-    StdError, StdResult, Uint128,
+use crate::ethereum::{
+    compress_public_key, decode_address, ethereum_address_raw, get_recovery_param,
+    public_key_to_address,
 };
+use crate::state::CONFIG;
+use bech32::ToBase32;
+use cosmwasm_std::{Deps, StdError, StdResult};
 use sha2::{Digest, Sha256};
 use sha3::Keccak256;
+use std::str;
 
 #[cfg(feature = "eth")]
 pub fn verify_signature(
+    deps: Deps,
+    message: &str,
+    signature: &str,
+    signer_address: &str,
+) -> StdResult<bool> {
+    verify_signature_eth(deps, message, signature, signer_address)
+}
+
+#[cfg(feature = "solana")]
+pub fn verify_signature(
+    deps: Deps,
+    message: &str,
+    signature: &str,
+    signer_address: &str,
+) -> StdResult<bool> {
+    verify_signature_solana(deps, message, signature, signer_address)
+}
+
+#[cfg(feature = "terra")]
+pub fn verify_signature(
+    _deps: Deps,
+    _message: &str,
+    _signature: &str,
+    _signer_address: &str,
+) -> StdResult<bool> {
+    // No signature for terra
+    Ok(true)
+}
+
+#[cfg(feature = "cosmos")]
+pub fn verify_signature(
+    deps: Deps,
+    message: &str,
+    signature: &str,
+    signer_address: &str,
+) -> StdResult<bool> {
+    let config = CONFIG.load(deps.storage)?;
+    let prefix = match config.prefix {
+        Some(p) => Ok(p),
+        None => Err(StdError::generic_err("prefix missing for cosmos airdrop")),
+    }?;
+    verify_signature_cosmos(deps, message, signature, signer_address, &prefix)
+}
+
+pub fn verify_signature_eth(
     deps: Deps,
     message: &str,
     signature: &str,
@@ -21,7 +69,8 @@ pub fn verify_signature(
     hasher.update(message);
     let hash = hasher.finalize();
 
-    let signature_u8 = hex::decode(signature);
+    let signature_u8 = hex::decode(signature)
+        .map_err(|_| StdError::generic_err("error decoding hex signature"))?;
     // Decompose signature
     let (v, rs) = match signature_u8.split_last() {
         Some(pair) => pair,
@@ -37,13 +86,12 @@ pub fn verify_signature(
     }
     let result = deps.api.secp256k1_verify(&hash, rs, &calculated_pubkey);
     match result {
-        Ok(verifies) => Ok(true),
+        Ok(verified) => Ok(verified),
         Err(err) => Err(err.into()),
     }
 }
 
-#[cfg(feature = "solana")]
-pub fn verify_signature(
+pub fn verify_signature_solana(
     deps: Deps,
     message: &str,
     signature: &str,
@@ -63,5 +111,25 @@ pub fn verify_signature(
     }
 }
 
-#[cfg(feature = "terra")]
-pub fn verify_signature(deps: Deps, message: &str, signature: &str, signer_address: &str) {}
+pub fn verify_signature_cosmos(
+    deps: Deps,
+    message: &str,
+    signature: &str,
+    signer_address: &str,
+    prefix: &str,
+) -> StdResult<bool> {
+    let mut hasher = Sha256::new();
+    hasher.update(message);
+    let hash = hasher.finalize();
+    let signature_u8 =
+        hex::decode(signature).map_err(|_| StdError::generic_err("error decoding signature"))?;
+    let recovered_pubkey = deps
+        .api
+        .secp256k1_recover_pubkey(hash.as_slice(), &signature_u8, 1)?;
+    let calculated_address = compress_public_key(&recovered_pubkey)?;
+    let recovered_address = public_key_to_address(&calculated_address, prefix)?;
+    if signer_address != recovered_address {
+        return Ok(false);
+    }
+    Ok(true)
+}

@@ -30,6 +30,7 @@ pub fn instantiate(
         &Config {
             admin: deps.api.addr_validate(&msg.admin)?.to_string(),
             denom: msg.denom,
+            prefix: None,
         },
     )?;
 
@@ -206,7 +207,7 @@ pub fn claim(
     }
 
     // Update claim index to the current stage
-    CLAIM_INDEX.save(deps.storage, (user_raw.as_slice()), &true)?;
+    CLAIM_INDEX.save(deps.storage, user_raw.as_slice(), &true)?;
 
     Ok(Response::new()
         // .add_message(CosmosMsg::Wasm(WasmMsg::Execute {
