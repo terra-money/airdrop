@@ -1,8 +1,7 @@
 import { Verifier } from "./interface";
-import { SimplePublicKey, Key } from "@terra-money/terra.js";
+import { SimplePublicKey } from "@terra-money/terra.js";
 import crypto from "crypto";
 import secp256k1 from "secp256k1";
-import { encode, decode } from "bech32-buffer";
 
 export class TerraVerifier implements Verifier {
   verify(address: string, message: string, signature: string): boolean {

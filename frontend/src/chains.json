@@ -10,6 +10,11 @@
                 "icon": "station"
             },
             {
+                "id": "keplr",
+                "name": "Keplr",
+                "icon": "keplr"
+            },
+            {
                 "id": "walletconnect",
                 "name": "Wallet Connect",
                 "icon": "walletconnect"
@@ -25,11 +30,6 @@
                 "id": "metamask",
                 "name": "MetaMask",
                 "icon": "metamask"
-            },
-            {
-                "id": "walletconnect",
-                "name": "Wallet Connect",
-                "icon": "walletconnect"
             }
         ]
     },
@@ -42,11 +42,6 @@
                 "id": "metamask",
                 "name": "MetaMask",
                 "icon": "metamask"
-            },
-            {
-                "id": "walletconnect",
-                "name": "Wallet Connect",
-                "icon": "walletconnect"
             }
         ]
     },

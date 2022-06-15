@@ -9,17 +9,17 @@ import { Chain } from "../../models/Chain";
 import { Wallet } from "../../models/Wallet";
 import { Loader } from "../Loader";
 import DoneAllIcon from "@mui/icons-material/DoneAll"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
 import "./ClaimAirdrop.scss"
 
 type ClaimAirdropType = {
     wallet: Wallet,
     chain: Chain,
+    onClaimAirdropSuccessfully: () => void,
     onCheckAnotherWallet: () => void
 }
 
 export const ClaimAirdrop = (props: ClaimAirdropType) => {
-    const { wallet, chain, onCheckAnotherWallet } = props;
+    const { wallet, chain, onCheckAnotherWallet, onClaimAirdropSuccessfully } = props;
 
     const [newTerraAddress, setNewTerraAddress] = useState("");
     const [isValidAccount, setIsValidAccount] = useState<boolean | null>(null);
@@ -53,9 +53,9 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         { new_terra_address: newTerraAddress, signature }
                     );
                     setClaimResponse(claimResponse);
+                    onClaimAirdropSuccessfully();
                 }
                 catch (e : any) {
-                    console.error(e);
                     if (e?.response?.data?.message) {
                         setClaimResponse({
                             message: e?.response?.data?.message
@@ -63,16 +63,15 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     }
                     else {
                         setClaimResponse({
-                            message: "Something went wrong"
+                            message: "Something went wrong claiming the airdrop. Try again or"
                         })
                     }
                     
-                    enqueueSnackbar("Something went wrong", { variant: "error" });
+                    enqueueSnackbar("Something went wrong claiming the airdrop. Try again", { variant: "error" });
                 }
             }
             catch (e) {
-                console.error(e);
-                enqueueSnackbar("Airdrop signature was cancelled", { variant: "error" });
+                enqueueSnackbar("Something went wrong signing the transaction. Try again", { variant: "error" });
             }
         }
 
@@ -85,7 +84,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 ? <>{claimResponse === null
                     ? <div className="ClaimForm">
                         <h4 className="ClaimAirdropTitle">
-                            Define a Terra 2 address to collect the tokens. <br />
+                            Add a Terra 2 address where you want to get the tokens. <br />
                             This address must be new (without previous transactions)
                         </h4>
 
@@ -102,7 +101,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                 severity="error">
                                 <div>This address is invalid, use a different address</div>
                                 <a className="AlertLink"
-                                    href={"https://finder.terra.money/mainnet/address/" + newTerraAddress}
+                                    href={`https://finder.terra.money/mainnet/address/${newTerraAddress}`}
                                     target="_blank"
                                     rel="noreferrer">
                                     <div className="AlertText">Check address in Finder</div>
@@ -122,16 +121,17 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         {!claimResponse?.message
                             ? <>
                                 <DoneAllIcon className="AllocationIcon success" />
-                                <h4>Airdrop successfully claimed</h4>
+                                <h4>Airdrop claimed, transaction is being broadcasted</h4>
                                 <h3>
-                                    <a href={`https://finder.terra.money/mainnet/tx/${claimResponse?.transaction_hash}`}
+                                    <a href={`https://finder.terra.money/mainnet/address/${newTerraAddress}`}
                                         target="_blank"
-                                        rel="noreferrer"> Check transaction in Finder
+                                        rel="noreferrer"> Check your address in Finder
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>
 
                                 <Button variant="outlined"
+                                    fullWidth
                                     onClick={() => onCheckAnotherWallet()}>
                                     Check another address
                                 </Button>
@@ -142,7 +142,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                     <a href="https://discord.com/invite/sTmERSFnYW"
                                         target="_blank"
                                         rel="noreferrer">
-                                        Go to Terra 2 Discord for help
+                                        Check Terra 2 Discord for help
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>
@@ -151,7 +151,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     </div>}
                 </>
                 : <div className="LoadingAllocation">
-                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Claiming airdrop</h4>} />
+                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Signing transaction to claim the airdrop</h4>} />
                 </div>}
         </div>
     )

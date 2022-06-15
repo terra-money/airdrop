@@ -1,6 +1,6 @@
 import './App.scss';
-import { Button, Card, CardActions, CardContent, CardHeader, Step } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { Button, Card, CardActions, CardContent, CardHeader } from '@mui/material';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
 import { useState } from 'react';
 
 import { CheckAllocation } from './components/CheckAllocation';
@@ -42,6 +42,12 @@ function App() {
         updateSteps(steps);
         nextStep();
     }
+
+    const handleClaimAirdropSuccessfully = () => {
+        steps[activeStep].completed = true;
+        steps[activeStep].completedLabel = "Successfully";
+        updateSteps(steps);
+    }
     
     const handleCheckAnotherWallet = () => {
         setState({});
@@ -69,7 +75,10 @@ function App() {
                         && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
                     }
                     {activeStep === 2 && state.chain && state.wallet 
-                        && <ClaimAirdrop wallet={state.wallet} chain={state.chain} onCheckAnotherWallet={handleCheckAnotherWallet}/> }
+                        && <ClaimAirdrop wallet={state.wallet} 
+                            chain={state.chain} 
+                            onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
+                            onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
 
                 <CardActions className='AppActions'>

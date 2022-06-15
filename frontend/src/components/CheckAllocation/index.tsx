@@ -29,7 +29,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
 
     useEffect(() => {
         const init = async () => {
-            const address = getAddress(wallet);
+            const address = await getAddress(wallet);
             setAddress(address);
             try {
                 const allocationResponse = await checkAllocation(chain.id, address);
@@ -72,6 +72,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                                 <h4>to be claimed for address</h4>
                                 <h3>{address}</h3>
                                 <Button variant="outlined"
+                                    fullWidth
                                     onClick={() => onCollectAllocation(address)}>
                                     Claim airdrop
                                 </Button>
@@ -92,7 +93,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                             <a href="https://discord.com/invite/sTmERSFnYW"
                                 target="_blank"
                                 rel="noreferrer">
-                                Go to Terra 2 Discord for help
+                                Check Terra 2 Discord for help
                             </a>
                             <div className="icon external-link"></div>
                         </h3>

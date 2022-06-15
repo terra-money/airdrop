@@ -1,8 +1,9 @@
 .ClaimAirdropWrapper {
+    margin: 1em auto 1em auto;
+    max-width: 420px;
 
-        
     .ClaimAirdropTitle {
-        margin: 0 0 1.6em 0;
+        margin: 1em 0 1.6em 0;
         font-weight: normal;
         text-align: center;
     }
@@ -10,7 +11,6 @@
     .ClaimForm {
         display: flex;
         flex-direction: column;
-        align-items: center;
 
         .ClaimAddressInput {
             min-width: 400px;
@@ -43,7 +43,6 @@
     .ClaimAllocationResult {
         text-align: center;
         margin-bottom: 1em;
-        margin-top: 3em;
         
         .AllocationIcon {
             height: 60px;
