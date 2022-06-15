@@ -9,7 +9,7 @@ import { AppHeader } from './components/AppHeader';
 import { ConnectWallet } from './components/ConnectWallet';
 
 import useSteps from './hooks/useSteps';
-import chains from './chains.json';
+import wallets from './wallets.json';
 import { Wallet } from './models/Wallet';
 import { Chain } from './models/Chain';
 import { StepData } from './components/AppHeader/StepComponent';
@@ -70,7 +70,7 @@ function App() {
                 <CardHeader title={<span>{steps[activeStep].label}</span>} />
 
                 <CardContent>
-                    {activeStep === 0 && <ConnectWallet chains={chains} onWalletConnected={handleWalletConnected}/>}
+                    {activeStep === 0 && <ConnectWallet wallets={wallets} onWalletConnected={handleWalletConnected}/>}
                     {activeStep === 1 && state.chain && state.wallet 
                         && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
                     }

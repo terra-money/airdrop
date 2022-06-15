@@ -8,23 +8,23 @@ import { Wallet } from '../../models/Wallet';
 import './ConnectWallet.scss'
 
 export type ConnectWalletType = {
-    chains: Array<Chain>,
+    wallets: Array<Wallet>,
     onWalletConnected: (wallet: Wallet, chain: Chain) => void
 }
 
 export const ConnectWallet = (props: ConnectWalletType) => {
     const {
-        chains,
+        wallets,
         onWalletConnected
     } = props;
 
-    const [chainId, setChainId] = useState('');
-    const [chain, setChain] = useState<Chain | null>();
-
-    const [wallets, setWallets] = useState(new Array<Wallet>());
+    const [wallet, setWallet] = useState<Wallet | null>();
     const [walletId, setWalletId] = useState('');
 
-    const [wallet, setWallet] = useState<Wallet | null>();
+    const [chains, setChains] = useState(new Array<Chain>());
+    const [chain, setChain] = useState<Chain | null>();
+    const [chainId, setChainId] = useState('');
+
     const [walletInstalled, setWalletInstalled] = useState<boolean>();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -43,39 +43,40 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     }, [connectedWallet])
 
 
-    const handleSelectChain = (event: any) => {
-        const selectedChain = chains.find(chain => chain.id === event.target.value);
-        setWallet(null);
-        setWalletId('');
-
-        if (selectedChain) {
-            setChain(selectedChain);
-            setChainId(event.target.value);
-            setWallets(selectedChain.wallets);
-            setWalletInstalled(false);
-        }
-    };
-
     const handleSelectWallet = (event: any) => {
         const selectedWallet = wallets.find(wallet => wallet.id === event.target.value);
+        setChain(null);
+        setChainId("");
+        setChains([]);
 
-        if (selectedWallet && chain) {
+        if (selectedWallet) {
             setWalletId(event.target.value);
             setWallet(selectedWallet);
+            setChains(selectedWallet.chains);
 
             const walletInstalled = isInstalled(selectedWallet);
             setWalletInstalled(walletInstalled);
+        }
+    };
 
-            if (isConnected(selectedWallet)) {
-                onWalletConnected(selectedWallet, chain)
+    const handleSelectChain = (event: any) => {
+        const selectedChain = chains.find(chain => chain.id === event.target.value);
+
+        if (wallet) {
+            setChainId(event.target.value);
+            setChain(selectedChain);
+
+            if (isConnected(wallet) && selectedChain) {
+                onWalletConnected(wallet, selectedChain)
             }
         }
     };
 
+
     const handleConnectWallet = async () => {
         try {
             if (wallet && chain) {
-                await connect(wallet);
+                await connect(wallet, chain);
 
                 // For station and wallet connect 
                 // the status must be checked on 
@@ -96,14 +97,36 @@ export const ConnectWallet = (props: ConnectWalletType) => {
         setWalletId('');
         setChain(null);
         setChainId('');
-        setWallets([]);
+        setChains([]);
         setWalletInstalled(false);
     }
 
     return (
         <div className='ConnectWallet'>
-            <h4>Select a network to connect one of the available wallets. Check the airdrop eligibility for the connected address. Sign a transaction to prove the ownership to claim the airdrop. (<b>the transaction you will have to sign  is free of charge</b>).</h4>
+            <h4>Select a wallet and connect to one of the available networks. Check the airdrop eligibility for the connected wallet. Sign a transaction to prove the ownership and claim the airdrop.</h4>
             <FormControl className='FormControl' fullWidth>
+                <InputLabel id='WalletLabel'>Select Wallet</InputLabel>
+                <Select
+                    id='WalletDropdown'
+                    labelId='Wallet'
+                    value={walletId}
+                    label='Select Wallet'
+                    onChange={handleSelectWallet}>
+                    {wallets.map((wallet, index) => (
+                        <MenuItem
+                            className='DropdownItem'
+                            key={index}
+                            value={wallet.id}>
+                            <div className={'icon ' + wallet.icon} />
+                            <span>{wallet.name}</span>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            {wallet && !walletInstalled
+                && <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to select a chain</Alert>}
+            {wallet && walletInstalled && <FormControl className='FormControl' fullWidth>
+
                 <InputLabel id='OriginChainDropdownLabel'>Origin Chain</InputLabel>
                 <Select
                     id='OriginChainDropdown'
@@ -121,40 +144,14 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                         </MenuItem>
                     ))}
                 </Select>
-            </FormControl>
-            {chain
-                ? <FormControl className='FormControl' fullWidth>
-                    <InputLabel id='WalletLabel'>Select Wallet</InputLabel>
-                    <Select
-                        id='WalletDropdown'
-                        labelId='Wallet'
-                        value={walletId}
-                        label='Select Wallet'
-                        onChange={handleSelectWallet}>
-                        {wallets.map((wallet, index) => (
-                            <MenuItem
-                                className='DropdownItem'
-                                key={index}
-                                value={wallet.id}>
-                                <div className={'icon ' + wallet.icon} />
-                                <span>{wallet.name}</span>
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                : <></>
-            }
-            {wallet &&
-                <div className='ConnectWalletFooter'>
-                    {walletInstalled
-                        ? <Button variant='outlined'
-                            fullWidth
-                            onClick={() => handleConnectWallet()}>
-                            Use {wallet.name} with {chain?.name}
-                        </Button>
-                        : <Alert severity="info" onClose={() => handleCleanSelections()}>Install {wallet.name} to connect to {chain?.name}</Alert>
-                    }
-                </div>
+            </FormControl>}
+            {wallet && chain && <div className='ConnectWalletFooter'>
+                <Button variant='outlined'
+                    fullWidth
+                    onClick={() => handleConnectWallet()}>
+                    Use {wallet.name} with {chain?.name}
+                </Button>
+            </div>
             }
         </div>
     )

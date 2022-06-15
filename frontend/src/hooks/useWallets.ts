@@ -1,14 +1,15 @@
 import { useMetaMask } from "metamask-react";
 import { ConnectType, useWallet } from "@terra-money/wallet-provider";
 import { Wallet } from "../models/Wallet";
+import { Chain, KeplrChain, keplrChainId } from "../models/Chain";
 import { ethers } from 'ethers';
 import { Coins, MsgSend } from "@terra-money/terra.js";
 import useWalletsHelpers from "./useWalletsHelpers";
 
 const useWallets = () => {
+    const { terraClassicKeplrConfig, injectiveKeplrConfig } = useWalletsHelpers();
     const metamask = useMetaMask();
     const station = useWallet();
-    const { terraClassicKeplrConfig } = useWalletsHelpers();
     const _window: any = window;
 
     const isInstalled = (wallet: Wallet): boolean => {
@@ -45,16 +46,14 @@ const useWallets = () => {
         }
     }
 
-    const connect = async (wallet: Wallet): Promise<any> => {
+    const connect = async (wallet: Wallet, chain: Chain): Promise<any> => {
         switch (wallet.id) {
             case "station":
                 return Promise.resolve(station.connect(ConnectType.EXTENSION));
             case "walletconnect":
                 return Promise.resolve(station.connect(ConnectType.WALLETCONNECT));
             case "keplr":
-                const terraClassicConfig = terraClassicKeplrConfig();
-                await _window.keplr.experimentalSuggestChain(terraClassicConfig);
-                return _window.keplr.enable("columbus-5");
+                return _connectKeplrWallet(chain as KeplrChain);
             case "metamask":
                 return metamask.connect();
             case "phantom":
@@ -64,14 +63,28 @@ const useWallets = () => {
         }
     }
 
-    const getAddress = async (wallet: Wallet): Promise<string> => {
+    const _connectKeplrWallet = async (chain: KeplrChain) : Promise<any> => {
+        if(chain.keplrChainId === "columbus-5") {
+            const terraClassicConfig = terraClassicKeplrConfig();
+            await _window.keplr.experimentalSuggestChain(terraClassicConfig);
+        }
+        else if(chain.keplrChainId === "injective-1"){
+            const injectiveConfig = injectiveKeplrConfig();
+            await _window.keplr.experimentalSuggestChain(injectiveConfig);
+        }
+
+        return _window.keplr.enable(chain.keplrChainId);
+    }
+
+    const getAddress = async (wallet: Wallet, chain?: Chain): Promise<string> => {
         switch (wallet.id) {
             case "station":
                 return station.wallets[0]?.terraAddress;
             case "walletconnect":
                 return station.wallets[0]?.terraAddress;
             case "keplr":
-                const offlineSigner = _window.getOfflineSigner("columbus-5");
+                const keplrChainId = (chain as KeplrChain).keplrChainId;
+                const offlineSigner = _window.getOfflineSigner(keplrChainId);
                 const accounts = await offlineSigner.getAccounts();
                 return accounts[0].address;
             case "metamask":
@@ -85,6 +98,7 @@ const useWallets = () => {
 
     const signClaimAllocation = async (
         wallet: Wallet,
+        chain: Chain,
         newTerraAddress: string
     ): Promise<{ signature: string, signerAddress: string }> => {
         let signature;
@@ -95,9 +109,10 @@ const useWallets = () => {
                 signature = await _signAddressWithStation(wallet, newTerraAddress);
                 break;
             case "keplr":
+                const keplrChainId = (chain as KeplrChain).keplrChainId;
                 const response = await _window.keplr.signArbitrary(
-                    "columbus-5", 
-                    await getAddress(wallet), 
+                    keplrChainId, 
+                    await getAddress(wallet, chain), 
                     newTerraAddress
                 );
                 signature = Buffer.from(response.signature, 'base64').toString('hex');
@@ -114,7 +129,7 @@ const useWallets = () => {
 
         return {
             signature,
-            signerAddress: await getAddress(wallet)
+            signerAddress: await getAddress(wallet, chain)
         }
     }
 
