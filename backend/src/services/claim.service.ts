@@ -8,12 +8,12 @@ import {
 import { Config } from "../config";
 
 interface ClaimExecuteMsg {
-  claim_amount: string;
-  merkle_proofs: string[];
-  new_terra_address: string;
+  allocation: string;
+  proofs: string[];
+  message: string;
   signature: string;
   address: string;
-  fee_paid?: string;
+  fee_refund?: string;
 }
 
 export class ClaimService {
@@ -59,9 +59,9 @@ export class ClaimService {
           contract: "",
           execute_msg: {
             address: address,
-            claim_amount: allocString,
-            merkle_proofs: proofs,
-            new_terra_address: newTerraAddress,
+            allocation: allocString,
+            proofs: proofs,
+            message: newTerraAddress,
             signature: signature,
           } as ClaimExecuteMsg,
         } as MsgExecuteContract,
