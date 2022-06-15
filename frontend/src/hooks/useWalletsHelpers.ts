@@ -39,8 +39,47 @@ const useWalletsHelpers = () => {
         };
     }
 
+    const injectiveKeplrConfig = () => {
+        return {
+            rpc: "https://public.api.injective.network",
+            rest: "https://public.lcd.injective.network",
+            chainId: "injective-1",
+            chainName: "Injective",
+            bip44: {
+                coinType: 60,
+            },
+            bech32Config: Bech32Address.defaultBech32Config("inj"),
+            currencies: [{
+                coinDenom: "INJ",
+                coinMinimalDenom: "inj",
+                coinDecimals: 18,
+                coinGeckoId: "injective-protocol"
+            }],
+            feeCurrencies: [{
+                coinDenom: "INJ",
+                coinMinimalDenom: "inj",
+                coinDecimals: 18,
+                coinGeckoId: "injective-protocol",
+            }],
+            stakeCurrency: {
+                coinDenom: "INJ",
+                coinMinimalDenom: "inj",
+                coinDecimals: 18,
+                coinGeckoId: "injective-protocol"
+            },
+            gasPriceStep: {
+                low: 0.0005,
+                average: 0.0007,
+                high: 0.0009,
+            },
+            explorerUrlToTx:
+                "https://explorer.injective.network/transaction/{txHash}",
+        };
+    }
+
     return {
-        terraClassicKeplrConfig
+        terraClassicKeplrConfig,
+        injectiveKeplrConfig
     }
 }
 

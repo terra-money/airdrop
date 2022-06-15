@@ -44,7 +44,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
 
         if (isNew) {
             try {
-                const { signature, signerAddress } = await signClaimAllocation(wallet, newTerraAddress);
+                const { signature, signerAddress } = await signClaimAllocation(wallet, chain, newTerraAddress);
 
                 try {
                     const claimResponse = await claimAllocation(
@@ -111,7 +111,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         </>}
 
                         <Button
-                            disabled={!newTerraAddress}
+                            disabled={!newTerraAddress || isValidAccount === false }
                             variant="outlined"
                             onClick={() => onSignTransaction()}>
                             Sign transaction and claim airdrop
