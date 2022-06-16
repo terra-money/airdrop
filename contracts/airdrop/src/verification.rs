@@ -126,8 +126,10 @@ pub fn verify_signature_cosmos(
     signer_address: &str,
     prefix: &str,
 ) -> StdResult<bool> {
+    let message_b64 = base64::encode(message);
+    let raw_message = format!("{{\"account_number\":\"0\",\"chain_id\":\"\",\"fee\":{{\"amount\":[],\"gas\":\"0\"}},\"memo\":\"\",\"msgs\":[{{\"type\":\"sign/MsgSignData\",\"value\":{{\"data\":\"{}\",\"signer\":\"{}\"}}}}],\"sequence\":\"0\"}}", message_b64, signer_address);
     let mut hasher = Sha256::new();
-    hasher.update(message);
+    hasher.update(raw_message);
     let hash = hasher.finalize();
     let signature_u8 =
         hex::decode(signature).map_err(|_| StdError::generic_err("error decoding signature"))?;

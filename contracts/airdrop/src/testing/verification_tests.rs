@@ -80,22 +80,21 @@ fn verify_wrong_solana_signer() {
 
 #[test]
 fn verify_correct_cosmos_signer() {
-    let signer_address = "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw";
-    let message = "hello world";
-    let signature = "3ea138e59a229615997fb8ce7a51f40ed115edf7e217b1e79bc6a688bf2be8d32a87aceb9048689c39f722c1593e028210438928bf8a89375d7cef25df0154fb";
+    let signer_address = "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq";
+    let message = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9";
+    let signature = "3a6d14fd6fabc5b57153f1aa425e9112cf11e5e1cb02a8ef933786a5f8dc76ef62cbbc6871335a7b1caabe0517971596e71b3bb9d38885e3771b81efc0055b15";
 
     let deps = setup();
     let verified =
-        verify_signature_cosmos(deps.as_ref(), message, signature, signer_address, "terra")
-            .unwrap();
+        verify_signature_cosmos(deps.as_ref(), message, signature, signer_address, "kava").unwrap();
     assert_eq!(verified, true);
 }
 
 #[test]
 fn verify_wrong_cosmos_signer() {
-    let signer_address = "terra1lxc1c5rnvcfx94x2ejarsr55cmcec6apklkdpw";
-    let message = "hello world";
-    let signature = "3ea138e59a229615997fb8ce7a51f40ed115edf7e217b1e79bc6a688bf2be8d32a87aceb9048689c39f722c1593e028210438928bf8a89375d7cef25df0154fb";
+    let signer_address = "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq";
+    let message = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h8";
+    let signature = "3a6d14fd6fabc5b57153f1aa425e9112cf11e5e1cb02a8ef933786a5f8dc76ef62cbbc6871335a7b1caabe0517971596e71b3bb9d38885e3771b81efc0055b15";
 
     let deps = setup();
     let verified =
@@ -106,9 +105,9 @@ fn verify_wrong_cosmos_signer() {
 
 #[test]
 fn verify_wrong_cosmos_message() {
-    let signer_address = "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw";
-    let message = "hello worlds";
-    let signature = "3ea138e59a229615997fb8ce7a51f40ed115edf7e217b1e79bc6a688bf2be8d32a87aceb9048689c39f722c1593e028210438928bf8a89375d7cef25df0154fb";
+    let signer_address = "kava190xtwswsgwu75xqz8sk8s3nj06s0n7tmur9sdq";
+    let message = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9";
+    let signature = "3a6d14fd6fabc5b57153f1aa425e9112cf11e5e1cb02a8ef933786a5f8dc76ef62cbbc6871335a7b1caabe0517971596e71b3bb9d38885e3771b81efc0055b15";
 
     let deps = setup();
     let verified =
