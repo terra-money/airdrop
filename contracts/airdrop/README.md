@@ -12,6 +12,11 @@ In order to run tests or build, you will need to run the following
 cargo test --features eth --no-default-features
 ```
 
+To build contracts, use the helper script `compile-contracts.sh`. You will need to have docker installed in order to build.
+```
+./compile-contracts.sh all|eth|solana|terra|cosmos
+```
+
 ## Init
 Instantiate airdrop contract by registering owner and mirror token 
 
