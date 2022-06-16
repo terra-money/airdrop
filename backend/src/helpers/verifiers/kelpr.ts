@@ -13,7 +13,6 @@ export class KelprVerifier implements Verifier {
   verify(address: string, message: string, signature: string): boolean {
     const doc = this.makeADR36AminoSignDoc(address, message);
     const rawMessage = JSON.stringify(sortedObject(doc));
-    console.log(rawMessage);
     const hasher = crypto.createHash("SHA256");
     const hash = hasher.update(rawMessage).digest();
     const signatureBuffer = Buffer.from(signature, "hex");
