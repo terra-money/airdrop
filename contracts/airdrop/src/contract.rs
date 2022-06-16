@@ -180,25 +180,29 @@ pub fn claim(
 
     let amount0 = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount0"))?;
     let amount0_u128 = u128::from_str_radix(amount0, 10)
         .map_err(|_| StdError::generic_err("unable to parse amount0"))?;
+    
     let mut vesting_periods: Vec<(i64, String)> = vec![];
     let amount1 = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount1"))?;
     vesting_periods.push((config.vesting_periods[0], String::from(amount1)));
+
     let amount2 = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount2"))?;
     vesting_periods.push((config.vesting_periods[1], String::from(amount2)));
+
     let amount3 = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount3"))?;
     vesting_periods.push((config.vesting_periods[2], String::from(amount3)));
+    
     let amount4 = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount4"))?;
     vesting_periods.push((config.vesting_periods[3], String::from(amount4)));
 
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
