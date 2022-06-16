@@ -1,12 +1,16 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::Uint128;
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct InstantiateMsg {
     pub admin: String,
     pub denom: String,
+    pub vesting_periods: [i64; 4],
+    // Only used for cosmos chains (ex. terra)
+    pub prefix: Option<String>,
+    // Start time from when the vesting starts. If None, then it will start
+    // when the user claims the airdrop
+    pub start_time: Option<i64>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -27,11 +31,6 @@ pub enum ExecuteMsg {
         message: String,
         signature: String,
         fee_refund: Option<String>,
-        address: String,
-    },
-    CreateVestingAccount {
-        recipient: String,
-        periods: Vec<(i64, String)>,
     },
 }
 

@@ -6,6 +6,7 @@ import { AllocationValidation, validateAndClean } from "../validation";
 
 export interface Allocation {
   address: string;
+  amount0: string;
   amount1: string;
   amount2: string;
   amount3: string;
@@ -14,6 +15,7 @@ export interface Allocation {
 
 export const EMPTY_ALLOCATION = {
   address: "",
+  amount0: "0",
   amount1: "0",
   amount2: "0",
   amount3: "0",
@@ -28,6 +30,11 @@ export class Airdrop {
     const leaves = allocations.map(this.hashFromAllocation);
     this.allocationMap = new Map();
     for (const a of allocations) {
+      if (this.allocationMap.get(a.address)) {
+        throw Error(
+          "Invalid allocation file. Duplicate claim address " + a.address
+        );
+      }
       this.allocationMap.set(a.address, a);
     }
     this.tree = new MerkleTree(leaves, keccak256, { sort: true });
@@ -85,6 +92,6 @@ export class Airdrop {
   }
 
   private static allocationToString(a: Allocation): string {
-    return `${a.address},${a.amount1},${a.amount2},${a.amount3},${a.amount4}`;
+    return `${a.address},${a.amount0},${a.amount1},${a.amount2},${a.amount3},${a.amount4}`;
   }
 }

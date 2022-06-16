@@ -2,8 +2,8 @@
 use cosmwasm_std::entry_point;
 
 use cosmwasm_std::{
-    to_binary, Binary, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
-    Uint128,
+    coins, to_binary, BankMsg, Binary, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response,
+    StdError, StdResult,
 };
 
 use crate::msg::{
@@ -11,7 +11,7 @@ use crate::msg::{
 };
 use crate::state::{Config, CLAIM_INDEX, CONFIG, MERKLE_ROOT};
 use crate::verification::verify_signature;
-use crate::vesting::{Coin, MsgCreatePeriodicVestingAccount, Period};
+use crate::vesting::{Coin as VestingCoin, MsgCreatePeriodicVestingAccount, Period};
 
 use sha3::Digest;
 use std::convert::TryInto;
@@ -30,6 +30,9 @@ pub fn instantiate(
         &Config {
             admin: deps.api.addr_validate(&msg.admin)?.to_string(),
             denom: msg.denom,
+            prefix: msg.prefix,
+            start_time: msg.start_time,
+            vesting_periods: msg.vesting_periods,
         },
     )?;
 
@@ -51,14 +54,8 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             proofs,
             message,
             signature,
-            address,
             fee_refund: _,
-        } => claim(
-            deps, env, info, allocation, proofs, message, signature, address,
-        ),
-        ExecuteMsg::CreateVestingAccount { recipient, periods } => {
-            create_vesting_account(deps, env, recipient, periods)
-        }
+        } => claim(deps, env, info, allocation, proofs, message, signature),
     }
 }
 
@@ -120,22 +117,24 @@ pub fn register_merkle_root(
 }
 
 pub fn create_vesting_account(
-    deps: DepsMut,
     env: Env,
+    denom: String,
     recipient: String,
     periods: Vec<(i64, String)>,
+    start_time: Option<i64>,
 ) -> StdResult<Response> {
-    let config: Config = CONFIG.load(deps.storage)?;
-
     let mut msg = MsgCreatePeriodicVestingAccount::new();
     msg.from_address = env.contract.address.to_string();
     msg.to_address = recipient;
-    msg.start_time = env.block.time.seconds() as i64;
+    msg.start_time = match start_time {
+        Some(t) => t,
+        None => env.block.time.seconds() as i64,
+    };
     msg.vesting_periods = periods
         .iter()
         .map(|v| {
-            let mut coin = Coin::new();
-            coin.denom = config.denom.clone();
+            let mut coin = VestingCoin::new();
+            coin.denom = denom.clone();
             coin.amount = v.1.clone();
 
             let mut period = Period::new();
@@ -145,7 +144,6 @@ pub fn create_vesting_account(
             period
         })
         .collect::<Vec<Period>>();
-
     let bytes = Message::write_to_bytes(&msg).unwrap();
     Ok(Response::new().add_message(CosmosMsg::Stargate {
         type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
@@ -155,30 +153,61 @@ pub fn create_vesting_account(
 
 pub fn claim(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
     amount: String,
     proofs: Vec<String>,
-    message: String,
+    new_terra_address: String,
     signature: String,
-    address: String,
 ) -> StdResult<Response> {
-    verify_signature(deps.as_ref(), "123", "123", "123");
+    let mut values = (&amount).split(",");
+    let signer = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+
+    let (verified, verified_terra_address) = verify_signature(
+        deps.as_ref(),
+        info.sender.into_string(),
+        new_terra_address,
+        signature,
+        String::from(signer),
+    )?;
+    if !verified {
+        return Err(StdError::generic_err("signature verification error"));
+    };
+
+    let config = CONFIG.load(deps.storage)?;
+
+    let amount0 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    let amount0_u128 = u128::from_str_radix(amount0, 10)
+        .map_err(|_| StdError::generic_err("unable to parse amount0"))?;
+    let mut vesting_periods: Vec<(i64, String)> = vec![];
+    let amount1 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    vesting_periods.push((config.vesting_periods[0], String::from(amount1)));
+    let amount2 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    vesting_periods.push((config.vesting_periods[1], String::from(amount2)));
+    let amount3 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    vesting_periods.push((config.vesting_periods[2], String::from(amount3)));
+    let amount4 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    vesting_periods.push((config.vesting_periods[3], String::from(amount4)));
 
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
 
-    let user_raw = deps.api.addr_canonicalize(info.sender.as_str())?;
-
-    // If user claimed target stage, return err
-    if CLAIM_INDEX
-        .may_load(deps.storage, user_raw.as_slice())?
-        .unwrap_or(false)
-    {
+    if CLAIM_INDEX.may_load(deps.storage, signer)?.unwrap_or(false) {
         return Err(StdError::generic_err("already claimed"));
     }
 
-    let user_input: String = info.sender.to_string() + &amount.to_string();
-    let mut hash: [u8; 32] = sha3::Keccak256::digest(user_input.as_bytes())
+    let mut hash: [u8; 32] = sha3::Keccak256::digest(amount.as_bytes())
         .as_slice()
         .try_into()
         .expect("Wrong length");
@@ -202,26 +231,33 @@ pub fn claim(
     let mut root_buf: [u8; 32] = [0; 32];
     hex::decode_to_slice(merkle_root, &mut root_buf).unwrap();
     if root_buf != hash {
-        return Err(StdError::generic_err("Verification is failed"));
+        return Err(StdError::generic_err("Merkle verification failed"));
     }
 
-    // Update claim index to the current stage
-    CLAIM_INDEX.save(deps.storage, (user_raw.as_slice()), &true)?;
+    CLAIM_INDEX.save(deps.storage, signer, &true)?;
 
-    Ok(Response::new()
-        // .add_message(CosmosMsg::Wasm(WasmMsg::Execute {
-        //     contract_addr: deps.api.addr_humanize(&config.mirror_token)?.to_string(),
-        //     funds: vec![],
-        //     msg: to_binary(&Cw20ExecuteMsg::Transfer {
-        //         recipient: info.sender.to_string(),
-        //         amount,
-        //     })?,
-        // }))
-        .add_attributes(vec![
-            ("action", "claim"),
-            ("address", info.sender.as_str()),
-            ("amount", &amount.to_string()),
-        ]))
+    let res = create_vesting_account(
+        env,
+        config.denom.clone(),
+        verified_terra_address.clone(),
+        vesting_periods,
+        config.start_time,
+    )?
+    .add_message(CosmosMsg::Bank(BankMsg::Send {
+        to_address: verified_terra_address.clone(),
+        amount: coins(amount0_u128, config.denom.clone()),
+    }))
+    .add_attributes(vec![
+        ("action", "claim"),
+        ("address", signer),
+        ("new_address", &verified_terra_address.to_string()),
+        ("amount0", &amount0.to_string()),
+        ("amount1", &amount1.to_string()),
+        ("amount2", &amount2.to_string()),
+        ("amount3", &amount3.to_string()),
+        ("amount4", &amount4.to_string()),
+    ]);
+    Ok(res)
 }
 
 fn bytes_cmp(a: [u8; 32], b: [u8; 32]) -> std::cmp::Ordering {
@@ -266,10 +302,9 @@ pub fn query_merkle_root(deps: Deps, _env: Env) -> StdResult<MerkleRootResponse>
 }
 
 pub fn query_is_claimed(deps: Deps, _env: Env, address: String) -> StdResult<IsClaimedResponse> {
-    let user_raw = deps.api.addr_canonicalize(&address)?;
     let resp = IsClaimedResponse {
         is_claimed: CLAIM_INDEX
-            .may_load(deps.storage, user_raw.as_slice())?
+            .may_load(deps.storage, &address)?
             .unwrap_or(false),
     };
 
