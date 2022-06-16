@@ -202,9 +202,7 @@ pub fn claim(
     vesting_periods.push((config.vesting_periods[3], String::from(amount4)));
 
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
-    // let user_raw = deps.api.addr_canonicalize(info.sender.as_str())?;
 
-    // If user claimed target stage, return err
     if CLAIM_INDEX.may_load(deps.storage, signer)?.unwrap_or(false) {
         return Err(StdError::generic_err("already claimed"));
     }
@@ -236,7 +234,6 @@ pub fn claim(
         return Err(StdError::generic_err("Merkle verification failed"));
     }
 
-    // Update claim index to the current stage
     CLAIM_INDEX.save(deps.storage, signer, &true)?;
 
     let res = create_vesting_account(
