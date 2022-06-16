@@ -87,7 +87,6 @@ fn register_merkle_root() {
         res.attributes,
         vec![
             attr("action", "register_merkle_root"),
-            attr("stage", "1"),
             attr(
                 "merkle_root",
                 "634de21cde1044f41d90373733b0f0fb1c1c71f9652b905cdf159e73c4cf0d37"
@@ -126,7 +125,6 @@ fn update_merkle_root() {
         res.attributes,
         vec![
             attr("action", "register_merkle_root"),
-            attr("stage", "1"),
             attr(
                 "merkle_root",
                 "634de21cde1044f41d90373733b0f0fb1c1c71f9652b905cdf159e73c4cf0d37"
@@ -145,7 +143,6 @@ fn update_merkle_root() {
         res.attributes,
         vec![
             attr("action", "update_merkle_root"),
-            attr("stage", "1"),
             attr("merkle_root", "12345678")
         ]
     );
@@ -213,7 +210,6 @@ fn claim() {
         res.attributes,
         vec![
             attr("action", "claim"),
-            attr("stage", "1"),
             attr("address", "terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8"),
             attr("amount", "1000001")
         ]
@@ -274,7 +270,6 @@ fn claim() {
         res.attributes,
         vec![
             attr("action", "claim"),
-            attr("stage", "2"),
             attr("address", "terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8"),
             attr("amount", "2000001")
         ]

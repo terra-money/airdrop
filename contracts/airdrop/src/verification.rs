@@ -2,8 +2,6 @@ use crate::ethereum::{
     compress_public_key, decode_address, ethereum_address_raw, get_recovery_param,
     public_key_to_address,
 };
-use crate::state::CONFIG;
-use bech32::ToBase32;
 use cosmwasm_std::{Deps, StdError, StdResult};
 use sha2::{Digest, Sha256};
 use sha3::Keccak256;
@@ -12,49 +10,58 @@ use std::str;
 #[cfg(feature = "eth")]
 pub fn verify_signature(
     deps: Deps,
-    message: &str,
-    signature: &str,
-    signer_address: &str,
-) -> StdResult<bool> {
-    verify_signature_eth(deps, message, signature, signer_address)
+    _sender: String,
+    message: String,
+    signature: String,
+    signer_address: String,
+) -> StdResult<(bool, String)> {
+    let verified = verify_signature_eth(deps, message, signature, signer_address)?;
+    Ok((verified, message))
 }
 
 #[cfg(feature = "solana")]
 pub fn verify_signature(
     deps: Deps,
-    message: &str,
-    signature: &str,
-    signer_address: &str,
-) -> StdResult<bool> {
-    verify_signature_solana(deps, message, signature, signer_address)
+    _sender: String,
+    message: String,
+    signature: String,
+    signer_address: String,
+) -> StdResult<(bool, String)> {
+    let verified = verify_signature_solana(deps, message, signature, signer_address)?;
+    Ok((verified, message))
 }
 
 #[cfg(feature = "terra")]
 pub fn verify_signature(
     _deps: Deps,
-    _message: &str,
-    _signature: &str,
-    _signer_address: &str,
-) -> StdResult<bool> {
+    sender: String,
+    message: String,
+    _signature: String,
+    signer_address: String,
+) -> StdResult<(bool, String)> {
     // No signature for terra
-    Ok(true)
+    let verified = verify_terra(sender, signer_address);
+    Ok((verified, message))
 }
 
 #[cfg(feature = "cosmos")]
 pub fn verify_signature(
     deps: Deps,
-    message: &str,
-    signature: &str,
-    signer_address: &str,
-) -> StdResult<bool> {
+    _sender: String,
+    message: String,
+    signature: String,
+    signer_address: String,
+) -> StdResult<(bool, String)> {
     let config = CONFIG.load(deps.storage)?;
     let prefix = match config.prefix {
         Some(p) => Ok(p),
         None => Err(StdError::generic_err("prefix missing for cosmos airdrop")),
     }?;
-    verify_signature_cosmos(deps, message, signature, signer_address, &prefix)
+    let verified = verify_signature_cosmos(deps, message, signature, signer_address, &prefix)?;
+    Ok((verified, message))
 }
 
+#[inline]
 pub fn verify_signature_eth(
     deps: Deps,
     message: &str,
@@ -91,6 +98,7 @@ pub fn verify_signature_eth(
     }
 }
 
+#[inline]
 pub fn verify_signature_solana(
     deps: Deps,
     message: &str,
@@ -132,4 +140,8 @@ pub fn verify_signature_cosmos(
         return Ok(false);
     }
     Ok(true)
+}
+
+pub fn verify_terra(sender: String, signer: String) -> bool {
+    return sender.eq(&signer);
 }
