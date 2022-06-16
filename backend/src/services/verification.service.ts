@@ -1,5 +1,6 @@
 import { EthVerifier } from "../helpers/verifiers/eth";
 import { Verifier } from "../helpers/verifiers/interface";
+import { KelprVerifier } from "../helpers/verifiers/kelpr";
 import { TerraVerifier } from "../helpers/verifiers/terra";
 
 export class VerificationService {
@@ -9,6 +10,7 @@ export class VerificationService {
     // Add list of verifiers
     this.verifiers.set("eth", new EthVerifier());
     this.verifiers.set("terraclassic", new TerraVerifier());
+    this.verifiers.set("kava", new KelprVerifier("kava"))
   }
 
   public verify(
