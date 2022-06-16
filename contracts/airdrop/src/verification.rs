@@ -2,6 +2,8 @@ use crate::ethereum::{
     compress_public_key, decode_address, ethereum_address_raw, get_recovery_param,
     public_key_to_address,
 };
+#[cfg(feature = "cosmos")]
+use crate::state::CONFIG;
 use cosmwasm_std::{Deps, StdError, StdResult};
 use sha2::{Digest, Sha256};
 use sha3::Keccak256;
@@ -27,7 +29,7 @@ pub fn verify_signature(
     signature: String,
     signer_address: String,
 ) -> StdResult<(bool, String)> {
-    let verified = verify_signature_solana(deps, message, signature, signer_address)?;
+    let verified = verify_signature_solana(deps, &message, &signature, &signer_address)?;
     Ok((verified, message))
 }
 
@@ -53,11 +55,11 @@ pub fn verify_signature(
     signer_address: String,
 ) -> StdResult<(bool, String)> {
     let config = CONFIG.load(deps.storage)?;
-    let prefix = match config.prefix {
+    let prefix: String = match config.prefix {
         Some(p) => Ok(p),
         None => Err(StdError::generic_err("prefix missing for cosmos airdrop")),
     }?;
-    let verified = verify_signature_cosmos(deps, message, signature, signer_address, &prefix)?;
+    let verified = verify_signature_cosmos(deps, &message, &signature, &signer_address, &prefix)?;
     Ok((verified, message))
 }
 

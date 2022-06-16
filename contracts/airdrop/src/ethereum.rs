@@ -1,5 +1,5 @@
 use bech32::{encode, ToBase32};
-use cosmwasm_std::{Api, StdError, StdResult};
+use cosmwasm_std::{StdError, StdResult};
 use ripemd::{Digest as RipeDigest, Ripemd160};
 use sha2::Sha256;
 use sha3::{Digest, Keccak256};
