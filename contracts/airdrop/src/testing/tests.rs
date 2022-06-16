@@ -254,6 +254,10 @@ fn claim_eth() {
         vec![
             attr("action", "claim"),
             attr("address", "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd"),
+            attr(
+                "new_address",
+                "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw"
+            ),
             attr("amount0", "1000"),
             attr("amount1", "12000"),
             attr("amount2", "0"),

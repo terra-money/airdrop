@@ -157,7 +157,7 @@ pub fn claim(
     info: MessageInfo,
     amount: String,
     proofs: Vec<String>,
-    message: String,
+    new_terra_address: String,
     signature: String,
 ) -> StdResult<Response> {
     let mut values = (&amount).split(",");
@@ -165,10 +165,10 @@ pub fn claim(
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount"))?;
 
-    let (verified, new_terra_address) = verify_signature(
+    let (verified, verified_terra_address) = verify_signature(
         deps.as_ref(),
         info.sender.into_string(),
-        message,
+        new_terra_address,
         signature,
         String::from(signer),
     )?;
@@ -242,17 +242,18 @@ pub fn claim(
     let res = create_vesting_account(
         env,
         config.denom.clone(),
-        new_terra_address.clone(),
+        verified_terra_address.clone(),
         vesting_periods,
         config.start_time,
     )?
     .add_message(CosmosMsg::Bank(BankMsg::Send {
-        to_address: new_terra_address.clone(),
+        to_address: verified_terra_address.clone(),
         amount: coins(amount0_u128, config.denom.clone()),
     }))
     .add_attributes(vec![
         ("action", "claim"),
         ("address", signer),
+        ("new_address", &verified_terra_address.to_string()),
         ("amount0", &amount0.to_string()),
         ("amount1", &amount1.to_string()),
         ("amount2", &amount2.to_string()),
