@@ -30,6 +30,11 @@ export class Airdrop {
     const leaves = allocations.map(this.hashFromAllocation);
     this.allocationMap = new Map();
     for (const a of allocations) {
+      if (this.allocationMap.get(a.address)) {
+        throw Error(
+          "Invalid allocation file. Duplicate claim address " + a.address
+        );
+      }
       this.allocationMap.set(a.address, a);
     }
     this.tree = new MerkleTree(leaves, keccak256, { sort: true });

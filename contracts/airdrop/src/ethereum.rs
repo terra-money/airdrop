@@ -70,7 +70,6 @@ pub fn compress_public_key(p: &[u8]) -> StdResult<[u8; 33]> {
         return Err(StdError::generic_err("Public key must be 65 bytes long"));
     }
 
-    // incomplete function
     // 1. check if the last 32 bytes is odd or even (y value of the key)
     // 2. need to take the first 32 bytes (x value of the key) without the tag
     // 3. prefix (2) with the tag from (1)

@@ -12,9 +12,9 @@ fn setup() -> OwnedDeps<MockStorage, MockApi, MockQuerier> {
 
 #[test]
 fn verify_correct_eth_signature() {
-    let signer_address = "0x8898702932F9e10c696146AA8DC6dD0E6F524b88";
-    let message = "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je";
-    let signature = "e9185703bba3a4da838788fe38d4d1e771fba1cd91726552192fa2d51e6ad646293cb0b0db770f0eb105a26eef11de076ada843ff025f9bbcb551a37487c9d4f1c";
+    let signer_address = "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd";
+    let message = "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw";
+    let signature = "93a37e1a568cdcba6454e24cc8f31a57e8d947b147adf4c16ff67c4c12112c0700adf75abbfa00f5bfbf8d5057cdaf0b6ca11572c4d3a1064b5e967a5b39e53f1c";
 
     let deps = setup();
     let verified = verify_signature_eth(deps.as_ref(), message, signature, signer_address).unwrap();

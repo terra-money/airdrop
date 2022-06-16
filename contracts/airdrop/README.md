@@ -1,5 +1,17 @@
 # Mirror Airdrop <!-- omit in toc -->
 
+## Buildings and Testing
+This contract uses rust features to build the airdrop contract for different chains. Currently supported are:
+1. Terra (default)
+2. Ethereum (eth)
+3. Solana (solana)
+4. Cosmos (cosmos)
+
+In order to run tests or build, you will need to run the following
+```
+cargo test --features eth --no-default-features
+```
+
 ## Init
 Instantiate airdrop contract by registering owner and mirror token 
 

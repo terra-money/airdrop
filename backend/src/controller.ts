@@ -95,7 +95,7 @@ export class MainController {
       hasClaim = true;
     }
 
-    const response = {
+    const response: Record<string, any> = {
       allocation: String(
         parseInt(allocation.amount0) +
           parseInt(allocation.amount1) +
@@ -107,6 +107,15 @@ export class MainController {
       chain,
       address,
     };
+
+    if (req.query.verbose) {
+      let [airdrop, _] = this.airdropService.getAirdrop(chain);
+      let [allocationString, proofs, __] =
+        airdrop?.getMerkleProofByAddress(address)!;
+      response["allocation_string"] = allocationString;
+      response["proofs"] = proofs;
+    }
+
     res.status(200);
     return res.json(response);
   }

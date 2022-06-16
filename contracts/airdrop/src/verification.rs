@@ -15,7 +15,7 @@ pub fn verify_signature(
     signature: String,
     signer_address: String,
 ) -> StdResult<(bool, String)> {
-    let verified = verify_signature_eth(deps, message, signature, signer_address)?;
+    let verified = verify_signature_eth(deps, &message, &signature, &signer_address)?;
     Ok((verified, message))
 }
 

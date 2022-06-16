@@ -31,7 +31,6 @@ pub enum ExecuteMsg {
         message: String,
         signature: String,
         fee_refund: Option<String>,
-        address: String,
     },
 }
 

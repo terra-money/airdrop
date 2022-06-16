@@ -54,7 +54,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             proofs,
             message,
             signature,
-            address,
             fee_refund: _,
         } => claim(deps, env, info, allocation, proofs, message, signature),
     }
@@ -145,7 +144,6 @@ pub fn create_vesting_account(
             period
         })
         .collect::<Vec<Period>>();
-
     let bytes = Message::write_to_bytes(&msg).unwrap();
     Ok(Response::new().add_message(CosmosMsg::Stargate {
         type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
@@ -175,7 +173,7 @@ pub fn claim(
         String::from(signer),
     )?;
     if !verified {
-        return Err(StdError::generic_err("verification error"));
+        return Err(StdError::generic_err("signature verification error"));
     };
 
     let config = CONFIG.load(deps.storage)?;
@@ -235,7 +233,7 @@ pub fn claim(
     let mut root_buf: [u8; 32] = [0; 32];
     hex::decode_to_slice(merkle_root, &mut root_buf).unwrap();
     if root_buf != hash {
-        return Err(StdError::generic_err("Verification is failed"));
+        return Err(StdError::generic_err("Merkle verification failed"));
     }
 
     // Update claim index to the current stage
@@ -259,6 +257,7 @@ pub fn claim(
         ("amount1", &amount1.to_string()),
         ("amount2", &amount2.to_string()),
         ("amount3", &amount3.to_string()),
+        ("amount4", &amount4.to_string()),
     ]);
     Ok(res)
 }
@@ -305,10 +304,9 @@ pub fn query_merkle_root(deps: Deps, _env: Env) -> StdResult<MerkleRootResponse>
 }
 
 pub fn query_is_claimed(deps: Deps, _env: Env, address: String) -> StdResult<IsClaimedResponse> {
-    let user_raw = deps.api.addr_canonicalize(&address)?;
     let resp = IsClaimedResponse {
         is_claimed: CLAIM_INDEX
-            .may_load(deps.storage, &user_raw.to_string())?
+            .may_load(deps.storage, &address)?
             .unwrap_or(false),
     };
 
