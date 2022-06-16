@@ -9,6 +9,7 @@ import {
 import { sortedObject } from "../util";
 
 export class KelprVerifier implements Verifier {
+  public constructor(private prefix: string) {}
   verify(address: string, message: string, signature: string): boolean {
     const doc = this.makeADR36AminoSignDoc(address, message);
     const rawMessage = JSON.stringify(sortedObject(doc));
@@ -17,16 +18,13 @@ export class KelprVerifier implements Verifier {
     const hash = hasher.update(rawMessage).digest();
     const signatureBuffer = Buffer.from(signature, "hex");
     const k = secp256k1.ecdsaRecover(signatureBuffer, 1, hash);
-    // const pubKey = new SimplePublicKey(Buffer.from(k).toString("base64"));
-    console.log(Buffer.from(k).toString("hex"));
     const recoveredAddress = pubkeyToAddress(
       {
         type: "tendermint/PubKeySecp256k1",
         value: Buffer.from(k).toString("base64"),
       },
-      "terra"
+      this.prefix
     );
-    console.log(recoveredAddress);
     return address === recoveredAddress;
   }
 
