@@ -13,6 +13,9 @@ fn proper_instantiate() {
     let msg = InstantiateMsg {
         admin: "admin0000".to_string(),
         denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -34,6 +37,9 @@ fn update_config() {
     let msg = InstantiateMsg {
         admin: "admin0000".to_string(),
         denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -71,6 +77,9 @@ fn register_merkle_root() {
     let msg = InstantiateMsg {
         admin: "admin0000".to_string(),
         denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -109,6 +118,9 @@ fn update_merkle_root() {
     let msg = InstantiateMsg {
         admin: "admin0000".to_string(),
         denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -159,6 +171,9 @@ fn claim() {
     let msg = InstantiateMsg {
         admin: "admin0000".to_string(),
         denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
     };
 
     let info = mock_info("addr0000", &[]);

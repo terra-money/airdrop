@@ -30,8 +30,9 @@ pub fn instantiate(
         &Config {
             admin: deps.api.addr_validate(&msg.admin)?.to_string(),
             denom: msg.denom,
-            prefix: None,
-            vesting_schedule: vec![],
+            prefix: msg.prefix,
+            start_time: msg.start_time,
+            vesting_periods: msg.vesting_periods,
         },
     )?;
 
@@ -56,9 +57,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             address,
             fee_refund: _,
         } => claim(deps, env, info, allocation, proofs, message, signature),
-        ExecuteMsg::CreateVestingAccount { recipient, periods } => {
-            create_vesting_account(deps, env, recipient, periods)
-        }
     }
 }
 
@@ -120,22 +118,24 @@ pub fn register_merkle_root(
 }
 
 pub fn create_vesting_account(
-    deps: DepsMut,
     env: Env,
+    denom: String,
     recipient: String,
     periods: Vec<(i64, String)>,
+    start_time: Option<i64>,
 ) -> StdResult<Response> {
-    let config: Config = CONFIG.load(deps.storage)?;
-
     let mut msg = MsgCreatePeriodicVestingAccount::new();
     msg.from_address = env.contract.address.to_string();
     msg.to_address = recipient;
-    msg.start_time = env.block.time.seconds() as i64;
+    msg.start_time = match start_time {
+        Some(t) => t,
+        None => env.block.time.seconds() as i64,
+    };
     msg.vesting_periods = periods
         .iter()
         .map(|v| {
             let mut coin = VestingCoin::new();
-            coin.denom = config.denom.clone();
+            coin.denom = denom.clone();
             coin.amount = v.1.clone();
 
             let mut period = Period::new();
@@ -189,15 +189,19 @@ pub fn claim(
     let amount1 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount"))?;
-    vesting_periods.push((config.vesting_schedule[1], String::from(amount1)));
+    vesting_periods.push((config.vesting_periods[0], String::from(amount1)));
     let amount2 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount"))?;
-    vesting_periods.push((config.vesting_schedule[2], String::from(amount2)));
+    vesting_periods.push((config.vesting_periods[1], String::from(amount2)));
     let amount3 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount"))?;
-    vesting_periods.push((config.vesting_schedule[3], String::from(amount3)));
+    vesting_periods.push((config.vesting_periods[2], String::from(amount3)));
+    let amount4 = values
+        .next()
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+    vesting_periods.push((config.vesting_periods[3], String::from(amount4)));
 
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
     // let user_raw = deps.api.addr_canonicalize(info.sender.as_str())?;
@@ -237,19 +241,25 @@ pub fn claim(
     // Update claim index to the current stage
     CLAIM_INDEX.save(deps.storage, signer, &true)?;
 
-    let res = create_vesting_account(deps, env, new_terra_address.clone(), vesting_periods)?
-        .add_message(CosmosMsg::Bank(BankMsg::Send {
-            to_address: new_terra_address.clone(),
-            amount: coins(amount0_u128, config.denom),
-        }))
-        .add_attributes(vec![
-            ("action", "claim"),
-            ("address", signer),
-            ("amount0", &amount0.to_string()),
-            ("amount1", &amount1.to_string()),
-            ("amount2", &amount2.to_string()),
-            ("amount3", &amount3.to_string()),
-        ]);
+    let res = create_vesting_account(
+        env,
+        config.denom.clone(),
+        new_terra_address.clone(),
+        vesting_periods,
+        config.start_time,
+    )?
+    .add_message(CosmosMsg::Bank(BankMsg::Send {
+        to_address: new_terra_address.clone(),
+        amount: coins(amount0_u128, config.denom.clone()),
+    }))
+    .add_attributes(vec![
+        ("action", "claim"),
+        ("address", signer),
+        ("amount0", &amount0.to_string()),
+        ("amount1", &amount1.to_string()),
+        ("amount2", &amount2.to_string()),
+        ("amount3", &amount3.to_string()),
+    ]);
     Ok(res)
 }
 

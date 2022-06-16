@@ -8,7 +8,8 @@ pub struct Config {
     pub admin: String,
     pub denom: String,
     pub prefix: Option<String>,
-    pub vesting_schedule: Vec<i64>,
+    pub start_time: Option<i64>,
+    pub vesting_periods: [i64; 4],
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");

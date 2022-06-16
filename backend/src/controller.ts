@@ -97,7 +97,8 @@ export class MainController {
 
     const response = {
       allocation: String(
-        parseInt(allocation.amount1) +
+        parseInt(allocation.amount0) +
+          parseInt(allocation.amount1) +
           parseInt(allocation.amount2) +
           parseInt(allocation.amount3) +
           parseInt(allocation.amount4)

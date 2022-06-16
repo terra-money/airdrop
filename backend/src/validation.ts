@@ -13,6 +13,7 @@ export const ClaimRequest = Joi.object({
 
 export const AllocationValidation = Joi.object({
   address: Joi.string().required(),
+  amount0: Joi.string().default("0"),
   amount1: Joi.string().default("0"),
   amount2: Joi.string().default("0"),
   amount3: Joi.string().default("0"),
