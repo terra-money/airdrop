@@ -6,7 +6,7 @@ export const ClaimRequest = Joi.object({
     new_terra_address: Joi.string().required(),
   }),
   params: Joi.object({
-    claim: Joi.string().required(),
+    chain: Joi.string().required(),
     address: Joi.string().required(),
   }).unknown(),
 }).unknown();

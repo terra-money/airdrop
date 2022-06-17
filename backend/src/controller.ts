@@ -34,7 +34,7 @@ export class MainController {
     }
 
     const { new_terra_address: newTerraAddress, signature } = req.body;
-    const { chain, address } = req.body;
+    const { chain, address } = req.params;
 
     // Verify message to authenticate the request
     let [isVerified, err] = this.verificationService.verify(
@@ -92,7 +92,7 @@ export class MainController {
       });
     } else {
       // Check has claimed
-      hasClaim = true;
+      hasClaim = false;
     }
 
     const response: Record<string, any> = {

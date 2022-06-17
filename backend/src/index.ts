@@ -7,12 +7,14 @@ import { errorHandler } from "./helpers/error-handler";
 import { AirdropService } from "./services/airdrop.service";
 import { ClaimService } from "./services/claim.service";
 import { VerificationService } from "./services/verification.service";
+import cors from "cors";
 
 export const CreateApp = (): express.Express => {
   // App setup
   const app = express();
   app.use(express.json());
   app.use(morgan("combined"));
+  app.use(cors());
 
   // Create airdrop service and add airdrop files
   const airdropService = new AirdropService();
