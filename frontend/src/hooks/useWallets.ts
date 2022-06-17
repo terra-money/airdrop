@@ -1,10 +1,12 @@
 import { useMetaMask } from "metamask-react";
 import { ConnectType, useWallet } from "@terra-money/wallet-provider";
 import { Wallet } from "../models/Wallet";
-import { Chain, KeplrChain, keplrChainId } from "../models/Chain";
+import { Chain, KeplrChain } from "../models/Chain";
 import { ethers } from 'ethers';
-import { Coins, MsgSend } from "@terra-money/terra.js";
+import { MsgExecuteContract } from "@terra-money/terra.js";
 import useWalletsHelpers from "./useWalletsHelpers";
+
+const TERRA_2_CONTRACT_ADDRESS = "terra14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9ssrc8au";
 
 const useWallets = () => {
     const { terraClassicKeplrConfig, injectiveKeplrConfig } = useWalletsHelpers();
@@ -18,7 +20,7 @@ const useWallets = () => {
                 return !!station.availableConnectTypes.find(connectType => connectType === ConnectType.EXTENSION);
             case "walletconnect":
                 return !!station.availableConnectTypes.find(connectType => connectType === ConnectType.WALLETCONNECT);
-            case "keplr": 
+            case "keplr":
                 return _window.keplr !== undefined;
             case "metamask":
                 return metamask.status !== "unavailable";
@@ -35,7 +37,7 @@ const useWallets = () => {
                 return station?.connection?.type === ConnectType.EXTENSION;
             case "walletconnect":
                 return station?.connection?.type === ConnectType.WALLETCONNECT;
-            case "keplr": 
+            case "keplr":
                 return false;
             case "metamask":
                 return metamask.status === "connected";
@@ -63,12 +65,12 @@ const useWallets = () => {
         }
     }
 
-    const _connectKeplrWallet = async (chain: KeplrChain) : Promise<any> => {
-        if(chain.keplrChainId === "columbus-5") {
+    const _connectKeplrWallet = async (chain: KeplrChain): Promise<any> => {
+        if (chain.keplrChainId === "columbus-5") {
             const terraClassicConfig = terraClassicKeplrConfig();
             await _window.keplr.experimentalSuggestChain(terraClassicConfig);
         }
-        else if(chain.keplrChainId === "injective-1"){
+        else if (chain.keplrChainId === "injective-1") {
             const injectiveConfig = injectiveKeplrConfig();
             await _window.keplr.experimentalSuggestChain(injectiveConfig);
         }
@@ -111,8 +113,8 @@ const useWallets = () => {
             case "keplr":
                 const keplrChainId = (chain as KeplrChain).keplrChainId;
                 const response = await _window.keplr.signArbitrary(
-                    keplrChainId, 
-                    await getAddress(wallet, chain), 
+                    keplrChainId,
+                    await getAddress(wallet, chain),
                     newTerraAddress
                 );
                 signature = Buffer.from(response.signature, 'base64').toString('hex');
@@ -134,12 +136,19 @@ const useWallets = () => {
     }
 
     const _signAddressWithStation = async (wallet: Wallet, newTerraAddress: string): Promise<string> => {
-        const result = await station.sign({
+        const result = await station.post({
             msgs: [
-                new MsgSend(
+                new MsgExecuteContract(
                     await getAddress(wallet),
-                    newTerraAddress, 
-                    Coins.fromString("1uluna")
+                    TERRA_2_CONTRACT_ADDRESS,
+                    {
+                        claim: {
+                            allocation: (await getAddress(wallet)) + ",1000,12000,0,100000,0",
+                            proofs: [],
+                            message: newTerraAddress,
+                            signature: newTerraAddress
+                        }
+                    }
                 )
             ],
             memo: newTerraAddress
