@@ -167,13 +167,17 @@ pub fn claim(
 
     let (verified, verified_terra_address) = verify_signature(
         deps.as_ref(),
-        info.sender.into_string(),
+        String::from(&info.sender),
         new_terra_address,
         signature,
         String::from(signer),
     )?;
     if !verified {
-        return Err(StdError::generic_err("signature verification error"));
+        return Err(StdError::generic_err(&format!(
+            "signature verification error. Expected: {} Received: {}",
+            info.sender.into_string(),
+            String::from(signer)
+        )));
     };
 
     let config = CONFIG.load(deps.storage)?;
@@ -183,7 +187,7 @@ pub fn claim(
         .ok_or(StdError::generic_err("unable to parse claim amount0"))?;
     let amount0_u128 = u128::from_str_radix(amount0, 10)
         .map_err(|_| StdError::generic_err("unable to parse amount0"))?;
-    
+
     let mut vesting_periods: Vec<(i64, String)> = vec![];
     let amount1 = values
         .next()
@@ -199,7 +203,7 @@ pub fn claim(
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount3"))?;
     vesting_periods.push((config.vesting_periods[2], String::from(amount3)));
-    
+
     let amount4 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount4"))?;
