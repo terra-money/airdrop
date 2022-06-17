@@ -287,41 +287,143 @@ fn claim_eth() {
         _ => panic!("DO NOT ENTER HERE"),
     }
 
-    // // Claim next airdrop
-    // let msg = ExecuteMsg::Claim {
-    //     allocation: "".to_string(),
-    //     proofs: vec![
-    //         "ca2784085f944e5594bb751c3237d6162f7c2b24480b3a37e9803815b7a5ce42".to_string(),
-    //         "5b07b5898fc9aa101f27344dab0737aede6c3aa7c9f10b4b1fda6d26eb669b0f".to_string(),
-    //         "4847b2b9a6432a7bdf2bdafacbbeea3aab18c524024fc6e1bc655e04cbc171f3".to_string(),
-    //         "cad1958c1a5c815f23450f1a2761a5a75ab2b894a258601bf93cd026469d42f2".to_string(),
-    //     ],
-    //     message: "".to_string(),
-    //     signature: "".to_string(),
-    //     fee_refund: None,
-    // };
+    // Try to claim the same airdrop again
+    let msg = ExecuteMsg::Claim {
+        allocation: "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd,1000,12000,0,100000,0".to_string(),
+        proofs: vec![
+            "2a8465686efe8d016d7bbb617134848fa544ced1f93c1c355ca6d92c16257e14".to_string(),
+            "662cb31a348d45aa0bfe1b3e8a9a203014f6836481840a325dd4a5c5eaa74e63".to_string(),
+            "ef1f1b2665bed3c525e7d2707d1d72ef7a43a4a93cd823a51339ea7d7cd6b955".to_string(),
+        ],
+        message: "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw".to_string(),
+        signature: "93a37e1a568cdcba6454e24cc8f31a57e8d947b147adf4c16ff67c4c12112c0700adf75abbfa00f5bfbf8d5057cdaf0b6ca11572c4d3a1064b5e967a5b39e53f1c".to_string(),
+        fee_refund: None,
+    };
 
-    // let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
-    // let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
-    // assert_eq!(
-    //     res.messages,
-    //     vec![SubMsg::new(CosmosMsg::Wasm(WasmMsg::Execute {
-    //         contract_addr: "mirror0000".to_string(),
-    //         funds: vec![],
-    //         msg: to_binary(&Cw20ExecuteMsg::Transfer {
-    //             recipient: "terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8".to_string(),
-    //             amount: Uint128::from(2000001u128),
-    //         })
-    //         .unwrap(),
-    //     }))]
-    // );
+    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
+    let result = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone());
+    match result {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
+        _ => panic!("DO NOT ENTER HERE"),
+    }
+}
 
-    // assert_eq!(
-    //     res.attributes,
-    //     vec![
-    //         attr("action", "claim"),
-    //         attr("address", "terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8"),
-    //         attr("amount", "2000001")
-    //     ]
-    // );
+#[cfg(feature = "cosmos")]
+#[test]
+fn claim_cosmos() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: Some(1655360550i64),
+        prefix: Some("kava".to_string()),
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let env = mock_env();
+    let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    // Register merkle roots
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::RegisterMerkleRoot {
+        merkle_root: "61b88379b661dfad12d6d3fc3764cf189d655d34f6a7ade3de3d253b1ab60656".to_string(),
+    };
+    let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    let msg = ExecuteMsg::Claim {
+        allocation: "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq,100,10000,0,100000,0".to_string(),
+        proofs: vec![
+            "a6c6bec719c58c60478fd2a4c05cb298dd72b354e57acccc7010a96116a29520".to_string(),
+            "572f3f165aab7510a61b51f9acdb21040a5f634b70024bd78d449ce286d30f95".to_string(),
+            "e974eb19d77890f9ca62738b10a974ef079c12cd067be59c9396a654b9fd3231".to_string(),
+            "66de85f84f70faa792aef4c7033ba9bd0cb23fbe7f9cdb046b073131f6510944".to_string(),
+        ],
+        message: "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9".to_string(),
+        signature: "3a6d14fd6fabc5b57153f1aa425e9112cf11e5e1cb02a8ef933786a5f8dc76ef62cbbc6871335a7b1caabe0517971596e71b3bb9d38885e3771b81efc0055b15".to_string(),
+        fee_refund: None,
+    };
+
+    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
+    let res = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+
+    let mut vesting_msg = MsgCreatePeriodicVestingAccount::new();
+    vesting_msg.from_address = env.contract.address.to_string();
+    vesting_msg.to_address = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9".to_string();
+    vesting_msg.start_time = 1655360550i64;
+    vesting_msg.vesting_periods = [
+        (15552000i64, "10000".to_string()),
+        (46656000i64, "0".to_string()),
+        (15552000i64, "100000".to_string()),
+        (62208000i64, "0".to_string()),
+    ]
+    .iter()
+    .map(|v| {
+        let mut coin = VestingCoin::new();
+        coin.denom = "uluna".to_string();
+        coin.amount = v.1.clone();
+
+        let mut period = Period::new();
+        period.length = v.0;
+        period.amount = vec![coin];
+
+        period
+    })
+    .collect::<Vec<Period>>();
+
+    let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
+
+    assert_eq!(
+        res.messages[0],
+        SubMsg::new(CosmosMsg::Stargate {
+            type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
+            value: Binary(bytes),
+        })
+    );
+    assert_eq!(
+        res.messages[1],
+        SubMsg::new(CosmosMsg::Bank(BankMsg::Send {
+            to_address: String::from("terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9"),
+            amount: coins(100u128, "uluna"),
+        }))
+    );
+
+    assert_eq!(
+        res.attributes,
+        vec![
+            attr("action", "claim"),
+            attr("address", "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq"),
+            attr(
+                "new_address",
+                "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9"
+            ),
+            attr("amount0", "100"),
+            attr("amount1", "10000"),
+            attr("amount2", "0"),
+            attr("amount3", "100000"),
+            attr("amount4", "0"),
+        ]
+    );
+
+    assert!(
+        from_binary::<IsClaimedResponse>(
+            &query(
+                deps.as_ref(),
+                mock_env(),
+                QueryMsg::IsClaimed {
+                    address: "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq".to_string(),
+                }
+            )
+            .unwrap()
+        )
+        .unwrap()
+        .is_claimed
+    );
+
+    let res = execute(deps.as_mut(), mock_env(), info, msg);
+    match res {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
+        _ => panic!("DO NOT ENTER HERE"),
+    }
 }
