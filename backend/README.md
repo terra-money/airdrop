@@ -20,10 +20,17 @@ Response when user has funds to claim:
 ```
 GET:/allocation/{chain}/{address}
 {
-    "allocation": "0.123456",
+    "allocation": "110100",
     "has_claimed": false,
     "chain": "terraclassic",
-    "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"
+    "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8",
+    "allocation_string": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8,100,10000,0,100000,0",
+    "merkle_proofs": [
+        "9efa86bf87944e9023a32741eca1b37b59446e7fd7b7b9e6e9f7415807d51615",
+        "fa758dfa5394b2c425c17805ba2665597f3d765e12943d0ef8601c08524f3222",
+        "f9db7a772327af0a99846a61afcb5978fb96a87f0668eab3d2447077fc3a0ada",
+        "7fa36eaa4d530755aa99ac4501e5c5be7a2ad2c5e93dc6e2516edba74a5ef512"
+    ]
 }
 ```
 

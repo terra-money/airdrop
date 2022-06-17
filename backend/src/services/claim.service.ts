@@ -19,6 +19,7 @@ interface ClaimExecuteMsg {
 export class ClaimService {
   private lcd: LCDClient;
   private wallet: Wallet;
+  private contracts: Record<string, string>;
   public constructor(private aidropService: AirdropService) {
     this.lcd = new LCDClient({
       URL: Config.lcdUrl,
@@ -28,7 +29,31 @@ export class ClaimService {
     this.wallet = this.lcd.wallet(
       new MnemonicKey({ mnemonic: Config.mnemonic })
     );
+    this.contracts = {
+      terraclassic: Config.terraAirdropContract,
+      eth: Config.ethAirdropContract,
+      bsc: Config.bscAirdropContract,
+      kava: Config.kavaAirdropContract,
+    };
   }
+
+  public async checkIsClaimed(
+    chain: string,
+    address: string
+  ): Promise<[boolean | null, Error | null]> {
+    const contractAddress = this.contracts[chain];
+    if (!contractAddress) {
+      return [null, Error("Airdrop contract not found for " + chain)];
+    }
+    const query = {
+      address: address,
+    };
+    const claimResponse = await this.lcd.wasm.contractQuery<{
+      is_claimed: boolean;
+    }>(contractAddress, query);
+    return [claimResponse.is_claimed, null];
+  }
+
   public async claim(
     chain: string,
     address: string,

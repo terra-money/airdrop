@@ -80,11 +80,11 @@ export class MainController {
     });
   }
 
-  private allocation(req: Request, res: Response) {
-    let hasClaim = false;
+  private async allocation(req: Request, res: Response) {
     const chain = req.params.chain;
     const address = req.params.address;
     let [allocation, err] = this.airdropService.getAllocation(chain, address);
+    let isClaimed;
     if (err || !allocation) {
       res.status(404);
       return res.json({
@@ -92,7 +92,13 @@ export class MainController {
       });
     } else {
       // Check has claimed
-      hasClaim = false;
+      [isClaimed, err] = await this.claimService.checkIsClaimed(chain, address);
+      if (err || isClaimed == null) {
+        res.status(500);
+        return res.json({
+          message: String(err),
+        });
+      }
     }
 
     const response: Record<string, any> = {
@@ -103,18 +109,16 @@ export class MainController {
           parseInt(allocation.amount3) +
           parseInt(allocation.amount4)
       ),
-      has_claimed: hasClaim,
+      has_claimed: isClaimed,
       chain,
       address,
     };
 
-    if (req.query.verbose) {
-      let [airdrop, _] = this.airdropService.getAirdrop(chain);
-      let [allocationString, proofs, __] =
-        airdrop?.getMerkleProofByAddress(address)!;
-      response["allocation_string"] = allocationString;
-      response["proofs"] = proofs;
-    }
+    let [airdrop, _] = this.airdropService.getAirdrop(chain);
+    let [allocationString, proofs, __] =
+      airdrop?.getMerkleProofByAddress(address)!;
+    response["allocation_string"] = allocationString;
+    response["proofs"] = proofs;
 
     res.status(200);
     return res.json(response);
