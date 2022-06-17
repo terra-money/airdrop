@@ -14,7 +14,7 @@ import { Button } from "@mui/material"
 type CheckAllocationType = {
     wallet: Wallet,
     chain: Chain,
-    onCollectAllocation: (address: string) => void
+    onCollectAllocation: (allocationResponse: AllocationResponse) => void
 }
 
 export const CheckAllocation = (props: CheckAllocationType) => {
@@ -73,7 +73,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                                 <h3>{address}</h3>
                                 <Button variant="outlined"
                                     fullWidth
-                                    onClick={() => onCollectAllocation(address)}>
+                                    onClick={() => onCollectAllocation(allocationResponse)}>
                                     Claim airdrop
                                 </Button>
                             </>}

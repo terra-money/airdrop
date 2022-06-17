@@ -8,7 +8,8 @@ const useAirdropApi = () => {
         chain: ChainId, 
         address: string
     ): Promise<AllocationResponse> => {
-        const { data } = await axios.get(`http://localhost:3333/allocation/${chain}/${address}`);
+        console.log(process.env)
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/allocation/${chain}/${address}`);
         data.allocation = Number(data.allocation);
         return data;
     }
@@ -18,7 +19,7 @@ const useAirdropApi = () => {
         address: string,
         requestData: ClaimAllocationRequest
     ): Promise<ClaimAllocationResponse> => {
-        const { data } = await axios.post(`http://localhost:3333/claim/${chain}/${address}`, requestData);
+        const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/claim/${chain}/${address}`, requestData);
         return data;
     }
 

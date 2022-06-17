@@ -13,6 +13,7 @@ import wallets from './wallets.json';
 import { Wallet } from './models/Wallet';
 import { Chain } from './models/Chain';
 import { StepData } from './components/AppHeader/StepComponent';
+import { AllocationResponse } from './models/Api';
 
 
 function App() {
@@ -27,7 +28,8 @@ function App() {
 
     const [state, setState]  = useState<{
         wallet?: Wallet, 
-        chain?: Chain
+        chain?: Chain,
+        allocationResponse?: AllocationResponse
     }>({});
 
     const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
@@ -37,8 +39,12 @@ function App() {
         setState({wallet, chain});
     }
 
-    const handleCollectAllocation = (address: string) => {
-        steps[activeStep].completedLabel = address;
+    const handleCollectAllocation = (allocationResponse: AllocationResponse) => {
+        steps[activeStep].completedLabel = allocationResponse.address;
+        setState({
+            ...state,
+            allocationResponse
+        })
         updateSteps(steps);
         nextStep();
     }
@@ -74,9 +80,10 @@ function App() {
                     {activeStep === 1 && state.chain && state.wallet 
                         && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
                     }
-                    {activeStep === 2 && state.chain && state.wallet 
-                        && <ClaimAirdrop wallet={state.wallet} 
-                            chain={state.chain} 
+                    {activeStep === 2 && state.chain && state.wallet && state.allocationResponse
+                        && <ClaimAirdrop wallet={state.wallet}
+                            chain={state.chain}
+                            allocationResponse={state.allocationResponse}
                             onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
                             onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>

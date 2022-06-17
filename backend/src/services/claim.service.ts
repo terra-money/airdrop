@@ -46,7 +46,7 @@ export class ClaimService {
       return [null, Error("Airdrop contract not found for " + chain)];
     }
     const query = {
-      address: address,
+      is_claimed: { address },
     };
     const claimResponse = await this.lcd.wasm.contractQuery<{
       is_claimed: boolean;
