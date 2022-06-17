@@ -74,7 +74,6 @@ POST:/claim/{chain}/{address}
 
 # response
 {
-    "has_claimed": false,
     "transaction_hash": "3A41C57DDBFA6F68052947BC3204CE9DB64767CA907E899D9EDF9DB88E0896C5"
 }
 ```
@@ -91,7 +90,6 @@ POST:/claim/{chain}/{address}
 
 # response
 {
-    "has_claimed": true,
     "transaction_hash": "3A41C57DDBFA6F68052947BC3204CE9DB64767CA907E899D9EDF9DB88E0896C5"
 }
 ```
