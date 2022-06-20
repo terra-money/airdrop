@@ -27,9 +27,10 @@ export class Airdrop {
   private allocationMap: Map<string, Allocation>;
 
   constructor(allocations: Array<Allocation>) {
-    const leaves = allocations.map(this.hashFromAllocation);
+    const cleanedAlloc = allocations.map(a => validateAndClean(a, AllocationValidation))
+    const leaves = cleanedAlloc.map(this.hashFromAllocation);
     this.allocationMap = new Map();
-    for (const a of allocations) {
+    for (const a of cleanedAlloc) {
       if (this.allocationMap.get(a.address)) {
         throw Error(
           "Invalid allocation file. Duplicate claim address " + a.address
@@ -53,6 +54,7 @@ export class Airdrop {
   public getMerkleProofByAddress(
     address: string
   ): [string, string[], Error | null] {
+    address = address.toLowerCase();
     const [allocation, err] = this.getAllocation(address);
     if (err || !allocation) {
       return ["", [], err];
@@ -79,6 +81,7 @@ export class Airdrop {
   }
 
   public getAllocation(address: string): [Allocation | null, any] {
+    address = address.toLocaleLowerCase();
     const allocation = this.allocationMap.get(address);
     if (!allocation) {
       return [null, `allocation not found for: ${address}`];
@@ -87,8 +90,7 @@ export class Airdrop {
   }
 
   private hashFromAllocation(alloc: Allocation): Buffer {
-    const a = validateAndClean(alloc, AllocationValidation);
-    return keccak256(Airdrop.allocationToString(a));
+    return keccak256(Airdrop.allocationToString(alloc));
   }
 
   private static allocationToString(a: Allocation): string {

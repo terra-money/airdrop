@@ -68,6 +68,7 @@ export class ClaimService {
     newTerraAddress: string,
     signature: string
   ): Promise<[string | null, Error | null]> {
+    signature = signature.replace(/^0x/, "");
     let [airdrop, err] = this.airdropService.getAirdrop(chain);
     if (err || !airdrop) {
       return [null, err];

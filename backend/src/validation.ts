@@ -12,7 +12,7 @@ export const ClaimRequest = Joi.object({
 }).unknown();
 
 export const AllocationValidation = Joi.object({
-  address: Joi.string().required(),
+  address: Joi.string().lowercase().required(),
   amount0: Joi.string().default("0"),
   amount1: Joi.string().default("0"),
   amount2: Joi.string().default("0"),
