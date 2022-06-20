@@ -16,7 +16,7 @@ export class MainController {
         const { params } = req;
         setTimeout(() => {
             return res.send({
-                "allocation": "0.1",
+                "allocation": "1293819221",
                 "has_claimed": false,
                 "chain": params.chain,
                 "address": params.address
