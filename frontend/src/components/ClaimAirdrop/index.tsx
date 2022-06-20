@@ -4,7 +4,7 @@ import { useState } from "react";
 import useAirdropApi from "../../hooks/useAirdropApi";
 import useBlockchainApi from "../../hooks/useBlockchainApi";
 import useWallets from "../../hooks/useWallets";
-import { ClaimAllocationResponse } from "../../models/Api";
+import { AllocationResponse, ClaimAllocationResponse } from "../../models/Api";
 import { Chain } from "../../models/Chain";
 import { Wallet } from "../../models/Wallet";
 import { Loader } from "../Loader";
@@ -14,12 +14,13 @@ import "./ClaimAirdrop.scss"
 type ClaimAirdropType = {
     wallet: Wallet,
     chain: Chain,
+    allocationResponse: AllocationResponse,
     onClaimAirdropSuccessfully: () => void,
     onCheckAnotherWallet: () => void
 }
 
 export const ClaimAirdrop = (props: ClaimAirdropType) => {
-    const { wallet, chain, onCheckAnotherWallet, onClaimAirdropSuccessfully } = props;
+    const { wallet, chain, onCheckAnotherWallet, onClaimAirdropSuccessfully, allocationResponse } = props;
 
     const [newTerraAddress, setNewTerraAddress] = useState("");
     const [isValidAccount, setIsValidAccount] = useState<boolean | null>(null);
@@ -44,15 +45,24 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
 
         if (isNew) {
             try {
-                const { signature, signerAddress } = await signClaimAllocation(wallet, chain, newTerraAddress);
+                const { signature, signerAddress } = await signClaimAllocation(wallet, chain, newTerraAddress, allocationResponse);
 
                 try {
-                    const claimResponse = await claimAllocation(
-                        chain.id,
-                        signerAddress,
-                        { new_terra_address: newTerraAddress, signature }
-                    );
-                    setClaimResponse(claimResponse);
+                    if(wallet.id === 'station' || wallet.id === 'walletconnect') {
+                        setClaimResponse({});
+                    }
+                    else {
+                        const claimResponse = await claimAllocation(
+                            chain.id,
+                            signerAddress,
+                            { 
+                                new_terra_address: newTerraAddress, 
+                                signature 
+                            }
+                        );
+                        setClaimResponse(claimResponse);
+                    }
+
                     onClaimAirdropSuccessfully();
                 }
                 catch (e : any) {
@@ -67,11 +77,12 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         })
                     }
                     
-                    enqueueSnackbar("Something went wrong claiming the airdrop. Try again", { variant: "error" });
+                    enqueueSnackbar("Something went wrong claiming the airdrop. Try again or check discord", { variant: "error" });
                 }
             }
             catch (e) {
-                enqueueSnackbar("Something went wrong signing the transaction. Try again", { variant: "error" });
+                console.log(e)
+                enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
             }
         }
 

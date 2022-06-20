@@ -5,8 +5,7 @@ import { Chain, KeplrChain } from "../models/Chain";
 import { ethers } from 'ethers';
 import { MsgExecuteContract } from "@terra-money/terra.js";
 import useWalletsHelpers from "./useWalletsHelpers";
-
-const TERRA_2_CONTRACT_ADDRESS = "terra14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9ssrc8au";
+import { AllocationResponse } from "../models/Api";
 
 const useWallets = () => {
     const { terraClassicKeplrConfig, injectiveKeplrConfig } = useWalletsHelpers();
@@ -101,14 +100,15 @@ const useWallets = () => {
     const signClaimAllocation = async (
         wallet: Wallet,
         chain: Chain,
-        newTerraAddress: string
+        newTerraAddress: string,
+        allocationResponse: AllocationResponse
     ): Promise<{ signature: string, signerAddress: string }> => {
         let signature;
 
         switch (wallet.id) {
             case "station":
             case "walletconnect":
-                signature = await _signAddressWithStation(wallet, newTerraAddress);
+                signature = await _signAddressWithStation(wallet, newTerraAddress, allocationResponse);
                 break;
             case "keplr":
                 const keplrChainId = (chain as KeplrChain).keplrChainId;
@@ -135,16 +135,21 @@ const useWallets = () => {
         }
     }
 
-    const _signAddressWithStation = async (wallet: Wallet, newTerraAddress: string): Promise<string> => {
+    const _signAddressWithStation = async (
+        wallet: Wallet, 
+        newTerraAddress: string, 
+        allocationResponse: AllocationResponse
+    ): Promise<string> => {
+        console.log(allocationResponse);
         const result = await station.post({
             msgs: [
                 new MsgExecuteContract(
                     await getAddress(wallet),
-                    TERRA_2_CONTRACT_ADDRESS,
+                    process.env.REACT_APP_TERRA_2_CONTRACT_ADDRESS as string,
                     {
                         claim: {
-                            allocation: (await getAddress(wallet)) + ",1000,12000,0,100000,0",
-                            proofs: [],
+                            allocation: allocationResponse.allocation_string,
+                            proofs: allocationResponse.proofs,
                             message: newTerraAddress,
                             signature: newTerraAddress
                         }

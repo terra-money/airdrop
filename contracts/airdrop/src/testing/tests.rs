@@ -281,28 +281,9 @@ fn claim_eth() {
         .is_claimed
     );
 
+    // Try to claim airdrop again
     let res = execute(deps.as_mut(), mock_env(), info, msg);
     match res {
-        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
-        _ => panic!("DO NOT ENTER HERE"),
-    }
-
-    // Try to claim the same airdrop again
-    let msg = ExecuteMsg::Claim {
-        allocation: "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd,1000,12000,0,100000,0".to_string(),
-        proofs: vec![
-            "2a8465686efe8d016d7bbb617134848fa544ced1f93c1c355ca6d92c16257e14".to_string(),
-            "662cb31a348d45aa0bfe1b3e8a9a203014f6836481840a325dd4a5c5eaa74e63".to_string(),
-            "ef1f1b2665bed3c525e7d2707d1d72ef7a43a4a93cd823a51339ea7d7cd6b955".to_string(),
-        ],
-        message: "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw".to_string(),
-        signature: "93a37e1a568cdcba6454e24cc8f31a57e8d947b147adf4c16ff67c4c12112c0700adf75abbfa00f5bfbf8d5057cdaf0b6ca11572c4d3a1064b5e967a5b39e53f1c".to_string(),
-        fee_refund: None,
-    };
-
-    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
-    let result = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone());
-    match result {
         Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
         _ => panic!("DO NOT ENTER HERE"),
     }
@@ -591,4 +572,18 @@ fn claim_terra_unauthorized() {
         Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signature verification error"),
         _ => panic!("DO NOT ENTER HERE"),
     }
+    assert!(
+        !from_binary::<IsClaimedResponse>(
+            &query(
+                deps.as_ref(),
+                mock_env(),
+                QueryMsg::IsClaimed {
+                    address: "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8".to_string(),
+                }
+            )
+            .unwrap()
+        )
+        .unwrap()
+        .is_claimed
+    );
 }
