@@ -7,7 +7,7 @@ import {
   isTxError,
 } from "@terra-money/terra.js";
 import { Config } from "../config";
-import { createNoSubstitutionTemplateLiteral } from "typescript";
+import Axios from "axios";
 
 interface ClaimExecuteMsg {
   allocation: string;
@@ -111,7 +111,13 @@ export class ClaimService {
       }
       return [txReceipt.txhash, null];
     } catch (e) {
-      console.error(e);
+      if (Axios.isAxiosError(e)) {
+        const message =
+          e.response?.data.message ??
+          JSON.stringify(e.response?.data, null, " ") ??
+          "Unknown error";
+        return [null, Error(message)];
+      }
       if (e instanceof Error) {
         return [null, e];
       }
