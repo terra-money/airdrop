@@ -11,7 +11,6 @@ const useAirdropApi = () => {
     chain: ChainId,
     address: string
   ): Promise<AllocationResponse> => {
-    console.log(process.env);
     const { data } = await axios.get(
       `${process.env.REACT_APP_API_URL}/allocation/${chain}/${address}`
     );

@@ -54,6 +54,12 @@ export const ConnectWallet = (props: ConnectWalletType) => {
             setWallet(selectedWallet);
             setChains(selectedWallet.chains);
 
+            const firstChain = selectedWallet.chains[0];
+            if(selectedWallet.chains.length === 1) {
+                setChain(firstChain);
+                setChainId(firstChain.id);
+            }
+
             const walletInstalled = isInstalled(selectedWallet);
             setWalletInstalled(walletInstalled);
         }
@@ -81,7 +87,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                 // For station and wallet connect 
                 // the status must be checked on 
                 // an imperative way thru useEffect
-                if (wallet.id !== "station" && wallet.id !== "walletconnect") {
+                if (wallet.id !== "station" && wallet.id !== "stationmobile") {
                     onWalletConnected(wallet, chain);
                 }
             }
@@ -145,7 +151,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                     ))}
                 </Select>
             </FormControl>}
-            {wallet && chain && <div className='ConnectWalletFooter'>
+            {wallet && chain && isInstalled(wallet) && <div className='ConnectWalletFooter'>
                 <Button variant='outlined'
                     fullWidth
                     onClick={() => handleConnectWallet()}>

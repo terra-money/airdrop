@@ -48,7 +48,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 const { signature, signerAddress } = await signClaimAllocation(wallet, chain, newTerraAddress, allocationResponse);
 
                 try {
-                    if(wallet.id === 'station' || wallet.id === 'walletconnect') {
+                    if(wallet.id === 'station' || wallet.id === 'stationmobile') {
                         setClaimResponse({});
                     }
                     else {

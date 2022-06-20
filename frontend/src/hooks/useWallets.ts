@@ -17,7 +17,7 @@ const useWallets = () => {
         switch (wallet.id) {
             case "station":
                 return !!station.availableConnectTypes.find(connectType => connectType === ConnectType.EXTENSION);
-            case "walletconnect":
+            case "stationmobile":
                 return !!station.availableConnectTypes.find(connectType => connectType === ConnectType.WALLETCONNECT);
             case "keplr":
                 return _window.keplr !== undefined;
@@ -34,7 +34,7 @@ const useWallets = () => {
         switch (wallet.id) {
             case "station":
                 return station?.connection?.type === ConnectType.EXTENSION;
-            case "walletconnect":
+            case "stationmobile":
                 return station?.connection?.type === ConnectType.WALLETCONNECT;
             case "keplr":
                 return false;
@@ -51,7 +51,7 @@ const useWallets = () => {
         switch (wallet.id) {
             case "station":
                 return Promise.resolve(station.connect(ConnectType.EXTENSION));
-            case "walletconnect":
+            case "stationmobile":
                 return Promise.resolve(station.connect(ConnectType.WALLETCONNECT));
             case "keplr":
                 return _connectKeplrWallet(chain as KeplrChain);
@@ -81,7 +81,7 @@ const useWallets = () => {
         switch (wallet.id) {
             case "station":
                 return station.wallets[0]?.terraAddress;
-            case "walletconnect":
+            case "stationmobile":
                 return station.wallets[0]?.terraAddress;
             case "keplr":
                 const keplrChainId = (chain as KeplrChain).keplrChainId;
@@ -107,7 +107,7 @@ const useWallets = () => {
 
         switch (wallet.id) {
             case "station":
-            case "walletconnect":
+            case "stationmobile":
                 signature = await _signAddressWithStation(wallet, newTerraAddress, allocationResponse);
                 break;
             case "keplr":

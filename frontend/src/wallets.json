@@ -12,6 +12,18 @@
         ]
     },
     {
+        "id": "stationmobile",
+        "name": "Terra Station Mobile",
+        "icon": "station",
+        "chains": [
+            {
+                "id": "terraclassic",
+                "name": "Terra Classic",
+                "icon": "terraclassic"
+            }
+        ]
+    },
+    {
         "id": "keplr",
         "name": "Keplr",
         "icon": "keplr",
