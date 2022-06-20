@@ -8,12 +8,11 @@ import {
 } from "@terra-money/terra.js";
 
 const CONTRACT_ADDRESS =
-  "terra1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrqcmwekl";
+  "terra14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9ssrc8au";
 
 async function main() {
   const mk = new MnemonicKey({
-    mnemonic:
-      "satisfy adjust timber high purchase tuition stool faith fine install that you unaware feed domain license impose boss human eager hat rent enjoy dawn",
+    mnemonic: "_",
   });
   const terra = new LCDClient({
     URL: "http://localhost:1317",
@@ -25,16 +24,15 @@ async function main() {
       new MsgExecuteContract(wallet.key.accAddress, CONTRACT_ADDRESS, {
         claim: {
           allocation:
-            "kava1xy25akmlyu2qexzpy62h6c67lnf8tap74wsa2d,1000000000,1066666,1,100000,1",
+            "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8,100,10000,0,100000,0",
           proofs: [
-            "ab74b0f5500a142c455ca0c436dd88afb9b8775c6783952f34e224fcdc845aca",
-            "572f3f165aab7510a61b51f9acdb21040a5f634b70024bd78d449ce286d30f95",
-            "e974eb19d77890f9ca62738b10a974ef079c12cd067be59c9396a654b9fd3231",
-            "9296eba955d79c16fe46ca81a72f6475ef7855f890bc2f7612d3b2cc2b8cc789",
+            "9efa86bf87944e9023a32741eca1b37b59446e7fd7b7b9e6e9f7415807d51615",
+            "fa758dfa5394b2c425c17805ba2665597f3d765e12943d0ef8601c08524f3222",
+            "f9db7a772327af0a99846a61afcb5978fb96a87f0668eab3d2447077fc3a0ada",
+            "7fa36eaa4d530755aa99ac4501e5c5be7a2ad2c5e93dc6e2516edba74a5ef512",
           ],
-          message: "terra1jq3dg9ggzqngp3hhjzr8tug6h8q35e5p63y7ae",
-          signature:
-            "4b26d9728140e5ce720b045e02b5cec7beca4d2efe511b30cd35ae6eada02cf9011a58600deda9d03c1dd1369df5e356a9c62b114042285d32ec984369aeb1cd",
+          message: "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9",
+          signature: "",
         },
       }),
     ],

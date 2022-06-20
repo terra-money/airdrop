@@ -23,7 +23,7 @@ const init = async () => {
 
   const storeCode = new MsgStoreCode(
     wallet.key.accAddress,
-    fs.readFileSync("./artifacts/airdrop-cosmos.wasm").toString("base64")
+    fs.readFileSync("./artifacts/cw3_fixed_multisig.wasm").toString("base64")
   );
   const storeCodeTx = await wallet.createAndSignTx({
     msgs: [storeCode],
@@ -45,13 +45,26 @@ const init = async () => {
     wallet.key.accAddress,
     +code_id[0],
     {
-      admin: wallet.key.accAddress,
-      denom: "uluna",
-      vesting_periods: [15552000, 46656000, 15552000, 62208000],
-      start_time: 1669269600, // genesis + 6 months
-      prefix: "kava",
+      voters: [
+        {
+          addr: "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v",
+          weight: 1,
+        },
+        {
+          addr: "terra17lmam6zguazs5q5u6z5mmx76uj63gldnse2pdp",
+          weight: 1,
+        },
+      ],
+      threshold: {
+        absolute_count: {
+          weight: 1,
+        },
+      },
+      max_voting_period: {
+        time: 15552000,
+      },
     },
-    { uluna: 1000000000000 }, // init coins
+    {}, // init coins
     "Instantiate terra"
   );
 
@@ -59,26 +72,10 @@ const init = async () => {
     msgs: [instantiate],
   });
   const instantiateTxResult = await terra.tx.broadcast(instantiateTx);
-  const CONTRACT_ADDRESS = JSON.parse(instantiateTxResult.raw_log)[0].events[2]
+  console.log(instantiateTxResult.raw_log);
+  const CONTRACT_ADDRESS = JSON.parse(instantiateTxResult.raw_log)[0].events[0]
     .attributes[0].value;
-  console.log(instantiateTxResult);
-  const execCreateMerkle = new MsgExecuteContract(
-    wallet.key.accAddress,
-    CONTRACT_ADDRESS,
-    {
-      register_merkle_root: {
-        merkle_root:
-          "b92bf21a99dee7f8152603f42079606b4e528f18c7d57d48fb5f50bf3dc70159",
-      },
-    }
-  );
-
-  const execCreateMerkleTx = await wallet.createAndSignTx({
-    msgs: [execCreateMerkle],
-  });
-  const execCreateMerkleResult = await terra.tx.broadcast(execCreateMerkleTx);
-
-  console.log(execCreateMerkleResult);
   console.log("CONTRACT_ADDRESS " + CONTRACT_ADDRESS);
 };
+
 init();
