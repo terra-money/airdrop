@@ -3,20 +3,18 @@ use cosmwasm_std::entry_point;
 
 use cosmwasm_std::{
     coins, to_binary, BankMsg, Binary, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response,
-    StdError, StdResult,
+    StdError, StdResult, WasmMsg,
 };
 
 use crate::msg::{
     ConfigResponse, ExecuteMsg, InstantiateMsg, IsClaimedResponse, MerkleRootResponse, QueryMsg,
 };
 use crate::state::{Config, CLAIM_INDEX, CONFIG, MERKLE_ROOT};
+use crate::submsg::create_claim_response;
 use crate::verification::verify_signature;
-use crate::vesting::{Coin as VestingCoin, MsgCreatePeriodicVestingAccount, Period};
 
 use sha3::Digest;
 use std::convert::TryInto;
-
-use protobuf::Message;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -116,41 +114,6 @@ pub fn register_merkle_root(
     ]))
 }
 
-pub fn create_vesting_account(
-    env: Env,
-    denom: String,
-    recipient: String,
-    periods: Vec<(i64, String)>,
-    start_time: Option<i64>,
-) -> StdResult<Response> {
-    let mut msg = MsgCreatePeriodicVestingAccount::new();
-    msg.from_address = env.contract.address.to_string();
-    msg.to_address = recipient;
-    msg.start_time = match start_time {
-        Some(t) => t,
-        None => env.block.time.seconds() as i64,
-    };
-    msg.vesting_periods = periods
-        .iter()
-        .map(|v| {
-            let mut coin = VestingCoin::new();
-            coin.denom = denom.clone();
-            coin.amount = v.1.clone();
-
-            let mut period = Period::new();
-            period.length = v.0;
-            period.amount = vec![coin];
-
-            period
-        })
-        .collect::<Vec<Period>>();
-    let bytes = Message::write_to_bytes(&msg).unwrap();
-    Ok(Response::new().add_message(CosmosMsg::Stargate {
-        type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
-        value: Binary(bytes),
-    }))
-}
-
 pub fn claim(
     deps: DepsMut,
     env: Env,
@@ -244,28 +207,15 @@ pub fn claim(
 
     CLAIM_INDEX.save(deps.storage, signer, &true)?;
 
-    let res = create_vesting_account(
+    Ok(create_claim_response(
         env,
-        config.denom.clone(),
-        verified_terra_address.clone(),
+        config.denom,
+        signer.to_string(),
+        verified_terra_address,
+        amount0_u128,
         vesting_periods,
         config.start_time,
-    )?
-    .add_message(CosmosMsg::Bank(BankMsg::Send {
-        to_address: verified_terra_address.clone(),
-        amount: coins(amount0_u128, config.denom.clone()),
-    }))
-    .add_attributes(vec![
-        ("action", "claim"),
-        ("address", signer),
-        ("new_address", &verified_terra_address.to_string()),
-        ("amount0", &amount0.to_string()),
-        ("amount1", &amount1.to_string()),
-        ("amount2", &amount2.to_string()),
-        ("amount3", &amount3.to_string()),
-        ("amount4", &amount4.to_string()),
-    ]);
-    Ok(res)
+    )?)
 }
 
 fn bytes_cmp(a: [u8; 32], b: [u8; 32]) -> std::cmp::Ordering {

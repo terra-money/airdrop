@@ -80,9 +80,9 @@ fn verify_wrong_solana_signer() {
 
 #[test]
 fn verify_correct_cosmos_signer() {
-    let signer_address = "kava190xtwywsgwu75xqz8sk8s3nj06s0n7tmur9sdq";
-    let message = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9";
-    let signature = "3a6d14fd6fabc5b57153f1aa425e9112cf11e5e1cb02a8ef933786a5f8dc76ef62cbbc6871335a7b1caabe0517971596e71b3bb9d38885e3771b81efc0055b15";
+    let signer_address = "kava1xy25akmlyu2qexzpy62h6c67lnf8tap74wsa2d";
+    let message = "terra1jq3dg9ggzqngp3hhjzr8tug6h8q35e5p63y7ae";
+    let signature = "4b26d9728140e5ce720b045e02b5cec7beca4d2efe511b30cd35ae6eada02cf9011a58600deda9d03c1dd1369df5e356a9c62b114042285d32ec984369aeb1cd";
 
     let deps = setup();
     let verified =

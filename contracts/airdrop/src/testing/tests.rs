@@ -258,11 +258,8 @@ fn claim_eth() {
                 "new_address",
                 "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw"
             ),
-            attr("amount0", "1000"),
-            attr("amount1", "12000"),
-            attr("amount2", "0"),
-            attr("amount3", "100000"),
-            attr("amount4", "0"),
+            attr("vested", "1000"),
+            attr("vesting", "112000"),
         ]
     );
 
@@ -281,7 +278,122 @@ fn claim_eth() {
         .is_claimed
     );
 
-    // Try to claim airdrop again
+    let res = execute(deps.as_mut(), mock_env(), info, msg);
+    match res {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
+        _ => panic!("DO NOT ENTER HERE"),
+    }
+}
+
+#[cfg(feature = "eth")]
+#[test]
+fn claim_eth_no_vesting() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: Some(1655360550i64),
+        prefix: None,
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let env = mock_env();
+    let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    // Register merkle roots
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::RegisterMerkleRoot {
+        merkle_root: "f63b24076d5619a1e65e5190e05ccc8c4acbef54e12c567d0fd4c2a774c0dd6c".to_string(),
+    };
+    let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    let msg = ExecuteMsg::Claim {
+        allocation: "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd,1000,12000,0,100000,0".to_string(),
+        proofs: vec![
+            "2a8465686efe8d016d7bbb617134848fa544ced1f93c1c355ca6d92c16257e14".to_string(),
+            "662cb31a348d45aa0bfe1b3e8a9a203014f6836481840a325dd4a5c5eaa74e63".to_string(),
+            "ef1f1b2665bed3c525e7d2707d1d72ef7a43a4a93cd823a51339ea7d7cd6b955".to_string(),
+        ],
+        message: "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw".to_string(),
+        signature: "93a37e1a568cdcba6454e24cc8f31a57e8d947b147adf4c16ff67c4c12112c0700adf75abbfa00f5bfbf8d5057cdaf0b6ca11572c4d3a1064b5e967a5b39e53f1c".to_string(),
+        fee_refund: None,
+    };
+
+    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
+    let res = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+
+    let mut vesting_msg = MsgCreatePeriodicVestingAccount::new();
+    vesting_msg.from_address = env.contract.address.to_string();
+    vesting_msg.to_address = "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw".to_string();
+    vesting_msg.start_time = 1655360550i64;
+    vesting_msg.vesting_periods = [
+        (15552000i64, "12000".to_string()),
+        (46656000i64, "0".to_string()),
+        (15552000i64, "100000".to_string()),
+        (62208000i64, "0".to_string()),
+    ]
+    .iter()
+    .map(|v| {
+        let mut coin = VestingCoin::new();
+        coin.denom = "uluna".to_string();
+        coin.amount = v.1.clone();
+
+        let mut period = Period::new();
+        period.length = v.0;
+        period.amount = vec![coin];
+
+        period
+    })
+    .collect::<Vec<Period>>();
+
+    let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
+
+    assert_eq!(
+        res.messages[0],
+        SubMsg::new(CosmosMsg::Stargate {
+            type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
+            value: Binary(bytes),
+        })
+    );
+    assert_eq!(
+        res.messages[1],
+        SubMsg::new(CosmosMsg::Bank(BankMsg::Send {
+            to_address: String::from("terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw"),
+            amount: coins(1000u128, "uluna"),
+        }))
+    );
+
+    assert_eq!(
+        res.attributes,
+        vec![
+            attr("action", "claim"),
+            attr("address", "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd"),
+            attr(
+                "new_address",
+                "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw"
+            ),
+            attr("vested", "1000"),
+            attr("vesting", "112000"),
+        ]
+    );
+
+    assert!(
+        from_binary::<IsClaimedResponse>(
+            &query(
+                deps.as_ref(),
+                mock_env(),
+                QueryMsg::IsClaimed {
+                    address: "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd".to_string(),
+                }
+            )
+            .unwrap()
+        )
+        .unwrap()
+        .is_claimed
+    );
+
     let res = execute(deps.as_mut(), mock_env(), info, msg);
     match res {
         Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "already claimed"),
@@ -379,11 +491,8 @@ fn claim_cosmos() {
                 "new_address",
                 "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9"
             ),
-            attr("amount0", "100"),
-            attr("amount1", "10000"),
-            attr("amount2", "0"),
-            attr("amount3", "100000"),
-            attr("amount4", "0"),
+            attr("vested", "100"),
+            attr("vesting", "110000"),
         ]
     );
 
@@ -499,11 +608,8 @@ fn claim_terra() {
                 "new_address",
                 "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9"
             ),
-            attr("amount0", "100"),
-            attr("amount1", "10000"),
-            attr("amount2", "0"),
-            attr("amount3", "100000"),
-            attr("amount4", "0"),
+            attr("vested", "100"),
+            attr("vesting", "110000"),
         ]
     );
 
@@ -572,18 +678,4 @@ fn claim_terra_unauthorized() {
         Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signature verification error"),
         _ => panic!("DO NOT ENTER HERE"),
     }
-    assert!(
-        !from_binary::<IsClaimedResponse>(
-            &query(
-                deps.as_ref(),
-                mock_env(),
-                QueryMsg::IsClaimed {
-                    address: "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8".to_string(),
-                }
-            )
-            .unwrap()
-        )
-        .unwrap()
-        .is_claimed
-    );
 }

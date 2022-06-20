@@ -1,4 +1,4 @@
-use crate::ethereum::{
+use crate::crypto::{
     compress_public_key, decode_address, ethereum_address_raw, get_recovery_param,
     public_key_to_address,
 };
