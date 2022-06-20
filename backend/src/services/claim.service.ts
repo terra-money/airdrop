@@ -4,15 +4,16 @@ import {
   LCDClient,
   Wallet,
   MnemonicKey,
+  isTxError,
 } from "@terra-money/terra.js";
 import { Config } from "../config";
+import { createNoSubstitutionTemplateLiteral } from "typescript";
 
 interface ClaimExecuteMsg {
   allocation: string;
   proofs: string[];
   message: string;
   signature: string;
-  address: string;
   fee_refund?: string;
 }
 
@@ -20,7 +21,7 @@ export class ClaimService {
   private lcd: LCDClient;
   private wallet: Wallet;
   private contracts: Record<string, string>;
-  public constructor(private aidropService: AirdropService) {
+  public constructor(private airdropService: AirdropService) {
     this.lcd = new LCDClient({
       URL: Config.lcdUrl,
       chainID: Config.chainId,
@@ -46,12 +47,19 @@ export class ClaimService {
       return [null, Error("Airdrop contract not found for " + chain)];
     }
     const query = {
-      address: address,
+      is_claimed: {
+        address: address,
+      },
     };
-    const claimResponse = await this.lcd.wasm.contractQuery<{
-      is_claimed: boolean;
-    }>(contractAddress, query);
-    return [claimResponse.is_claimed, null];
+    try {
+      const claimResponse = await this.lcd.wasm.contractQuery<{
+        is_claimed: boolean;
+      }>(contractAddress, query);
+      return [claimResponse.is_claimed, null];
+    } catch (e) {
+      console.error(e);
+      return [null, new Error("Error querying airdrop contract")];
+    }
   }
 
   public async claim(
@@ -60,7 +68,7 @@ export class ClaimService {
     newTerraAddress: string,
     signature: string
   ): Promise<[string | null, Error | null]> {
-    let [airdrop, err] = this.aidropService.getAirdrop(chain);
+    let [airdrop, err] = this.airdropService.getAirdrop(chain);
     if (err || !airdrop) {
       return [null, err];
     }
@@ -78,24 +86,32 @@ export class ClaimService {
       return [null, err];
     }
 
-    const tx = await this.wallet.createAndSignTx({
-      msgs: [
-        {
-          contract: "",
-          execute_msg: {
-            address: address,
-            allocation: allocString,
-            proofs: proofs,
-            message: newTerraAddress,
-            signature: signature,
-          } as ClaimExecuteMsg,
-        } as MsgExecuteContract,
-      ],
-    });
+    const claimMsg: ClaimExecuteMsg = {
+      allocation: allocString,
+      proofs: proofs,
+      message: newTerraAddress,
+      signature: signature,
+    };
+
     try {
-      const txReceipt = await this.lcd.tx.broadcastSync(tx);
-      return [txReceipt.txhash, Error("Not implemented yet")];
+      const tx = await this.wallet.createAndSignTx({
+        msgs: [
+          new MsgExecuteContract(
+            this.wallet.key.accAddress,
+            this.contracts[chain],
+            {
+              claim: claimMsg,
+            }
+          ),
+        ],
+      });
+      const txReceipt = await this.lcd.tx.broadcast(tx);
+      if (isTxError(txReceipt)) {
+        return [null, Error(txReceipt.raw_log)];
+      }
+      return [txReceipt.txhash, null];
     } catch (e) {
+      console.error(e);
       if (e instanceof Error) {
         return [null, e];
       }
