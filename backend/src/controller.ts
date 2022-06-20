@@ -92,12 +92,17 @@ export class MainController {
       });
     } else {
       // Check has claimed
-      [isClaimed, err] = await this.claimService.checkIsClaimed(chain, address);
-      if (err || isClaimed == null) {
-        res.status(500);
-        return res.json({
-          message: String(err),
-        });
+      if (!req.query.skip_check) {
+        [isClaimed, err] = await this.claimService.checkIsClaimed(
+          chain,
+          address
+        );
+        if (err || isClaimed == null) {
+          res.status(500);
+          return res.json({
+            message: String(err),
+          });
+        }
       }
     }
 
