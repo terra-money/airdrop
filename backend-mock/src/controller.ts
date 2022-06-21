@@ -3,8 +3,8 @@ import { Application, Request, Response } from "express";
 export class MainController {
     public registerRoutes(app: Application) {
         app.get("/healthcheck", this.healthCheck.bind(this));
-        app.get("/allocation/:chain/:address", this.allocation.bind(this));
-        app.post("/claim/:chain/:address", this.claim.bind(this));
+        app.get("/allocation/:chain/:address/:denom", this.allocation.bind(this));
+        app.post("/claim/:chain/:address/:denom", this.claim.bind(this));
     }
 
     private healthCheck(req: Request, res: Response) {
@@ -17,6 +17,7 @@ export class MainController {
         setTimeout(() => {
             return res.send({
                 "allocation": "1293819221",
+                "denom" : params.denom,
                 "has_claimed": false,
                 "chain": params.chain,
                 "address": params.address

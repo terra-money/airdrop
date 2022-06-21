@@ -4,7 +4,7 @@ import { MainController } from "./controller";
 import { errorHandler } from "./helpers/error-handler";
 import cors from 'cors';
 
-const PORT = 3333;
+const PORT = 3001;
 
 export const CreateApp = (): express.Express => {
     // App setup
