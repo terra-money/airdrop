@@ -31,18 +31,21 @@ export class ClaimService {
       new MnemonicKey({ mnemonic: Config.mnemonic })
     );
     this.contracts = {
-      terraclassic: Config.terraAirdropContract,
-      eth: Config.ethAirdropContract,
-      bsc: Config.bscAirdropContract,
-      kava: Config.kavaAirdropContract,
+      "terraclassic.uluna": Config.terraAirdropContract,
+      "terraclassic.usdc": Config.terraAirdropContract,
+      "eth.uluna": Config.ethAirdropContract,
+      "bsc.uluna": Config.bscAirdropContract,
+      "kava.uluna": Config.kavaAirdropContract,
     };
   }
 
   public async checkIsClaimed(
     chain: string,
+    denom: string,
     address: string
   ): Promise<[boolean | null, Error | null]> {
-    const contractAddress = this.contracts[chain];
+    const chainDenom = `${chain}.${denom}`;
+    const contractAddress = this.contracts[chainDenom];
     if (!contractAddress) {
       return [null, Error("Airdrop contract not found for " + chain)];
     }
@@ -64,12 +67,14 @@ export class ClaimService {
 
   public async claim(
     chain: string,
+    denom: string,
     address: string,
     newTerraAddress: string,
     signature: string
   ): Promise<[string | null, Error | null]> {
     signature = signature.replace(/^0x/, "");
-    let [airdrop, err] = this.airdropService.getAirdrop(chain);
+    const chainDenom = `${chain}.${denom}`;
+    let [airdrop, err] = this.airdropService.getAirdrop(chain, denom);
     if (err || !airdrop) {
       return [null, err];
     }
@@ -99,7 +104,7 @@ export class ClaimService {
         msgs: [
           new MsgExecuteContract(
             this.wallet.key.accAddress,
-            this.contracts[chain],
+            this.contracts[chainDenom],
             {
               claim: claimMsg,
             }

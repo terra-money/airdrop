@@ -8,6 +8,7 @@ export const ClaimRequest = Joi.object({
   params: Joi.object({
     chain: Joi.string().required(),
     address: Joi.string().required(),
+    denom: Joi.string().required(),
   }).unknown(),
 }).unknown();
 

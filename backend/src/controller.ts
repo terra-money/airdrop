@@ -14,9 +14,9 @@ export class MainController {
 
   public registerRoutes(app: Application) {
     app.get("/healthcheck", this.healthCheck.bind(this));
-    app.get("/allocation/:chain/:address", this.allocation.bind(this));
-    app.get("/merkle_root/:chain", this.merkle_root.bind(this));
-    app.post("/claim/:chain/:address", this.claim.bind(this));
+    app.get("/allocation/:chain/:address/:denom", this.allocation.bind(this));
+    app.get("/merkle_root/:chain/:denom", this.merkle_root.bind(this));
+    app.post("/claim/:chain/:address/:denom", this.claim.bind(this));
   }
 
   private healthCheck(req: Request, res: Response) {
@@ -34,7 +34,7 @@ export class MainController {
     }
 
     const { new_terra_address: newTerraAddress, signature } = req.body;
-    const { chain, address } = req.params;
+    const { chain, address, denom } = req.params;
 
     // Verify message to authenticate the request
     let [isVerified, err] = this.verificationService.verify(
@@ -62,6 +62,7 @@ export class MainController {
     let transactionHash: string | null;
     [transactionHash, err] = await this.claimService.claim(
       chain,
+      denom,
       address,
       newTerraAddress,
       signature
@@ -82,8 +83,13 @@ export class MainController {
 
   private async allocation(req: Request, res: Response) {
     const chain = req.params.chain;
+    const denom = req.params.denom;
     const address = req.params.address;
-    let [allocation, err] = this.airdropService.getAllocation(chain, address);
+    let [allocation, err] = this.airdropService.getAllocation(
+      chain,
+      denom,
+      address
+    );
     let isClaimed;
     if (err || !allocation) {
       res.status(404);
@@ -95,6 +101,7 @@ export class MainController {
       if (!req.query.skip_check) {
         [isClaimed, err] = await this.claimService.checkIsClaimed(
           chain,
+          denom,
           address
         );
         if (err || isClaimed == null) {
@@ -116,10 +123,11 @@ export class MainController {
       ),
       has_claimed: isClaimed,
       chain,
+      denom,
       address,
     };
 
-    let [airdrop, _] = this.airdropService.getAirdrop(chain);
+    let [airdrop, _] = this.airdropService.getAirdrop(chain, denom);
     let [allocationString, proofs, __] =
       airdrop?.getMerkleProofByAddress(address)!;
     response["allocation_string"] = allocationString;
@@ -131,7 +139,8 @@ export class MainController {
 
   private merkle_root(req: Request, res: Response) {
     const chain = req.params.chain;
-    let [airdrop, err] = this.airdropService.getAirdrop(chain);
+    const denom = req.params.denom;
+    let [airdrop, err] = this.airdropService.getAirdrop(chain, denom);
     if (err || !airdrop) {
       res.status(404);
       return res.json({

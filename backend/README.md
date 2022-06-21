@@ -12,15 +12,16 @@ This express app helps with the claiming process. Features:
 
 Note: the possible chains should match with the network id from /frontend/src/chains.json which currently are "terraclassic" | "eth" | "avax" | "sol".
 
-### GET:/allocation/{chain}/{address}
+### GET:/allocation/{chain}/{address}/{denom}
 
 Endpoint to look up the amount of LUNA the address is allocated. We do not save the airdrop amount in the smart contract and will just do a lookup using a CSV that is saved together in this repository. It will also check with the smart contract to see if the user has claimed or not.
 
 Response when user has funds to claim:
 ```
-GET:/allocation/{chain}/{address}
+GET:/allocation/{chain}/{address}/{denom}
 {
     "allocation": "110100",
+    "denom": "uluna",
     "has_claimed": false,
     "chain": "terraclassic",
     "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8",
@@ -36,9 +37,10 @@ GET:/allocation/{chain}/{address}
 
 Response when user already claimed the funds:
 ```
-GET:/allocation/{chain}/{address}
+GET:/allocation/{chain}/{address}/{denom}
 {
     "allocation": "0.123456",
+    "denom": "uluna",
     "has_claimed": true,
     "chain": "terraclassic",
     "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"
@@ -58,13 +60,13 @@ GET:/allocation/{chain}/{address}
 }
 ```
 
-### POST:/claim/{chain}
+### POST:/claim/{chain}/{denom}
 
 Endpoint to submit claims by providing user's snapshot address, new terra address and a signture to that we can verify that the message is signed by the snapshot address. Even though the airdrop contract will perform verification, this endpoint will perform verification to reduce spam. After verification, the app will generate a set of proofs and the claim message to be submitted to the smart contract.
 
 User submit a request to claim successfully:
 ```
-POST:/claim/{chain}/{address}
+POST:/claim/{chain}/{address}/{denom}
 
 # request
 {
@@ -80,7 +82,7 @@ POST:/claim/{chain}/{address}
 
 User submit a request to claim but funds were already claimed:
 ```
-POST:/claim/{chain}/{address}
+POST:/claim/{chain}/{address}/{denom}
 
 # request
 {
@@ -96,17 +98,18 @@ POST:/claim/{chain}/{address}
 
 ## Internal endpoints
 
-### GET:/merkle_root/{chain}
+### GET:/merkle_root/{chain}/{denom}
 
 Generate the merkle root for a set of claims by chain. Purely used for verification of the merkle root hash uploaded to the airdrop smart contract. 
 
 ```
-GET:/merkle_root/{chain}
+GET:/merkle_root/{chain}/{denom}
 
 # respone
 {
     "chain": "",
     "merkle_root": ""
+    "denom": ""
 }
 ```
 
