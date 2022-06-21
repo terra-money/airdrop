@@ -20,7 +20,13 @@ Response when user has funds to claim:
 ```
 GET:/allocation/{chain}/{address}
 {
-    "allocation": "110100",
+    "allocation": [{
+        denom: "uluna",
+        amount: "1293819221"
+    }, {
+        denom: "usdc",
+        amount: "1293819221"
+    }],
     "has_claimed": false,
     "chain": "terraclassic",
     "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8",
@@ -38,7 +44,13 @@ Response when user already claimed the funds:
 ```
 GET:/allocation/{chain}/{address}
 {
-    "allocation": "0.123456",
+    "allocation": [{
+        denom: "uluna",
+        amount: "1293819221"
+    }, {
+        denom: "usdc",
+        amount: "1293819221"
+    }],
     "has_claimed": true,
     "chain": "terraclassic",
     "address": "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"
@@ -51,7 +63,7 @@ GET:/allocation/{chain}/{address}
 
 # response
 {
-    "allocation": "0",
+    "allocation": [],
     "has_claimed": false,
     "chain": "terraclassic",
     "address": "terra15lsftv92eyssjwkh2393s0nhjc07kryqeux5s6"
@@ -67,9 +79,9 @@ User submit a request to claim successfully:
 POST:/claim/{chain}/{address}
 
 # request
-{
+{   //address,amount,value,address,amount,value
     "signature": "dGVycmExemRwZ2o4YW01bnFxdmh0OTI3azNldGxqeWw2YTUya3dxdXAwamU=",
-    "new_terra_address: "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je",
+    "value: "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je,1000,ULUNA,terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je,100,USDC",
 }
 
 # response
@@ -84,8 +96,9 @@ POST:/claim/{chain}/{address}
 
 # request
 {
+    //address,amount,denom,address,amount,denom
     "signature": "dGVycmExemRwZ2o4YW01bnFxdmh0OTI3azNldGxqeWw2YTUya3dxdXAwamU=",
-    "new_terra_address: "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je",
+    "value: "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je,1000,ULUNA,terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je,100,USDC",
 }
 
 # response

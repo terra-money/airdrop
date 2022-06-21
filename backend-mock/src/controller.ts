@@ -14,24 +14,20 @@ export class MainController {
 
     private allocation(req: Request, res: Response) {
         const { params } = req;
-        setTimeout(() => {
-            return res.send({
-                "allocation": "1293819221",
-                "has_claimed": false,
-                "chain": params.chain,
-                "address": params.address
-            });
-        }, 1000)
+        return res.send({
+            "allocation": "100000000",
+            "has_claimed": false,
+            "chain": params.chain,
+            "address": params.address
+        });
     }
 
     private claim(req: Request, res: Response) {
-        setTimeout(() => {
-            return res.send(
-                {
-                    "has_claimed": false,
-                    "transaction_hash": "3A41C57DDBFA6F68052947BC3204CE9DB64767CA907E899D9EDF9DB88E0896C5"
-                });
-        }, 1000)
+        return res.send(
+            {
+                "has_claimed": false,
+                "transaction_hash": "3A41C57DDBFA6F68052947BC3204CE9DB64767CA907E899D9EDF9DB88E0896C5"
+            });
 
     }
 }
