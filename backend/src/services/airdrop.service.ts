@@ -13,7 +13,7 @@ export class AirdropService {
     const allocations: Allocation[] = [];
     try {
       const splitPath = path.split("/");
-      const chain = splitPath[splitPath.length - 1].replace(".csv", "");
+      const chainToken = splitPath[splitPath.length - 1].replace(".csv", "");
       createReadStream(path)
         .pipe(parse({ headers: true }))
         .on("error", (error) => {
@@ -23,7 +23,7 @@ export class AirdropService {
         .on("end", (rowCount: number) => {
           console.log(`Parsed ${rowCount} rows for ${path}`);
           const airdrop = new Airdrop(allocations);
-          this.airdrops.set(chain, airdrop);
+          this.airdrops.set(chainToken, airdrop);
         });
     } catch (e) {
       if (e instanceof Error) {
@@ -35,20 +35,28 @@ export class AirdropService {
     return null;
   }
 
-  public getAirdrop(chain: string): [Airdrop | null, Error | null] {
-    const airdrop = this.airdrops.get(chain);
+  public getAirdrop(
+    chain: string,
+    denom: string
+  ): [Airdrop | null, Error | null] {
+    const chainDenom = `${chain}.${denom}`;
+    const airdrop = this.airdrops.get(chainDenom);
     if (airdrop) {
       return [airdrop, null];
     }
-    return [null, new Error(`Airdrop not found for ${chain} chain`)];
+    return [
+      null,
+      new Error(`Airdrop not found for ${chain} chain for ${denom}`),
+    ];
   }
 
   public getAllocation(
     chain: string,
+    denom: string,
     address: string
   ): [Allocation | null, Error | null] {
     let airdrop, allocation, err;
-    [airdrop, err] = this.getAirdrop(chain);
+    [airdrop, err] = this.getAirdrop(chain, denom);
     if (err || !airdrop) {
       return [null, err];
     }

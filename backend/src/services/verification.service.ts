@@ -10,7 +10,7 @@ export class VerificationService {
     // Add list of verifiers
     this.verifiers.set("eth", new EthVerifier());
     this.verifiers.set("terraclassic", new TerraVerifier());
-    this.verifiers.set("kava", new KelprVerifier("kava"))
+    this.verifiers.set("kava", new KelprVerifier("kava"));
   }
 
   public verify(
