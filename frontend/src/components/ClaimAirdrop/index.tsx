@@ -90,6 +90,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
             }
         }
+        setAcceptedWarning(false);
         setLoading(false);
     };
 
@@ -108,7 +109,6 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         <TextField className="ClaimAddressInput"
                             value={newTerraAddress}
                             label="New Terra 2 address"
-                            placeholder="address"
                             disabled={!acceptedWarning}
                             onChange={onChangeAddress}
                             variant="outlined"
