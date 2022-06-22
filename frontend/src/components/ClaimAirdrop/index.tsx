@@ -55,6 +55,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         const claimResponse = await claimAllocation(
                             chain.id,
                             signerAddress,
+                            "uluna",
                             { 
                                 new_terra_address: newTerraAddress, 
                                 signature 

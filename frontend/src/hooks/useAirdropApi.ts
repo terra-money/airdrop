@@ -4,15 +4,17 @@ import {
   AllocationResponse,
   ClaimAllocationRequest,
   ClaimAllocationResponse,
+  Denom,
 } from "../models/Api";
 
 const useAirdropApi = () => {
   const checkAllocation = async (
     chain: ChainId,
-    address: string
+    address: string,
+    denom: Denom
   ): Promise<AllocationResponse> => {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_API_URL}/allocation/${chain}/${address}`
+      `${process.env.REACT_APP_API_URL}/allocation/${chain}/${address}/${denom}`
     );
     data.allocation = Number(data.allocation);
     return data;
@@ -21,10 +23,11 @@ const useAirdropApi = () => {
   const claimAllocation = async (
     chain: ChainId,
     address: string,
+    denom: Denom,
     requestData: ClaimAllocationRequest
   ): Promise<ClaimAllocationResponse> => {
     const { data } = await axios.post(
-      `${process.env.REACT_APP_API_URL}/claim/${chain}/${address}`,
+      `${process.env.REACT_APP_API_URL}/claim/${chain}/${address}/${denom}`,
       requestData
     );
     return data;

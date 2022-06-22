@@ -32,7 +32,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
             const address = await getAddress(wallet, chain);
             setAddress(address);
             try {
-                const allocationResponse = await checkAllocation(chain.id, address);
+                const allocationResponse = await checkAllocation(chain.id, address, "uluna");
                 setAllocationResponse(allocationResponse);
             }
             catch (e: any) {
@@ -52,6 +52,17 @@ export const CheckAllocation = (props: CheckAllocationType) => {
         init();
     }, [chain, wallet]);
 
+    const parseAllocationRow = (allocationResponse: AllocationResponse) => {
+        const allocation = Number(allocationResponse.allocation) / (10 ** 6);
+
+        switch(allocationResponse.denom) {
+            case "uluna":
+                return `${allocation} LUNA`;
+            case "usdc":
+                return `${allocation} USDC`;
+        };
+    }
+
     return (
         <div className="CheckAllocationWrapper">
             {!loading
@@ -68,7 +79,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                             {!!allocationResponse?.allocation && !allocationResponse?.message && <>
                                 <InfoOutlinedIcon className="AllocationIcon info" />
                                 <h4>There is</h4>
-                                <h3>{Number(allocationResponse?.allocation) / (10 ** 6)} LUNA</h3>
+                                <h3>{parseAllocationRow(allocationResponse)}</h3>
                                 <h4>to be claimed for address</h4>
                                 <h3>{address}</h3>
                                 <Button variant="outlined"
