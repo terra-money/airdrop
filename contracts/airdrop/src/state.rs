@@ -10,6 +10,7 @@ pub struct Config {
     pub prefix: Option<String>,
     pub start_time: Option<i64>,
     pub vesting_periods: [i64; 4],
+    pub claim_end_time: u64,
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");

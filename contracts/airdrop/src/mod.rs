@@ -1,3 +1,3 @@
 // @generated
 
-pub mod vesting;
+pub mod distribution;

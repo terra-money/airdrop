@@ -50,6 +50,7 @@ const init = async () => {
       vesting_periods: [15552000, 46656000, 15552000, 62208000],
       start_time: 1669269600, // genesis + 6 months
       prefix: "kava",
+      claim_end_time: 1655870000,
     },
     { uluna: 1000000000000 }, // init coins
     "Instantiate terra"
@@ -80,5 +81,16 @@ const init = async () => {
 
   console.log(execCreateMerkleResult);
   console.log("CONTRACT_ADDRESS " + CONTRACT_ADDRESS);
+
+  // End airdrop event
+  //   const execEndTx = await wallet.createAndSignTx({
+  //     msgs: [
+  //       new MsgExecuteContract(wallet.key.accAddress, CONTRACT_ADDRESS, {
+  //         end: {},
+  //       }),
+  //     ],
+  //   });
+  //   const execEndResult = await terra.tx.broadcast(execEndTx);
+  //   console.log(execEndResult);
 };
 init();

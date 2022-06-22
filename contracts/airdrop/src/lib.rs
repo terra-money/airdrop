@@ -5,6 +5,7 @@ pub mod state;
 pub mod submsg;
 pub mod verification;
 
+mod distribution;
 mod vesting;
 
 #[cfg(test)]
