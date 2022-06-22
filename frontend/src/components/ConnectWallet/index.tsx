@@ -109,7 +109,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
 
     return (
         <div className='ConnectWallet'>
-            <h4>Select a wallet and connect to one of the available networks. Check the airdrop eligibility for the connected wallet. Sign a transaction to prove the ownership and claim the airdrop.</h4>
+            <h4>Select a wallet and connect to an available network. Then, check your wallet's airdrop eligibility, sign a transaction to prove ownership and claim your airdrop.</h4>
             <FormControl className='FormControl' fullWidth>
                 <InputLabel id='WalletLabel'>Select Wallet</InputLabel>
                 <Select
