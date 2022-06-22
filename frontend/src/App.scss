@@ -1,13 +1,11 @@
 .App {
     display: flex;
     justify-content: center;
-    min-height: 100vh;
-
+    
     .AppBody {
         margin: 10em 4em 0 4em;
         padding: 1em;
-        max-width: 50vw;
-        max-height: 40vh;
+        background-color: inherit;
     }
 
     .AppActions {

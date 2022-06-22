@@ -152,7 +152,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
                 </Select>
             </FormControl>}
             {wallet && chain && isInstalled(wallet) && <div className='ConnectWalletFooter'>
-                <Button variant='outlined'
+                <Button variant='contained'
                     fullWidth
                     onClick={() => handleConnectWallet()}>
                     Use {wallet.name} with {chain?.name}
