@@ -6,15 +6,15 @@ const useSteps = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [steps, setSteps] = useState<Array<StepData>>([{
         id: 0,
-        label: "Connect wallet",
+        label: "Connect Wallet",
         completed: false
     }, {
         id: 1,
-        label: "Check allocation",
+        label: "Check Allocation",
         completed: false
     }, {
         id: 2,
-        label: "Claim airdrop",
+        label: "Claim Airdrop",
         completed: false
     }]);
 

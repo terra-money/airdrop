@@ -80,9 +80,8 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                                 <InfoOutlinedIcon className="AllocationIcon info" />
                                 <h4>There is</h4>
                                 <h3>{parseAllocationRow(allocationResponse)}</h3>
-                                <h4>to be claimed for address</h4>
-                                <h3>{address}</h3>
-                                <Button variant="outlined"
+                                <h4>to be claimed for {address}</h4>
+                                <Button variant="contained"
                                     fullWidth
                                     onClick={() => onCollectAllocation(allocationResponse)}>
                                     Claim airdrop
@@ -113,7 +112,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                 : <div className="LoadingAllocation">
                     <Loader bottomElement={<>
                         <h4>Checking airdrop for address</h4>
-                        <h3>{address}</h3>
+                        <h5>{address}</h5>
                         <h4>from chain</h4>
                         <h3>{chain.name}</h3>
                     </>} />

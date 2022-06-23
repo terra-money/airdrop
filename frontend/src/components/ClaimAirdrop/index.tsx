@@ -1,4 +1,4 @@
-import { Alert, Button, TextField } from "@mui/material";
+import { Alert, Button, Checkbox, TextField, FormControlLabel } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import useAirdropApi from "../../hooks/useAirdropApi";
@@ -26,21 +26,25 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
     const [isValidAccount, setIsValidAccount] = useState<boolean | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [claimResponse, setClaimResponse] = useState<ClaimAllocationResponse | null>(null);
+    const [acceptedWarning, setAcceptedWarning] = useState<boolean>(false)
 
     const { enqueueSnackbar } = useSnackbar();
     const { signClaimAllocation } = useWallets();
-    const { isNewAccount } = useBlockchainApi();
+    const { isNewValidAccount } = useBlockchainApi();
     const { claimAllocation } = useAirdropApi();
 
     const onChangeAddress = (event: any) => {
         setNewTerraAddress(event.target.value);
         setIsValidAccount(null);
     }
+    const onChangeWarning = (event: any) => {
+        setAcceptedWarning(event.target.checked)
+    }
 
     const onSignTransaction = async () => {
         setLoading(true);
 
-        const isNew = await isNewAccount(newTerraAddress);
+        const isNew = await isNewValidAccount(newTerraAddress);
         setIsValidAccount(isNew);
 
         if (isNew) {
@@ -86,7 +90,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
             }
         }
-
+        setAcceptedWarning(false);
         setLoading(false);
     };
 
@@ -96,14 +100,16 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 ? <>{claimResponse === null
                     ? <div className="ClaimForm">
                         <h4 className="ClaimAirdropTitle">
-                            Add a Terra 2 address where you want to get the tokens. <br />
-                            This address must be new (without previous transactions)
+                            Enter a Terra 2 address where you'd like to receive your airdrop. This address must be for a new wallet (without previous transactions).
                         </h4>
-
+                        <FormControlLabel
+                            label={<h4>I verify this is a new wallet address with no transaction history</h4>}
+                            control={<Checkbox onChange={onChangeWarning}/>}
+                        />
                         <TextField className="ClaimAddressInput"
                             value={newTerraAddress}
                             label="New Terra 2 address"
-                            placeholder="terra..."
+                            disabled={!acceptedWarning}
                             onChange={onChangeAddress}
                             variant="outlined"
                             error={isValidAccount === false} />
@@ -111,20 +117,19 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         {isValidAccount === false && <>
                             <Alert className="ClaimAddressAlert"
                                 severity="error">
-                                <div>This address is invalid, use a different address</div>
+                                <div>This address is invalid. Make sure it's a new Terra wallet without any transaction history.</div>
                                 <a className="AlertLink"
-                                    href={`https://finder.terra.money/mainnet/address/${newTerraAddress}`}
+                                    href={`https://docs.terra.money`}
                                     target="_blank"
                                     rel="noreferrer">
-                                    <div className="AlertText">Check address in Finder</div>
+                                    <div className="AlertText">How do I make a new wallet?</div>
                                     <div className="icon external-link"></div>
                                 </a>
                             </Alert>
                         </>}
-
                         <Button
                             disabled={!newTerraAddress || isValidAccount === false }
-                            variant="outlined"
+                            variant="contained"
                             onClick={() => onSignTransaction()}>
                             Sign transaction and claim airdrop
                         </Button>
@@ -142,7 +147,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                     <div className="icon external-link"></div>
                                 </h3>
 
-                                <Button variant="outlined"
+                                <Button variant="contained"
                                     fullWidth
                                     onClick={() => onCheckAnotherWallet()}>
                                     Check another address
