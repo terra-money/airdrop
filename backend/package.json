@@ -6,6 +6,7 @@
     "scripts": {
         "test": "jest",
         "start": "ts-node src/index.ts",
+        "start:prod": "ts-node --transpile-only src/index.ts",
         "build": "tsc"
     },
     "author": "",
