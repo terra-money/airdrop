@@ -1,0 +1,24 @@
+FROM node:14.17-alpine
+
+# Create app directory
+WORKDIR /app
+
+COPY package*.json ./
+
+# node-gyp dependencies
+RUN apk add --update python make g++ && rm -rf /var/cache/apk/*
+
+# Install dependencies from package-lock.json
+RUN npm ci --no-audit --no-fund
+
+COPY . .
+
+RUN npm run build
+
+# Remove the packages specified in devDependencie
+RUN npm prune --production
+
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV PATH=$PATH:/home/node/.npm-global/bin
+
+CMD [ "npm", "run", "start" ]
