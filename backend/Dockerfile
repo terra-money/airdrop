@@ -20,5 +20,8 @@ RUN npm prune --production
 
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$PATH:/home/node/.npm-global/bin
+ENV APP_PORT=3000
 
-CMD [ "npm", "run", "start" ]
+EXPOSE 3000
+
+CMD [ "npm", "run", "start:prod" ]
