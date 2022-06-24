@@ -76,7 +76,6 @@ jobs:
 
       - name: Build, tag, and push docker image to AWS ECR
         uses: docker/build-push-action@v2
-        working-directory: ./backend
         with:
           push: true
           tags: |
@@ -85,3 +84,5 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           file: Dockerfile
+          build-contexts:
+            project = ./backend
