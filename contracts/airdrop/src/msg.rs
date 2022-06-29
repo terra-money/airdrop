@@ -11,6 +11,9 @@ pub struct InstantiateMsg {
     // Start time from when the vesting starts. If None, then it will start
     // when the user claims the airdrop
     pub start_time: Option<i64>,
+    // End time of the airdrop event. Afterwhich funds will be sent back to
+    // the community pool
+    pub claim_end_time: u64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -32,6 +35,7 @@ pub enum ExecuteMsg {
         signature: String,
         fee_refund: Option<String>,
     },
+    End {},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

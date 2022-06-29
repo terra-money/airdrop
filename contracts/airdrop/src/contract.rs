@@ -10,7 +10,7 @@ use crate::msg::{
     ConfigResponse, ExecuteMsg, InstantiateMsg, IsClaimedResponse, MerkleRootResponse, QueryMsg,
 };
 use crate::state::{Config, CLAIM_INDEX, CONFIG, MERKLE_ROOT};
-use crate::submsg::create_claim_response;
+use crate::submsg::{create_claim_response, create_fund_community_pool_response};
 use crate::verification::verify_signature;
 
 use sha3::Digest;
@@ -31,6 +31,7 @@ pub fn instantiate(
             prefix: msg.prefix,
             start_time: msg.start_time,
             vesting_periods: msg.vesting_periods,
+            claim_end_time: msg.claim_end_time,
         },
     )?;
 
@@ -54,6 +55,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             signature,
             fee_refund: _,
         } => claim(deps, env, info, allocation, proofs, message, signature),
+        ExecuteMsg::End {} => end_airdrop(deps, env, info),
     }
 }
 
@@ -123,6 +125,10 @@ pub fn claim(
     new_terra_address: String,
     signature: String,
 ) -> StdResult<Response> {
+    let config = CONFIG.load(deps.storage)?;
+    if env.block.time.seconds() > config.claim_end_time {
+        return Err(StdError::generic_err("airdrop event ended"));
+    }
     let mut values = (&amount).split(",");
     let signer = values
         .next()
@@ -142,8 +148,6 @@ pub fn claim(
             String::from(signer)
         )));
     };
-
-    let config = CONFIG.load(deps.storage)?;
 
     let amount0 = values
         .next()
@@ -216,6 +220,27 @@ pub fn claim(
         vesting_periods,
         config.start_time,
     )?)
+}
+
+fn end_airdrop(deps: DepsMut, env: Env, info: MessageInfo) -> StdResult<Response> {
+    let config: Config = CONFIG.load(deps.storage)?;
+    if info.sender != config.admin {
+        return Err(StdError::generic_err("unauthorized"));
+    }
+
+    if env.block.time.seconds() < config.claim_end_time {
+        return Err(StdError::generic_err("airdrop event not ended"));
+    }
+
+    let coin = deps
+        .querier
+        .query_balance(env.contract.address.clone(), config.denom.clone())?;
+
+    create_fund_community_pool_response(
+        config.denom,
+        env.contract.address.into_string(),
+        coin.amount,
+    )
 }
 
 fn bytes_cmp(a: [u8; 32], b: [u8; 32]) -> std::cmp::Ordering {

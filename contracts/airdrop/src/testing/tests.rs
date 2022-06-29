@@ -1,12 +1,15 @@
 use crate::contract::{execute, instantiate, query};
+use crate::distribution::{Coin as DistributionCoin, MsgFundCommunityPool};
 use crate::msg::{
     ConfigResponse, ExecuteMsg, InstantiateMsg, IsClaimedResponse, MerkleRootResponse, QueryMsg,
 };
 use crate::vesting::{Coin as VestingCoin, MsgCreatePeriodicVestingAccount, Period};
-use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+use cosmwasm_std::testing::{
+    mock_dependencies, mock_dependencies_with_balance, mock_env, mock_info,
+};
 use cosmwasm_std::{
-    attr, coins, from_binary, to_binary, BankMsg, Binary, CosmosMsg, ReplyOn, StdError, SubMsg,
-    Uint128, WasmMsg,
+    attr, coins, from_binary, to_binary, BankMsg, Binary, Coin, CosmosMsg, ReplyOn, StdError,
+    SubMsg, Timestamp, Uint128, WasmMsg,
 };
 use cw20::Cw20ExecuteMsg;
 use protobuf::Message;
@@ -21,6 +24,7 @@ fn proper_instantiate() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: None,
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -45,6 +49,7 @@ fn update_config() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: None,
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -85,6 +90,7 @@ fn register_merkle_root() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: None,
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -126,6 +132,7 @@ fn update_merkle_root() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: None,
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -180,6 +187,7 @@ fn claim_eth() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: Some(1655360550i64),
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -296,6 +304,7 @@ fn claim_eth_no_vesting() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: Some(1655360550i64),
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -382,6 +391,7 @@ fn claim_cosmos() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: Some(1655360550i64),
         prefix: Some("kava".to_string()),
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -499,6 +509,7 @@ fn claim_terra() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: Some(1655360550i64),
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -607,7 +618,7 @@ fn claim_terra() {
 
 #[cfg(feature = "terra")]
 #[test]
-fn claim_terra_unauthorized() {
+fn claim_terra_fail() {
     let mut deps = mock_dependencies();
 
     let msg = InstantiateMsg {
@@ -616,6 +627,7 @@ fn claim_terra_unauthorized() {
         vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
         start_time: Some(1655360550i64),
         prefix: None,
+        claim_end_time: 1955870000u64,
     };
 
     let info = mock_info("addr0000", &[]);
@@ -645,7 +657,96 @@ fn claim_terra_unauthorized() {
     let info = mock_info("terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtaps8", &[]);
     let res = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone());
     match res {
-        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signature verification error"),
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signature verification error. Expected: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtaps8 Received: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"),
         _ => panic!("DO NOT ENTER HERE"),
     }
+
+    let msg = ExecuteMsg::Claim {
+        allocation: "terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8,100,10000,0,100000,0".to_string(),
+        proofs: vec![
+            "9efa86bf87944e9023a32741eca1b37b59446e7fd7b7b9e6e9f7415807d51615".to_string(),
+            "fa758dfa5394b2c425c17805ba2665597f3d765e12943d0ef8601c08524f3222".to_string(),
+            "f9db7a772327af0a99846a61afcb5978fb96a87f0668eab3d2447077fc3a0ada".to_string(),
+            "7fa36eaa4d530755aa99ac4501e5c5be7a2ad2c5e93dc6e2516edba74a5ef512".to_string(),
+        ],
+        message: "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9".to_string(),
+        signature: "".to_string(),
+        fee_refund: None,
+    };
+
+    let mut env = mock_env();
+    env.block.time = Timestamp::from_seconds(1965870000u64);
+    let info = mock_info("terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8", &[]);
+    let res = execute(deps.as_mut(), env, info, msg.clone());
+    match res {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "airdrop event ended"),
+        _ => panic!("DO NOT ENTER HERE"),
+    }
+}
+
+#[test]
+fn end_airdrop() {
+    let coins = [Coin::new(100000000u128, "uluna")];
+    let mut deps = mock_dependencies_with_balance(&coins);
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [15552000i64, 46656000i64, 15552000i64, 62208000i64],
+        start_time: None,
+        prefix: None,
+        claim_end_time: 1655870000u64,
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    // end airdrop from non-admin
+    let info = mock_info("admin0001", &[]);
+    let msg = ExecuteMsg::End {};
+    let mut env = mock_env();
+    env.block.time = Timestamp::from_seconds(1655860000u64);
+
+    let res = execute(deps.as_mut(), env, info, msg);
+    match res {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "unauthorized"),
+        _ => panic!("Must return unauthorized error"),
+    };
+
+    // end airdrop before end time
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::End {};
+    let mut env = mock_env();
+    env.block.time = Timestamp::from_seconds(1655860000u64);
+
+    let res = execute(deps.as_mut(), env, info, msg);
+    match res {
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "airdrop event not ended"),
+        _ => panic!("Must return unauthorized error"),
+    };
+
+    // end airdrop after end time
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::End {};
+    let mut env = mock_env();
+    let contract_addr = env.clone().contract.address;
+    env.block.time = Timestamp::from_seconds(1655900000u64);
+
+    let res = execute(deps.as_mut(), env, info, msg).unwrap();
+
+    let mut msg = MsgFundCommunityPool::new();
+    let mut coin = DistributionCoin::new();
+    coin.amount = "100000000".to_string();
+    coin.denom = "uluna".to_string();
+    msg.amount = vec![coin];
+    msg.depositor = contract_addr.to_string();
+    let bytes = Message::write_to_bytes(&msg).unwrap();
+
+    assert_eq!(
+        res.messages[0],
+        SubMsg::new(CosmosMsg::Stargate {
+            type_url: "/cosmos.distribution.v1beta1.MsgFundCommunityPool".to_string(),
+            value: Binary(bytes),
+        })
+    );
 }

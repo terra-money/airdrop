@@ -1,6 +1,26 @@
+use crate::distribution::{Coin as DistributionCoin, MsgFundCommunityPool};
 use crate::vesting::{Coin as VestingCoin, MsgCreatePeriodicVestingAccount, Period};
-use cosmwasm_std::{coins, BankMsg, Binary, CosmosMsg, Env, Response, StdResult};
+use cosmwasm_std::{coins, BankMsg, Binary, CosmosMsg, Env, Response, StdResult, Uint128};
 use protobuf::Message;
+
+pub fn create_fund_community_pool_response(
+    denom: String,
+    depositor: String,
+    amount: Uint128,
+) -> StdResult<Response> {
+    let mut msg = MsgFundCommunityPool::new();
+    let mut coin = DistributionCoin::new();
+    coin.amount = amount.to_string();
+    coin.denom = denom.clone();
+    msg.amount = vec![coin];
+    msg.depositor = depositor;
+    let bytes = Message::write_to_bytes(&msg).unwrap();
+
+    Ok(Response::default().add_message(CosmosMsg::Stargate {
+        type_url: "/cosmos.distribution.v1beta1.MsgFundCommunityPool".to_string(),
+        value: Binary(bytes),
+    }))
+}
 
 pub fn create_claim_response(
     env: Env,
