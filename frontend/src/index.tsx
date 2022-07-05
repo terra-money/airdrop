@@ -34,8 +34,8 @@ getChainOptions().then((chainOptions) => {
                         <WalletProvider {...chainOptions}>
                             <BrowserRouter>
                                 <Routes>
-                                    <Route path="/wizard" element={<App />} />
                                     <Route path="/" element={<LandingPage />} />
+                                    <Route path="/wizard" element={<App />} />
                                 </Routes>
                             </BrowserRouter>
                         </WalletProvider>
