@@ -87,7 +87,6 @@ function App() {
                             onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
                             onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
-
                 <CardActions className='AppActions'>
                     <Button startIcon={<ArrowBackIos />}
                         variant="outlined"
