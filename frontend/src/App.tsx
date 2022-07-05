@@ -5,10 +5,8 @@ import { useState } from 'react';
 
 import { CheckAllocation } from './components/CheckAllocation';
 import { ClaimAirdrop } from './components/ClaimAirdrop';
-import { LandingPage } from './components/LandingPage';
 import { AppHeader } from './components/AppHeader';
 import { ConnectWallet } from './components/ConnectWallet';
-import { Routes, Route } from "react-router-dom";
 
 import useSteps from './hooks/useSteps';
 import wallets from './wallets.json';
@@ -72,38 +70,34 @@ function App() {
     }
     
     return (
-        <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/wizard" element={
-                <div className="App">
-                    <AppHeader steps={steps} activeStep={activeStep} />
-                    <Card className='AppBody'>
-                        <CardHeader title={<span>{steps[activeStep].label}</span>} />
-                        <CardContent>
-                            {activeStep === 0 && <ConnectWallet wallets={wallets} onWalletConnected={handleWalletConnected}/>}
-                            {activeStep === 1 && state.chain && state.wallet 
-                                && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
-                            }
-                            {activeStep === 2 && state.chain && state.wallet && state.allocationResponse
-                                && <ClaimAirdrop wallet={state.wallet}
-                                    chain={state.chain}
-                                    allocationResponse={state.allocationResponse}
-                                    onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
-                                    onCheckAnotherWallet={handleCheckAnotherWallet}/> }
-                        </CardContent>
+        <div className="App">
+            <AppHeader steps={steps} activeStep={activeStep} />
+            <Card className='AppBody'>
+                <CardHeader title={<span>{steps[activeStep].label}</span>} />
 
-                        <CardActions className='AppActions'>
-                            <Button startIcon={<ArrowBackIos />}
-                                variant="outlined"
-                                disabled={activeStep === 0}
-                                onClick={() => previousStep()}>
-                                Back
-                            </Button>
-                        </CardActions>
-                    </Card>
-                </div>
-             } />
-        </Routes>
+                <CardContent>
+                    {activeStep === 0 && <ConnectWallet wallets={wallets} onWalletConnected={handleWalletConnected}/>}
+                    {activeStep === 1 && state.chain && state.wallet 
+                        && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
+                    }
+                    {activeStep === 2 && state.chain && state.wallet && state.allocationResponse
+                        && <ClaimAirdrop wallet={state.wallet}
+                            chain={state.chain}
+                            allocationResponse={state.allocationResponse}
+                            onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
+                            onCheckAnotherWallet={handleCheckAnotherWallet}/> }
+                </CardContent>
+
+                <CardActions className='AppActions'>
+                    <Button startIcon={<ArrowBackIos />}
+                        variant="outlined"
+                        disabled={activeStep === 0}
+                        onClick={() => previousStep()}>
+                        Back
+                    </Button>
+                </CardActions>
+            </Card>
+        </div>
     );
 }
 

@@ -5,9 +5,10 @@ import App from './App';
 import { getChainOptions, WalletProvider } from '@terra-money/wallet-provider';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SnackbarProvider } from 'notistack';
 import { MetaMaskProvider } from "metamask-react";
+import { LandingPage } from './components/LandingPage';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -32,7 +33,10 @@ getChainOptions().then((chainOptions) => {
                     <MetaMaskProvider>
                         <WalletProvider {...chainOptions}>
                             <BrowserRouter>
-                                <App />
+                                <Routes>
+                                    <Route path="/wizard" element={<App />} />
+                                    <Route path="/" element={<LandingPage />} />
+                                </Routes>
                             </BrowserRouter>
                         </WalletProvider>
                     </MetaMaskProvider>
