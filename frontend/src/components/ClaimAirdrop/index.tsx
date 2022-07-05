@@ -119,7 +119,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                 severity="error">
                                 <div>This address is invalid. Make sure it's a new Terra wallet without any transaction history.</div>
                                 <a className="AlertLink"
-                                    href={`https://docs.terra.money`}
+                                    href={`https://docs.terra.money/docs/learn/terra-station/wallet.html#create-a-wallet`}
                                     target="_blank"
                                     rel="noreferrer">
                                     <div className="AlertText">How do I make a new wallet?</div>
