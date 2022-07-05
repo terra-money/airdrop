@@ -5,6 +5,7 @@ import App from './App';
 import { getChainOptions, WalletProvider } from '@terra-money/wallet-provider';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material';
+import { BrowserRouter } from "react-router-dom";
 import { SnackbarProvider } from 'notistack';
 import { MetaMaskProvider } from "metamask-react";
 
@@ -30,7 +31,9 @@ getChainOptions().then((chainOptions) => {
                     anchorOrigin={{ vertical: 'top', horizontal: 'right'}}>
                     <MetaMaskProvider>
                         <WalletProvider {...chainOptions}>
-                            <App />
+                            <BrowserRouter>
+                                <App />
+                            </BrowserRouter>
                         </WalletProvider>
                     </MetaMaskProvider>
                 </SnackbarProvider>
