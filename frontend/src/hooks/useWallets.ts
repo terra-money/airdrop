@@ -140,12 +140,15 @@ const useWallets = () => {
         newTerraAddress: string, 
         allocationResponse: AllocationResponse
     ): Promise<string> => {
-        console.log(allocationResponse);
+        const CONTRACT_ADDRESS = station.network.chainID === 'phoenix-1' 
+            ? process.env.REACT_APP_PHOENIX_CONTRACT_ADDRESS as string
+            : process.env.REACT_APP_PISCO_CONTRACT_ADDRESS as string;
+
         const result = await station.post({
             msgs: [
                 new MsgExecuteContract(
                     await getAddress(wallet),
-                    process.env.REACT_APP_TERRA_2_CONTRACT_ADDRESS as string,
+                    CONTRACT_ADDRESS,
                     {
                         claim: {
                             allocation: allocationResponse.allocation_string,
