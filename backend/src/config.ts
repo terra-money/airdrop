@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const Config = {
-  port: Number(process.env.APP_PORT) || 3001,
+  port: Number(process.env.PORT) || 3001,
   csvFolderPath: process.env.CSV_FOLDER_PATH || "./files",
   chainId: process.env.TERRA_CHAIN_ID || "localterra",
   lcdUrl: process.env.TERRA_LCD_URL || "http://localhost:1317",
