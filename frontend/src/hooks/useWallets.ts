@@ -6,9 +6,12 @@ import { ethers } from 'ethers';
 import { MsgExecuteContract } from "@terra-money/terra.js";
 import useWalletsHelpers from "./useWalletsHelpers";
 import { AllocationResponse } from "../models/Api";
+import { decode } from "bech32";
+import { useLCDClient } from '@terra-money/wallet-provider';
 
 const useWallets = () => {
     const { terraClassicKeplrConfig, injectiveKeplrConfig } = useWalletsHelpers();
+    const lcd = useLCDClient();
     const metamask = useMetaMask();
     const station = useWallet();
     const _window: any = window;
@@ -62,6 +65,40 @@ const useWallets = () => {
             default:
                 throw Error(`Unknown wallet with id '${wallet.id}'`);
         }
+    }
+
+    /**
+        * This method uses the LCD implemented into Wallet Provider 
+        * validate if the account exist in the selected network. 
+        * This way the frontend can be tested with both mainnet or testnet.
+        * e.g.: if you have selected testnet in Terra Station it will point to the testnet
+        */
+    const isNewValidAccount = async (address: string): Promise<boolean> => {
+        let decodedAddress;
+        try {
+            // This check is done to avoid users spamming
+            // the API with invalid addresses 
+            decodedAddress = decode(address);
+        }
+        catch (e) {
+            return false;
+        }
+
+        if (decodedAddress.prefix === "terra") {
+            try {
+                // If this request return a status code 200, means 
+                // that the account exist in the selected network
+                await lcd.auth.accountInfo(address);
+                return false;
+            }
+            catch (e: any) {
+                // To increase the method validity a check to the code 5 
+                // must be done which means that the account is NotFound.
+                // e.g.:https://phoenix-lcd.terra.dev/cosmos/auth/v1beta1/accounts/terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0je
+                return e.response?.data?.code === 5;
+            };
+        }
+        return false;
     }
 
     const _connectKeplrWallet = async (chain: KeplrChain): Promise<any> => {
@@ -136,11 +173,11 @@ const useWallets = () => {
     }
 
     const _signAddressWithStation = async (
-        wallet: Wallet, 
-        newTerraAddress: string, 
+        wallet: Wallet,
+        newTerraAddress: string,
         allocationResponse: AllocationResponse
     ): Promise<string> => {
-        const CONTRACT_ADDRESS = station.network.chainID === 'phoenix-1' 
+        const CONTRACT_ADDRESS = station.network.chainID === 'phoenix-1'
             ? process.env.REACT_APP_PHOENIX_CONTRACT_ADDRESS as string
             : process.env.REACT_APP_PISCO_CONTRACT_ADDRESS as string;
 
@@ -181,6 +218,7 @@ const useWallets = () => {
     return {
         isInstalled,
         isConnected,
+        isNewValidAccount,
         connect,
         getAddress,
         signClaimAllocation
