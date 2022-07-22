@@ -1,4 +1,4 @@
-# Mirror Airdrop <!-- omit in toc -->
+# Airdrop
 
 ## Buildings and Testing
 This contract uses rust features to build the airdrop contract for different chains. Currently supported are:
@@ -18,12 +18,11 @@ To build contracts, use the helper script `compile-contracts.sh`. You will need 
 ```
 
 ## Init
-Instantiate airdrop contract by registering owner and mirror token 
+Instantiate airdrop contract by registering owner.
 
 ```
 {
     "owner": "terra...",
-    "mirror_token": "terra...",
 }
 ```
 
