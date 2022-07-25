@@ -1,11 +1,17 @@
-name: default
+name: backend
 
 on:
+  workflow_dispatch:
   push:
+    paths:
+      - backend/**
+      - .github/workflows/backend.yml
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - backend/**
+      - .github/workflows/backend.yml
 
 jobs:
   integration:
@@ -46,8 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: integration
 
-    # deliver on push to main only
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # deliver on every branch push
+    if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
@@ -85,19 +91,3 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           file: ./backend/Dockerfile
           context: ./backend
-
-  dispatch:
-    runs-on: ubuntu-latest
-    needs: delivery
-    
-    # dispatch on push to main only
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Invoke Terraform Workflow
-        uses: aurelien-baudet/workflow-dispatch@v2
-        with:
-          repo: terra-money/tf-terra-airdrop
-          ref: pisco-1
-          workflow: Terraform
-          token: ${{ secrets.TFL_GITHUB_TOKEN }}
