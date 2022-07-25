@@ -25,11 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Node v14
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14.17'
-
       - name: Install dependencies from lock.
         run: npm ci
         working-directory: ./backend
