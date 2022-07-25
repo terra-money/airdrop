@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies from lock.
         run: npm ci
-        working-directory: ./backend
+        working-directory: ./frontend
 
       # - name: Linter.
       #   run: npm run lint:ci
@@ -40,7 +40,7 @@ jobs:
 
       - name: Build source code.
         run: npm run build
-        working-directory: ./backend
+        working-directory: ./frontend
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@1
@@ -48,5 +48,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_PAGES_TOKEN }}
           accountId: 620ff29bbd515d2848f5306578bd1d1d
           projectName: airdrop
-          directory: backend/build
+          directory: frontend/build
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
