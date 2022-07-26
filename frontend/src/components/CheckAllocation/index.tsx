@@ -32,13 +32,13 @@ export const CheckAllocation = (props: CheckAllocationType) => {
     const init = async () => {
       try {
         const address = await getAddress(wallet, chain);
+        setAddress(address);
         const allocationResponse = await checkAllocation(
           chain.id,
           address,
           "uluna"
         );
         setAllocationResponse(allocationResponse);
-        setAddress(address);
       } catch (e: any) {
         if (e?.response?.data?.message) {
           setAllocationResponse({

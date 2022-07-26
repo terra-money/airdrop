@@ -22,3 +22,11 @@ h4 {
   line-height: 1.5;
 }
 
+@media only screen and (max-width: 500px) {
+
+    body {
+        font-size: 0.9em;
+
+    }
+}
+
