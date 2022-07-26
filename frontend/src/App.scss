@@ -1,7 +1,7 @@
 .App {
     display: flex;
     justify-content: center;
-    
+
     .AppBody {
         margin: 10em 4em 0 4em;
         padding: 1em;
@@ -10,5 +10,20 @@
 
     .AppActions {
         justify-content: space-between;
+    }
+
+
+    @media only screen and (max-width: 500px) {
+        .AppBody {
+            margin: 6em 1em 0 1em;
+
+            .AppTitle {
+                padding: 0;
+            }
+
+            .AppBodyContent {
+                padding: 0;
+            }
+        }
     }
 }

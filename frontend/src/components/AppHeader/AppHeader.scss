@@ -2,7 +2,9 @@
     flex-direction: row !important;
     align-items: center;
     background-color: inherit !important;
-
+    overflow-x: auto;
+    overflow-y: hidden;
+    
     .AppTitle {    
         margin: 1.6em 2em 1.6em 0.8em;
         font-size: 1.2em;
@@ -10,11 +12,31 @@
 
     .AppLogo {
         margin-left: 1em;
+        min-height: 32px;
+        min-width: 32px;
     }
 
     .StepperWrapper {
         display: flex;
         flex-grow: 1;
         margin: 0 4em 0 4em;
+    }
+
+    @media only screen and (max-width: 500px) {
+
+        .AppTitle {
+            margin: 1em;
+            font-size: 1em;
+        }
+
+        .AppLogo {
+            margin-left: 0.5em;
+            min-height: 20px;
+            min-width: 20px;
+        }
+
+        .StepperWrapper {
+            margin: 8px;
+        }
     }
 }

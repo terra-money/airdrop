@@ -30,15 +30,15 @@ export const CheckAllocation = (props: CheckAllocationType) => {
 
   useEffect(() => {
     const init = async () => {
-      const address = await getAddress(wallet, chain);
-      setAddress(address);
       try {
+        const address = await getAddress(wallet, chain);
         const allocationResponse = await checkAllocation(
           chain.id,
           address,
           "uluna"
         );
         setAllocationResponse(allocationResponse);
+        setAddress(address);
       } catch (e: any) {
         if (e?.response?.data?.message) {
           setAllocationResponse({
@@ -56,9 +56,6 @@ export const CheckAllocation = (props: CheckAllocationType) => {
   }, [
     chain,
     wallet,
-    setAllocationResponse,
-    checkAllocation,
-    getAddress,
     setAddress,
   ]);
 
