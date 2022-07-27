@@ -1,5 +1,5 @@
 {
-  "name": "airdrop",
+  "name": "@terra-money/airdrop",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,20 +11,21 @@
     "@solana/web3.js": "^1.43.6",
     "@terra-money/terra.js": "^3.1.4",
     "@terra-money/wallet-provider": "^3.9.4",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "ethers": "^5.6.8",
-    "metamask-react": "^2.4.0",
     "notistack": "^2.0.5",
-    "path": "^0.12.7",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
+    "metamask-react": "^2.4.0",
     "sass": "^1.52.3",
+    "crypto-browserify": "^3.12.0",
+    "path-browserify": "^1.0.1",
+    "stream-browserify": "^3.0.0",
     "typescript": "^4.7.3",
-    "walletconnect": "^1.7.8"
+    "process": "^0.11.10",
+    "buffer": "^6.0.3"
+    
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -36,7 +37,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "react-hooks/exhaustive-deps" : "off"
+    }
   },
   "browserslist": {
     "production": [
@@ -55,15 +59,6 @@
     "@types/node": "^16.11.38",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
-    "assert": "^2.0.0",
-    "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
-    "https-browserify": "^1.0.0",
-    "os-browserify": "^0.3.0",
-    "process": "^0.11.10",
-    "react-app-rewired": "^2.2.1",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
-    "url": "^0.11.0"
+    "react-app-rewired": "^2.2.1"
   }
 }

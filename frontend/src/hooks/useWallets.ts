@@ -172,12 +172,16 @@ const useWallets = () => {
         }
     }
 
+    const isStationConnectedToMainnent = () => {
+        return station.network.name === 'mainnet';
+    }
+
     const _signAddressWithStation = async (
         wallet: Wallet,
         newTerraAddress: string,
         allocationResponse: AllocationResponse
     ): Promise<string> => {
-        const CONTRACT_ADDRESS = station.network.chainID === 'phoenix-1'
+        const CONTRACT_ADDRESS = isStationConnectedToMainnent()
             ? process.env.REACT_APP_PHOENIX_CONTRACT_ADDRESS as string
             : process.env.REACT_APP_PISCO_CONTRACT_ADDRESS as string;
 
@@ -219,6 +223,7 @@ const useWallets = () => {
         isInstalled,
         isConnected,
         isNewValidAccount,
+        isStationConnectedToMainnent,
         connect,
         getAddress,
         signClaimAllocation
