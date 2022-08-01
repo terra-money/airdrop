@@ -77,10 +77,10 @@ export const CheckAllocation = (props: CheckAllocationType) => {
           {allocationResponse?.has_claimed ? (
             <>
               <DoneAllIcon className="AllocationIcon success" />
-              <h4>The corresponding airdrop of</h4>
-              <h3>{allocationResponse.allocation} LUNA</h3>
-              <h4>was already processed for address</h4>
-              <h3>{address}</h3>
+              <h5>The corresponding airdrop of</h5>
+              <h4>{allocationResponse.allocation} LUNA</h4>
+              <h5>was already processed for address</h5>
+              <h4>{address}</h4>
             </>
           ) : (
             <>
@@ -88,9 +88,10 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                 !allocationResponse?.message && (
                   <>
                     <InfoOutlinedIcon className="AllocationIcon info" />
-                    <h4>There is</h4>
-                    <h3>{parseAllocationRow(allocationResponse)}</h3>
-                    <h4>to be claimed for {address}</h4>
+                    <h5>There is</h5>
+                    <h4>{parseAllocationRow(allocationResponse)}</h4>
+                    <h5>to be claimed for</h5>
+                    <h4>{address}</h4>
                     <Button
                       variant="contained"
                       fullWidth
@@ -104,10 +105,10 @@ export const CheckAllocation = (props: CheckAllocationType) => {
               {!allocationResponse?.allocation && !allocationResponse?.message && (
                 <>
                   <ErrorOutlineIcon className="AllocationIcon error" />
-                  <h4>There is no airdrop to be claimed for address</h4>
-                  <h3>{address}</h3>
-                  <h4>from chain</h4>
-                  <h3>{chain.name}</h3>
+                  <h5>There is no airdrop to be claimed for address</h5>
+                  <h4>{address}</h4>
+                  <h5>from chain</h5>
+                  <h4>{chain.name}</h4>
                 </>
               )}
             </>
@@ -115,8 +116,8 @@ export const CheckAllocation = (props: CheckAllocationType) => {
 
           {allocationResponse?.message && (
             <div className="AllocationError">
-              <h4>{allocationResponse.message}</h4>
-              <h3>
+              <h5>{allocationResponse.message}</h5>
+              <h4>
                 <a
                   href="https://discord.com/invite/sTmERSFnYW"
                   target="_blank"
@@ -125,7 +126,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                   Check Terra 2 Discord for help
                 </a>
                 <div className="icon external-link"></div>
-              </h3>
+              </h4>
             </div>
           )}
         </div>
@@ -134,10 +135,10 @@ export const CheckAllocation = (props: CheckAllocationType) => {
           <Loader
             bottomElement={
               <>
-                <h4>Checking airdrop for address</h4>
-                <h5>{address}</h5>
-                <h4>from chain</h4>
-                <h3>{chain.name}</h3>
+                <h5>Checking airdrop for address</h5>
+                <h4>{address}</h4>
+                <h5>from chain</h5>
+                <h4>{chain.name}</h4>
               </>
             }
           />
