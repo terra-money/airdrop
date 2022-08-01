@@ -53,6 +53,12 @@
                 "icon": "juno"
             },
             {
+                "id": "cronos",
+                "name": "Cronos",
+                "keplrChainId" : "crypto-org-chain-mainnet-1",
+                "icon": "cronos"
+            },
+            {
                 "id": "kava",
                 "name": "Kava",
                 "keplrChainId" : "kava_2222-10",
@@ -74,6 +80,26 @@
                 "id": "avax",
                 "name": "Avalanche",
                 "icon": "avalanche"
+            },
+            {
+                "id": "bsc",
+                "name": "Binance Smart Chain",
+                "icon": "bsc"
+            },
+            {
+                "id": "polygon",
+                "name": "Polygon",
+                "icon": "polygon"
+            },
+            {
+                "id": "fantom",
+                "name": "Fantom",
+                "icon": "fantom"
+            },
+            {
+                "id": "cronos",
+                "name": "Cronos",
+                "icon": "cronos"
             }
         ]
     },
