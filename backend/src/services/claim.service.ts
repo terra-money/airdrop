@@ -39,6 +39,9 @@ export class ClaimService {
       "eth.uluna": Config.ethAirdropContract,
       "bsc.uluna": Config.bscAirdropContract,
       "kava.uluna": Config.kavaAirdropContract,
+      "avax.uluna": Config.avaxAirdropContract,
+      "phantom.uluna": Config.avaxAirdropContract,
+      "polygon.uluna": Config.avaxAirdropContract,
     };
   }
 
