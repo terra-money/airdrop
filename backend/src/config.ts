@@ -10,7 +10,7 @@ export const Config = {
   terraAirdropContract: process.env.TERRA_AIRDROP_CONTRACT || "",
   ethAirdropContract: process.env.ETH_AIRDROP_CONTRACT || "",
   avaxAirdropContract: process.env.AVAX_AIRDROP_CONTRACT || "",
-  phantomAirdropContract: process.env.PHANTOM_AIRDROP_CONTRACT || "",
+  fantomAirdropContract: process.env.FANTOM_AIRDROP_CONTRACT || "",
   polygonAirdropContract: process.env.POLYGON_AIRDROP_CONTRACT || "",
   bscAirdropContract: process.env.BSC_AIRDROP_CONTRACT || "",
   solanaAirdropContract: process.env.SOLANA_AIRDROP_CONTRACT || "",
