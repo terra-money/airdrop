@@ -29,7 +29,8 @@ function App() {
     const [state, setState]  = useState<{
         wallet?: Wallet, 
         chain?: Chain,
-        allocationResponse?: AllocationResponse
+        allocationResponse?: AllocationResponse,
+        airdropClaimedSuccessfully?: boolean,
     }>({});
 
     const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
@@ -53,6 +54,10 @@ function App() {
         steps[activeStep].completed = true;
         steps[activeStep].completedLabel = "Successfully";
         updateSteps(steps);
+        setState({
+            ...state,
+            airdropClaimedSuccessfully: true
+        })
     }
     
     const handleCheckAnotherWallet = () => {
@@ -88,7 +93,7 @@ function App() {
                             onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
 
-                <CardActions className='AppActions'>
+                <CardActions className={`AppActions ${state.airdropClaimedSuccessfully ? 'HiddenActions' : ''}`}>
                     <Button startIcon={<ArrowBackIos />}
                         variant="outlined"
                         disabled={activeStep === 0}

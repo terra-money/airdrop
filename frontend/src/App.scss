@@ -10,6 +10,11 @@
 
     .AppActions {
         justify-content: space-between;
+
+        &.HiddenActions {
+            display: none;
+            
+        }
     }
 
 
