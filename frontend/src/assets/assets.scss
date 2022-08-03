@@ -62,6 +62,21 @@
 
     }
     
+    &.bsc {
+        background-image: url("./img/chains/bsc.svg");
+
+    }
+    
+    &.fantom {
+        background-image: url("./img/chains/fantom.svg");
+
+    }
+    
+    &.polygon {
+        background-image: url("./img/chains/polygon.svg");
+
+    }
+    
     &.kava {
         background-image: url("./img/chains/kava.svg");
 
@@ -75,8 +90,6 @@
 
 .logo {
     background: round;
-    width: 36px;
-    height: 36px;
 
     &.terra {
         background-image: url("./img/terra-logo.svg");

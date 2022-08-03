@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const Config = {
-  port: Number(process.env.APP_PORT) || 3001,
+  port: Number(process.env.PORT) || 3001,
   csvFolderPath: process.env.CSV_FOLDER_PATH || "./files",
   chainId: process.env.TERRA_CHAIN_ID || "localterra",
   lcdUrl: process.env.TERRA_LCD_URL || "http://localhost:1317",
@@ -9,6 +9,9 @@ export const Config = {
   mnemonic: process.env.TERRA_MNEMONIC || "",
   terraAirdropContract: process.env.TERRA_AIRDROP_CONTRACT || "",
   ethAirdropContract: process.env.ETH_AIRDROP_CONTRACT || "",
+  avaxAirdropContract: process.env.AVAX_AIRDROP_CONTRACT || "",
+  fantomAirdropContract: process.env.FANTOM_AIRDROP_CONTRACT || "",
+  polygonAirdropContract: process.env.POLYGON_AIRDROP_CONTRACT || "",
   bscAirdropContract: process.env.BSC_AIRDROP_CONTRACT || "",
   solanaAirdropContract: process.env.SOLANA_AIRDROP_CONTRACT || "",
   kavaAirdropContract: process.env.KAVA_AIRDROP_CONTRACT || "",

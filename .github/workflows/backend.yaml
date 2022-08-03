@@ -1,11 +1,17 @@
-name: default
+name: backend
 
 on:
+  workflow_dispatch:
   push:
+    paths:
+      - backend/**
+      - .github/workflows/backend.yml
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - backend/**
+      - .github/workflows/backend.yml
 
 jobs:
   integration:

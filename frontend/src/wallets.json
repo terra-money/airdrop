@@ -29,28 +29,10 @@
         "icon": "keplr",
         "chains": [
             {
-                "id": "terraclassic",
-                "name": "Terra Classic",
-                "keplrChainId" : "columbus-5",
-                "icon": "terraclassic"
-            },
-            {
-                "id": "axl",
-                "name": "Axelar",
-                "keplrChainId" : "axelar-dojo-1",
-                "icon": "axl"
-            },
-            {
                 "id": "injective",
                 "name": "Injective Network",
                 "keplrChainId" : "injective-1",
                 "icon": "injective"
-            },
-            {
-                "id": "juno",
-                "name": "Juno",
-                "keplrChainId" : "juno-1",
-                "icon": "juno"
             },
             {
                 "id": "kava",
@@ -74,18 +56,21 @@
                 "id": "avax",
                 "name": "Avalanche",
                 "icon": "avalanche"
-            }
-        ]
-    },
-    {
-        "id": "phantom",
-        "name": "Phantom",
-        "icon": "phantom",
-        "chains": [
+            },
             {
-                "id": "sol",
-                "name": "Solana",
-                "icon": "solana"
+                "id": "bsc",
+                "name": "Binance Smart Chain",
+                "icon": "bsc"
+            },
+            {
+                "id": "polygon",
+                "name": "Polygon",
+                "icon": "polygon"
+            },
+            {
+                "id": "fantom",
+                "name": "Fantom",
+                "icon": "fantom"
             }
         ]
     }

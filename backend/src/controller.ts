@@ -1,4 +1,5 @@
 import { Application, Request, Response } from "express";
+import { Config } from "./config";
 import { EMPTY_ALLOCATION } from "./helpers/airdrop";
 import { AirdropService } from "./services/airdrop.service";
 import { ClaimService } from "./services/claim.service";
@@ -10,10 +11,11 @@ export class MainController {
     private airdropService: AirdropService,
     private verificationService: VerificationService,
     private claimService: ClaimService
-  ) {}
+  ) { }
 
   public registerRoutes(app: Application) {
     app.get("/healthcheck", this.healthCheck.bind(this));
+    app.get("/config", this.getConfig.bind(this));
     app.get("/allocation/:chain/:address/:denom", this.allocation.bind(this));
     app.get("/merkle_root/:chain/:denom", this.merkle_root.bind(this));
     app.post("/claim/:chain/:address/:denom", this.claim.bind(this));
@@ -22,6 +24,18 @@ export class MainController {
   private healthCheck(req: Request, res: Response) {
     res.status(200);
     res.send("OK");
+  }
+
+  private getConfig(_req: Request, res: Response) {
+    const blackListedKeys = ["mnemonic"]
+    const config = {
+      ...Config
+    } as any;
+    for (let k of blackListedKeys) {
+      delete config[k];
+    }
+    res.status(200);
+    res.json(config);
   }
 
   private async claim(req: Request, res: Response) {
@@ -116,10 +130,10 @@ export class MainController {
     const response: Record<string, any> = {
       allocation: String(
         parseInt(allocation.amount0) +
-          parseInt(allocation.amount1) +
-          parseInt(allocation.amount2) +
-          parseInt(allocation.amount3) +
-          parseInt(allocation.amount4)
+        parseInt(allocation.amount1) +
+        parseInt(allocation.amount2) +
+        parseInt(allocation.amount3) +
+        parseInt(allocation.amount4)
       ),
       has_claimed: isClaimed,
       chain,

@@ -2,7 +2,6 @@ import { Alert, Button, Checkbox, TextField, FormControlLabel } from "@mui/mater
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import useAirdropApi from "../../hooks/useAirdropApi";
-import useBlockchainApi from "../../hooks/useBlockchainApi";
 import useWallets from "../../hooks/useWallets";
 import { AllocationResponse, ClaimAllocationResponse } from "../../models/Api";
 import { Chain } from "../../models/Chain";
@@ -29,8 +28,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
     const [acceptedWarning, setAcceptedWarning] = useState<boolean>(false)
 
     const { enqueueSnackbar } = useSnackbar();
-    const { signClaimAllocation } = useWallets();
-    const { isNewValidAccount } = useBlockchainApi();
+    const { signClaimAllocation, isNewValidAccount } = useWallets();
     const { claimAllocation } = useAirdropApi();
 
     const onChangeAddress = (event: any) => {

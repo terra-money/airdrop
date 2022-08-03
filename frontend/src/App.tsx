@@ -29,7 +29,8 @@ function App() {
     const [state, setState]  = useState<{
         wallet?: Wallet, 
         chain?: Chain,
-        allocationResponse?: AllocationResponse
+        allocationResponse?: AllocationResponse,
+        airdropClaimedSuccessfully?: boolean,
     }>({});
 
     const handleWalletConnected = (wallet: Wallet, chain: Chain) => {
@@ -53,6 +54,10 @@ function App() {
         steps[activeStep].completed = true;
         steps[activeStep].completedLabel = "Successfully";
         updateSteps(steps);
+        setState({
+            ...state,
+            airdropClaimedSuccessfully: true
+        })
     }
     
     const handleCheckAnotherWallet = () => {
@@ -73,9 +78,9 @@ function App() {
         <div className="App">
             <AppHeader steps={steps} activeStep={activeStep} />
             <Card className='AppBody'>
-                <CardHeader title={<span>{steps[activeStep].label}</span>} />
+                <CardHeader className='AppTitle' title={<span>{steps[activeStep].label}</span>} />
 
-                <CardContent>
+                <CardContent className='AppBodyContent'>
                     {activeStep === 0 && <ConnectWallet wallets={wallets} onWalletConnected={handleWalletConnected}/>}
                     {activeStep === 1 && state.chain && state.wallet 
                         && <CheckAllocation chain={state.chain} wallet={state.wallet} onCollectAllocation={handleCollectAllocation}/>
@@ -87,7 +92,8 @@ function App() {
                             onClaimAirdropSuccessfully={handleClaimAirdropSuccessfully}
                             onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
-                <CardActions className='AppActions'>
+
+                <CardActions className={`AppActions ${state.airdropClaimedSuccessfully ? 'HiddenActions' : ''}`}>
                     <Button startIcon={<ArrowBackIos />}
                         variant="outlined"
                         disabled={activeStep === 0}

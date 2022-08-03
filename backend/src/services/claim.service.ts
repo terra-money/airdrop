@@ -22,6 +22,9 @@ export class ClaimService {
   private wallet: Wallet;
   private contracts: Record<string, string>;
   public constructor(private airdropService: AirdropService) {
+    if (Config.lcdUrl.indexOf("http") != 0) {
+      Config.lcdUrl = "http://" + Config.lcdUrl;
+    }
     this.lcd = new LCDClient({
       URL: Config.lcdUrl,
       chainID: Config.chainId,
@@ -36,6 +39,9 @@ export class ClaimService {
       "eth.uluna": Config.ethAirdropContract,
       "bsc.uluna": Config.bscAirdropContract,
       "kava.uluna": Config.kavaAirdropContract,
+      "avax.uluna": Config.avaxAirdropContract,
+      "phantom.uluna": Config.fantomAirdropContract,
+      "polygon.uluna": Config.polygonAirdropContract,
     };
   }
 
