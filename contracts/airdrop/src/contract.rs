@@ -2,8 +2,7 @@
 use cosmwasm_std::entry_point;
 
 use cosmwasm_std::{
-    coins, to_binary, BankMsg, Binary, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response,
-    StdError, StdResult, WasmMsg,
+    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult, Uint128,
 };
 
 use crate::msg::{
@@ -15,6 +14,8 @@ use crate::verification::verify_signature;
 
 use sha3::Digest;
 use std::convert::TryInto;
+use std::ops::SubAssign;
+use std::str::FromStr;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -32,6 +33,7 @@ pub fn instantiate(
             start_time: msg.start_time,
             vesting_periods: msg.vesting_periods,
             claim_end_time: msg.claim_end_time,
+            fee_refund: msg.fee_refund,
         },
     )?;
 
@@ -41,7 +43,9 @@ pub fn instantiate(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> StdResult<Response> {
     match msg {
-        ExecuteMsg::UpdateConfig { admin } => update_config(deps, env, info, admin),
+        ExecuteMsg::UpdateConfig { admin, fee_refund } => {
+            update_config(deps, env, info, admin, fee_refund)
+        }
         ExecuteMsg::UpdateMerkleRoot { merkle_root } => {
             update_merkle_root(deps, env, info, merkle_root)
         }
@@ -53,7 +57,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             proofs,
             message,
             signature,
-            fee_refund: _,
         } => claim(deps, env, info, allocation, proofs, message, signature),
         ExecuteMsg::End {} => end_airdrop(deps, env, info),
     }
@@ -83,6 +86,7 @@ pub fn update_config(
     _env: Env,
     info: MessageInfo,
     admin: Option<String>,
+    fee_refund: Option<Uint128>,
 ) -> StdResult<Response> {
     let mut config: Config = CONFIG.load(deps.storage)?;
     if info.sender != config.admin {
@@ -91,6 +95,9 @@ pub fn update_config(
 
     if let Some(admin) = admin {
         config.admin = admin;
+    }
+    if let Some(fee_refund) = fee_refund {
+        config.fee_refund = Some(fee_refund);
     }
 
     CONFIG.save(deps.storage, &config)?;
@@ -132,53 +139,66 @@ pub fn claim(
     let mut values = (&amount).split(",");
     let signer = values
         .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount"))?;
+        .ok_or(StdError::generic_err("unable to parse claim amount"))?
+        .to_lowercase();
 
     let (verified, verified_terra_address) = verify_signature(
         deps.as_ref(),
         String::from(&info.sender),
         new_terra_address,
         signature,
-        String::from(signer),
+        signer.clone(),
     )?;
     if !verified {
         return Err(StdError::generic_err(&format!(
             "signature verification error. Expected: {} Received: {}",
             info.sender.into_string(),
-            String::from(signer)
+            signer
         )));
     };
 
     let amount0 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount0"))?;
-    let amount0_u128 = u128::from_str_radix(amount0, 10)
+    let mut amount0_u128 = u128::from_str_radix(amount0, 10)
         .map_err(|_| StdError::generic_err("unable to parse amount0"))?;
 
+    let mut refund_amount: Uint128 = Uint128::new(0);
+    if let Some(fee_refund) = config.fee_refund {
+        let fee_u128 = fee_refund.u128();
+        if amount0_u128.ge(&fee_u128) {
+            amount0_u128.sub_assign(fee_u128);
+            refund_amount = fee_refund;
+        }
+    }
+
     let mut vesting_periods: Vec<(i64, String)> = vec![];
-    let amount1 = values
-        .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount1"))?;
-    vesting_periods.push((config.vesting_periods[0], String::from(amount1)));
-
-    let amount2 = values
-        .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount2"))?;
-    vesting_periods.push((config.vesting_periods[1], String::from(amount2)));
-
-    let amount3 = values
-        .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount3"))?;
-    vesting_periods.push((config.vesting_periods[2], String::from(amount3)));
-
-    let amount4 = values
-        .next()
-        .ok_or(StdError::generic_err("unable to parse claim amount4"))?;
-    vesting_periods.push((config.vesting_periods[3], String::from(amount4)));
+    for i in 0..5 {
+        let mut amount_string = values
+            .next()
+            .ok_or(StdError::generic_err(format!(
+                "unable to parse claim amount {}",
+                i + 1
+            )))?
+            .to_string();
+        if let Some(fee_refund) = config.fee_refund {
+            if refund_amount.is_zero() {
+                let amount = Uint128::from_str(&amount_string)?;
+                if amount.ge(&fee_refund) {
+                    amount_string = amount.checked_sub(fee_refund)?.to_string();
+                    refund_amount = fee_refund;
+                }
+            }
+        }
+        vesting_periods.push((config.vesting_periods[i], amount_string));
+    }
 
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
 
-    if CLAIM_INDEX.may_load(deps.storage, signer)?.unwrap_or(false) {
+    if CLAIM_INDEX
+        .may_load(deps.storage, &signer)?
+        .unwrap_or(false)
+    {
         return Err(StdError::generic_err("already claimed"));
     }
 
@@ -209,16 +229,18 @@ pub fn claim(
         return Err(StdError::generic_err("Merkle verification failed"));
     }
 
-    CLAIM_INDEX.save(deps.storage, signer, &true)?;
+    CLAIM_INDEX.save(deps.storage, &signer, &true)?;
 
     Ok(create_claim_response(
         env,
+        info.sender.to_string(),
         config.denom,
         signer.to_string(),
         verified_terra_address,
         amount0_u128,
         vesting_periods,
         config.start_time,
+        refund_amount,
     )?)
 }
 
@@ -287,7 +309,7 @@ pub fn query_merkle_root(deps: Deps, _env: Env) -> StdResult<MerkleRootResponse>
 pub fn query_is_claimed(deps: Deps, _env: Env, address: String) -> StdResult<IsClaimedResponse> {
     let resp = IsClaimedResponse {
         is_claimed: CLAIM_INDEX
-            .may_load(deps.storage, &address)?
+            .may_load(deps.storage, &address.to_lowercase())?
             .unwrap_or(false),
     };
 
