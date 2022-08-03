@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, CardContent, CardActions, CardHeader } from '@mui/material';
+import { Button, Card, CardHeader } from '@mui/material';
 import './LandingPage.scss'
 
 
