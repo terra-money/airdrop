@@ -140,18 +140,33 @@ pub fn claim(
     signature: String,
 ) -> StdResult<Response> {
     let config = CONFIG.load(deps.storage)?;
+
+    // Make sure the airdrop is enabled
     if !config.enabled {
         return Err(StdError::generic_err("airdrop event is disabled"));
     }
+
+    // Make sure the airdrop claim period has not ended
     if env.block.time.seconds() > config.claim_end_time {
         return Err(StdError::generic_err("airdrop event ended"));
     }
+
+    // Parse claim string to get signer address
     let mut values = (&amount).split(",");
     let signer = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount"))?
         .to_lowercase();
 
+    // Check if user has already claimed
+    if CLAIM_INDEX
+        .may_load(deps.storage, &signer)?
+        .unwrap_or(false)
+    {
+        return Err(StdError::generic_err("already claimed"));
+    }
+
+    // Verify signature
     let (verified, verified_terra_address) = verify_signature(
         deps.as_ref(),
         String::from(&info.sender),
@@ -167,12 +182,14 @@ pub fn claim(
         )));
     };
 
+    // Parse vested component from claim string
     let amount0 = values
         .next()
         .ok_or(StdError::generic_err("unable to parse claim amount0"))?;
     let mut amount0_u128 = u128::from_str_radix(amount0, 10)
         .map_err(|_| StdError::generic_err("unable to parse amount0"))?;
 
+    // Deduct fees from vested component if its more than
     let mut refund_amount: Uint128 = Uint128::new(0);
     if let Some(fee_refund) = config.fee_refund {
         let fee_u128 = fee_refund.u128();
@@ -182,6 +199,9 @@ pub fn claim(
         }
     }
 
+    // Parse and deduct fees from vested component
+    // Note: If none of the amounts can be used to pay for gas, no fees will be deducted
+    // In practice, we have a dust filter of 1 LUNA so all airdrops should have enough fees
     let mut vesting_periods: Vec<(i64, String)> = vec![];
     for i in 0..5 {
         let mut amount_string = values
@@ -203,15 +223,8 @@ pub fn claim(
         vesting_periods.push((config.vesting_periods[i], amount_string));
     }
 
+    // Verify if claim amount is part of merkle tree
     let merkle_root: String = MERKLE_ROOT.load(deps.storage)?;
-
-    if CLAIM_INDEX
-        .may_load(deps.storage, &signer)?
-        .unwrap_or(false)
-    {
-        return Err(StdError::generic_err("already claimed"));
-    }
-
     let mut hash: [u8; 32] = sha3::Keccak256::digest(amount.as_bytes())
         .as_slice()
         .try_into()
@@ -239,6 +252,7 @@ pub fn claim(
         return Err(StdError::generic_err("Merkle verification failed"));
     }
 
+    // Update claims so users' can't claim twice
     CLAIM_INDEX.save(deps.storage, &signer, &true)?;
 
     Ok(create_claim_response(
