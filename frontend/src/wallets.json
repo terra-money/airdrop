@@ -56,6 +56,21 @@
                 "id": "avax",
                 "name": "Avalanche",
                 "icon": "avalanche"
+            },
+            {
+                "id": "bsc",
+                "name": "Binance Smart Chain",
+                "icon": "bsc"
+            },
+            {
+                "id": "polygon",
+                "name": "Polygon",
+                "icon": "polygon"
+            },
+            {
+                "id": "fantom",
+                "name": "Fantom",
+                "icon": "fantom"
             }
         ]
     }
