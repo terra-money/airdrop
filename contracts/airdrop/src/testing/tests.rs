@@ -68,11 +68,12 @@ fn update_config() {
     let info = mock_info("addr0000", &[]);
     let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
 
-    // update admin
+    // update admin and fee
     let info = mock_info("admin0000", &[]);
     let msg = ExecuteMsg::UpdateConfig {
         admin: Some("admin0001".to_string()),
-        fee_refund: None,
+        fee_refund: Some(Uint128::new(10000)),
+        enabled: None,
     };
 
     let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
@@ -81,13 +82,22 @@ fn update_config() {
     // it worked, let's query the state
     let res = query(deps.as_ref(), mock_env(), QueryMsg::Config {}).unwrap();
     let config: ConfigResponse = from_binary(&res).unwrap();
-    assert_eq!("admin0001", config.admin.as_str());
+    assert_eq!(
+        config,
+        ConfigResponse {
+            admin: "admin0001".to_string(),
+            denom: "uluna".to_string(),
+            fee: Some(Uint128::new(10000)),
+            enabled: true
+        },
+    );
 
     // Unauthorized err
     let info = mock_info("admin0000", &[]);
     let msg = ExecuteMsg::UpdateConfig {
         admin: None,
         fee_refund: None,
+        enabled: None,
     };
 
     let res = execute(deps.as_mut(), mock_env(), info, msg);
@@ -95,6 +105,69 @@ fn update_config() {
         Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "unauthorized"),
         _ => panic!("Must return unauthorized error"),
     }
+}
+
+#[test]
+fn disable_airdrop_contract() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: None,
+        prefix: None,
+        claim_end_time: 1955870000u64,
+        fee_refund: None,
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    // update admin and fee
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::UpdateConfig {
+        admin: Some("admin0001".to_string()),
+        fee_refund: None,
+        enabled: Some(false),
+    };
+
+    let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+    assert_eq!(0, res.messages.len());
+
+    // it worked, let's query the state
+    let res = query(deps.as_ref(), mock_env(), QueryMsg::Config {}).unwrap();
+    let config: ConfigResponse = from_binary(&res).unwrap();
+    assert_eq!(
+        config,
+        ConfigResponse {
+            admin: "admin0001".to_string(),
+            denom: "uluna".to_string(),
+            fee: None,
+            enabled: false
+        },
+    );
+    let msg = ExecuteMsg::Claim {
+        allocation: "0x78864ce3e53a439ae0a8e15622aa0d21675ad4cd,0,1000,12000,0,100000,0".to_string(),
+        proofs: vec![
+            "cbcae9860f77d0d6a3ba13892c8de9daf7a5505878fd35a4f82ce161bdbf4ae8".to_string(),
+            "47e6a6ada4d2a53b6b78835a73d194758694968e9f17be7260acf3f12dee1d42".to_string(),
+            "e677d3688a7cc4aaedc4c49aa510f8a1b01553f02b4524bbf79bc3cef6ac47ea".to_string(),
+        ],
+        message: "terra1gtf24wp9fvpupaykl6sskkc6mw8c5l4wny5fhk".to_string(),
+        signature: "cac2f150692e11a108ff05a75f364d245cf7e322cdc847555cdada5b3ba7dfc7200f37110b48752e6813b2f02361e26edf3e129ba7930ab60b996daa6f7dd9b11c".to_string(),
+    };
+
+    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
+    let res = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone());
+
+    assert_eq!(res, Err(StdError::generic_err("airdrop event is disabled")));
 }
 
 #[test]

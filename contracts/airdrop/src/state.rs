@@ -13,6 +13,7 @@ pub struct Config {
     pub vesting_periods: [i64; 5],
     pub claim_end_time: u64,
     pub fee_refund: Option<Uint128>,
+    pub enabled: bool,
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");

@@ -24,6 +24,7 @@ pub enum ExecuteMsg {
     UpdateConfig {
         admin: Option<String>,
         fee_refund: Option<Uint128>,
+        enabled: Option<bool>,
     },
     UpdateMerkleRoot {
         merkle_root: String,
@@ -53,6 +54,8 @@ pub enum QueryMsg {
 pub struct ConfigResponse {
     pub admin: String,
     pub denom: String,
+    pub fee: Option<Uint128>,
+    pub enabled: bool,
 }
 
 // We define a custom struct for each query response

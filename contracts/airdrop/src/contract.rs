@@ -34,6 +34,7 @@ pub fn instantiate(
             vesting_periods: msg.vesting_periods,
             claim_end_time: msg.claim_end_time,
             fee_refund: msg.fee_refund,
+            enabled: true,
         },
     )?;
 
@@ -43,9 +44,11 @@ pub fn instantiate(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> StdResult<Response> {
     match msg {
-        ExecuteMsg::UpdateConfig { admin, fee_refund } => {
-            update_config(deps, env, info, admin, fee_refund)
-        }
+        ExecuteMsg::UpdateConfig {
+            admin,
+            fee_refund,
+            enabled,
+        } => update_config(deps, env, info, admin, fee_refund, enabled),
         ExecuteMsg::UpdateMerkleRoot { merkle_root } => {
             update_merkle_root(deps, env, info, merkle_root)
         }
@@ -87,6 +90,7 @@ pub fn update_config(
     info: MessageInfo,
     admin: Option<String>,
     fee_refund: Option<Uint128>,
+    enabled: Option<bool>,
 ) -> StdResult<Response> {
     let mut config: Config = CONFIG.load(deps.storage)?;
     if info.sender != config.admin {
@@ -98,6 +102,9 @@ pub fn update_config(
     }
     if let Some(fee_refund) = fee_refund {
         config.fee_refund = Some(fee_refund);
+    }
+    if let Some(enabled) = enabled {
+        config.enabled = enabled;
     }
 
     CONFIG.save(deps.storage, &config)?;
@@ -133,6 +140,9 @@ pub fn claim(
     signature: String,
 ) -> StdResult<Response> {
     let config = CONFIG.load(deps.storage)?;
+    if !config.enabled {
+        return Err(StdError::generic_err("airdrop event is disabled"));
+    }
     if env.block.time.seconds() > config.claim_end_time {
         return Err(StdError::generic_err("airdrop event ended"));
     }
@@ -294,6 +304,8 @@ pub fn query_config(deps: Deps, _env: Env) -> StdResult<ConfigResponse> {
     let resp = ConfigResponse {
         admin: state.admin,
         denom: state.denom,
+        fee: state.fee_refund,
+        enabled: state.enabled,
     };
 
     Ok(resp)
