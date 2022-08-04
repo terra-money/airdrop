@@ -135,15 +135,17 @@ pub fn verify_signature_cosmos(
     let hash = hasher.finalize();
     let signature_u8 =
         hex::decode(signature).map_err(|_| StdError::generic_err("error decoding signature"))?;
-    let recovered_pubkey = deps
-        .api
-        .secp256k1_recover_pubkey(hash.as_slice(), &signature_u8, 1)?;
-    let calculated_address = compress_public_key(&recovered_pubkey)?;
-    let recovered_address = public_key_to_address(&calculated_address, prefix)?;
-    if signer_address != recovered_address {
-        return Ok(false);
+    for i in 0u8..2u8 {
+        let recovered_pubkey =
+            deps.api
+                .secp256k1_recover_pubkey(hash.as_slice(), &signature_u8, i)?;
+        let calculated_address = compress_public_key(&recovered_pubkey)?;
+        let recovered_address = public_key_to_address(&calculated_address, prefix)?;
+        if signer_address == recovered_address {
+            return Ok(true);
+        }
     }
-    Ok(true)
+    Ok(false)
 }
 
 pub fn verify_terra(sender: String, signer: String) -> bool {

@@ -406,6 +406,44 @@ fn claim_eth() {
 
 #[cfg(feature = "cosmos")]
 #[test]
+fn is_claimed_cosmos() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: Some(1655360550i64),
+        prefix: Some("inj".to_string()),
+        claim_end_time: 1955870000u64,
+        fee_refund: Some(Uint128::new(1)),
+    };
+    let info = mock_info("addr0000", &[]);
+    let env = mock_env();
+    let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    let query_result = query(
+        deps.as_ref(),
+        mock_env(),
+        QueryMsg::IsClaimed {
+            address: "inj1mlv7s4rpyzakjq29mf78hnjczdez0s45fc8esh".to_string(),
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        from_binary::<IsClaimedResponse>(&query_result).unwrap(),
+        IsClaimedResponse { is_claimed: false }
+    );
+}
+
+#[cfg(feature = "cosmos")]
+#[test]
 fn claim_cosmos() {
     let mut deps = mock_dependencies();
 
