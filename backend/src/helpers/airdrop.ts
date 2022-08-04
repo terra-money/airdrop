@@ -11,6 +11,7 @@ export interface Allocation {
   amount2: string;
   amount3: string;
   amount4: string;
+  amount5: string;
 }
 
 export const EMPTY_ALLOCATION = {
@@ -20,6 +21,7 @@ export const EMPTY_ALLOCATION = {
   amount2: "0",
   amount3: "0",
   amount4: "0",
+  amount5: "0",
 };
 
 export class Airdrop {
@@ -27,7 +29,9 @@ export class Airdrop {
   private allocationMap: Map<string, Allocation>;
 
   constructor(allocations: Array<Allocation>) {
-    const cleanedAlloc = allocations.map(a => validateAndClean(a, AllocationValidation))
+    const cleanedAlloc = allocations.map((a) =>
+      validateAndClean(a, AllocationValidation)
+    );
     const leaves = cleanedAlloc.map(this.hashFromAllocation);
     this.allocationMap = new Map();
     for (const a of cleanedAlloc) {
@@ -94,6 +98,6 @@ export class Airdrop {
   }
 
   private static allocationToString(a: Allocation): string {
-    return `${a.address},${a.amount0},${a.amount1},${a.amount2},${a.amount3},${a.amount4}`;
+    return `${a.address},${a.amount0},${a.amount1},${a.amount2},${a.amount3},${a.amount4},${a.amount5}`;
   }
 }

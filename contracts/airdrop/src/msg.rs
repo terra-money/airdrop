@@ -1,3 +1,4 @@
+use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -5,7 +6,7 @@ use serde::{Deserialize, Serialize};
 pub struct InstantiateMsg {
     pub admin: String,
     pub denom: String,
-    pub vesting_periods: [i64; 4],
+    pub vesting_periods: [i64; 5],
     // Only used for cosmos chains (ex. terra)
     pub prefix: Option<String>,
     // Start time from when the vesting starts. If None, then it will start
@@ -14,6 +15,7 @@ pub struct InstantiateMsg {
     // End time of the airdrop event. Afterwhich funds will be sent back to
     // the community pool
     pub claim_end_time: u64,
+    pub fee_refund: Option<Uint128>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -21,6 +23,8 @@ pub struct InstantiateMsg {
 pub enum ExecuteMsg {
     UpdateConfig {
         admin: Option<String>,
+        fee_refund: Option<Uint128>,
+        enabled: Option<bool>,
     },
     UpdateMerkleRoot {
         merkle_root: String,
@@ -33,7 +37,6 @@ pub enum ExecuteMsg {
         proofs: Vec<String>,
         message: String,
         signature: String,
-        fee_refund: Option<String>,
     },
     End {},
 }
@@ -51,6 +54,8 @@ pub enum QueryMsg {
 pub struct ConfigResponse {
     pub admin: String,
     pub denom: String,
+    pub fee: Option<Uint128>,
+    pub enabled: bool,
 }
 
 // We define a custom struct for each query response

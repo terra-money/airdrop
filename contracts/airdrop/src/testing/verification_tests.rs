@@ -1,10 +1,6 @@
 use crate::verification::{verify_signature_cosmos, verify_signature_eth, verify_signature_solana};
-use cosmwasm_std::testing::{
-    mock_dependencies, mock_env, mock_info, MockApi, MockQuerier, MockStorage,
-};
-use cosmwasm_std::{
-    from_slice, Binary, OwnedDeps, RecoverPubkeyError, StdError, VerificationError,
-};
+use cosmwasm_std::testing::{mock_dependencies, MockApi, MockQuerier, MockStorage};
+use cosmwasm_std::OwnedDeps;
 
 fn setup() -> OwnedDeps<MockStorage, MockApi, MockQuerier> {
     mock_dependencies()
@@ -31,6 +27,7 @@ fn verify_wrong_eth_message() {
     let verified = verify_signature_eth(deps.as_ref(), message, signature, signer_address).unwrap();
     assert_eq!(verified, false);
 }
+
 #[test]
 fn verify_wrong_eth_signer() {
     let signer_address = "0x8898702932F9e10c696146AA8DC6dD0E6F524b87";
