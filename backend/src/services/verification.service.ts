@@ -9,8 +9,14 @@ export class VerificationService {
     this.verifiers = new Map();
     // Add list of verifiers
     this.verifiers.set("eth", new EthVerifier());
+    this.verifiers.set("bsc", new EthVerifier());
+    this.verifiers.set("avax", new EthVerifier());
+    this.verifiers.set("fantom", new EthVerifier());
+    this.verifiers.set("cronos", new EthVerifier());
+    this.verifiers.set("polygon", new EthVerifier());
     this.verifiers.set("terraclassic", new TerraVerifier());
     this.verifiers.set("kava", new KelprVerifier("kava"));
+    this.verifiers.set("injective", new KelprVerifier("inj"));
   }
 
   public verify(
