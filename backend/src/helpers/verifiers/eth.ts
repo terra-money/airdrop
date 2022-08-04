@@ -7,6 +7,6 @@ export class EthVerifier implements Verifier {
     const Account = Web3Account as any;
     const accounts = new Account("");
     const signingAddress = accounts.recover(message, signature);
-    return address === signingAddress;
+    return address.toLocaleLowerCase() === signingAddress.toLocaleLowerCase();
   }
 }
