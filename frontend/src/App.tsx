@@ -93,10 +93,9 @@ function App() {
                             onCheckAnotherWallet={handleCheckAnotherWallet}/> }
                 </CardContent>
 
-                <CardActions className={`AppActions ${state.airdropClaimedSuccessfully ? 'HiddenActions' : ''}`}>
+                <CardActions className={`AppActions ${state.airdropClaimedSuccessfully || activeStep === 0 ? 'HiddenActions' : ''}`}>
                     <Button startIcon={<ArrowBackIos />}
                         variant="outlined"
-                        disabled={activeStep === 0}
                         onClick={() => previousStep()}>
                         Back
                     </Button>
