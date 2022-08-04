@@ -4,16 +4,24 @@
     background-color: inherit !important;
     overflow-x: auto;
     overflow-y: hidden;
-    
-    .AppTitle {    
-        margin: 1.6em 2em 1.6em 0.8em;
-        font-size: 1.2em;
-    }
 
-    .AppLogo {
-        margin-left: 1em;
-        min-height: 32px;
-        min-width: 32px;
+    .AppLink {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+
+        .AppTitle {
+            margin: 1.6em 1.6em 1.6em 0.8em;
+            font-size: 1.2em;
+            min-width: 85px;
+        }
+
+        .AppLogo {
+            margin-left: 1em;
+            min-height: 32px;
+            min-width: 32px;
+        }
     }
 
     .StepperWrapper {
@@ -24,15 +32,18 @@
 
     @media only screen and (max-width: 500px) {
 
-        .AppTitle {
-            margin: 1em;
-            font-size: 1em;
-        }
+        .AppLink {
+            
+            .AppTitle {
+                margin: 1em;
+                font-size: 1em;
+            }
 
-        .AppLogo {
-            margin-left: 0.5em;
-            min-height: 20px;
-            min-width: 20px;
+            .AppLogo {
+                margin-left: 1em;
+                min-height: 24px;
+                min-width: 24px;
+            }
         }
 
         .StepperWrapper {

@@ -166,7 +166,16 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     </div>}
                 </>
                 : <div className="LoadingAllocation">
-                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Signing transaction to claim the airdrop</h4>} />
+                    <Loader bottomElement={
+                        <>
+                            <h4 className="ClaimAirdropTitle" style={{color: 'red'}}>
+                                Before you sign this transaction check 
+                                that you have custody of the address 
+                                to avoid loss of funds.
+                            </h4>
+                            <h4 className="ClaimAirdropTitle">{newTerraAddress}</h4>
+                        </>
+                    } />
                 </div>}
         </div>
     )
