@@ -27,8 +27,8 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
     const [claimResponse, setClaimResponse] = useState<ClaimAllocationResponse | null>(null);
     const [acceptedWarning, setAcceptedWarning] = useState<boolean>(false)
 
-    const { enqueueSnackbar } = useSnackbar();
-    const { signClaimAllocation, isNewValidAccount } = useWallets();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { signClaimAllocation, isNewValidAccount, getAddress } = useWallets();
     const { claimAllocation } = useAirdropApi();
 
     const onChangeAddress = (event: any) => {
@@ -83,9 +83,15 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     enqueueSnackbar("Something went wrong claiming the airdrop. Try again or check discord", { variant: "error" });
                 }
             }
-            catch (e) {
+            catch (e: any) {
                 console.log(e)
-                enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
+                // Happens when the user has switched wallets in Station, but we're using the previous account sequence.
+                if (e.toString().includes('account sequence mismatch')) {
+                    const address = await getAddress(wallet);
+                    enqueueSnackbar(<div style={{ maxWidth: '600px'}} onClick={() => closeSnackbar('wrong-address')}>Unable to submit claim, verify that your active Terra Station wallet address matches the address of the previously connected wallet:<br /><br />{address}</div>, { key: 'wrong-address', variant: "error", persist: true });
+                } else {
+                    enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
+                }
             }
         }
         setAcceptedWarning(false);
