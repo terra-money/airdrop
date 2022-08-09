@@ -38,7 +38,10 @@ export const ConnectWallet = (props: ConnectWalletType) => {
   // Imperative way to detect if station is connected
   useEffect(() => {
     if (connectedWallet && wallet && chain) {
-      onWalletConnected(wallet, chain);
+      // Only proceed if user is attempting claim on Terra.
+      if (['station', 'stationmobile'].includes(wallet.id)) {
+        onWalletConnected(wallet, chain);
+      }
     }
   }, [connectedWallet, wallet, chain, onWalletConnected]);
 
