@@ -16,7 +16,7 @@ export const AppHeader = (props: AppHeaderType) => {
         <AppBar position="fixed" className='AppHeader'>
             <a href='/' className='AppLink'>
                 <div className='AppLogo logo terra'/>
-                <h3 className='AppTitle'>Terra Airdrop</h3>
+                <h3 className='AppTitle'>Terra Phoenix Airdrop</h3>
             </a>
 
             <Stepper className='StepperWrapper' activeStep={activeStep}>
