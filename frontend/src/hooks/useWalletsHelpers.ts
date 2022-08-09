@@ -46,7 +46,7 @@ const useWalletsHelpers = () => {
             chainId: "injective-1",
             chainName: "Injective",
             bip44: {
-                coinType: 60,
+                coinType: 330,
             },
             bech32Config: Bech32Address.defaultBech32Config("inj"),
             currencies: [{
