@@ -123,7 +123,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Check Terra 2 Discord for help
+                  Check Terra Discord for help
                 </a>
                 <div className="icon external-link"></div>
               </h4>

@@ -104,7 +104,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 ? <>{claimResponse === null
                     ? <div className="ClaimForm">
                         <h4 className="ClaimAirdropTitle">
-                            Enter a Terra 2 address where you'd like to receive your airdrop. This address must be for a new wallet (without previous transactions).
+                            Enter a Terra address where you'd like to receive your airdrop. This address must be for a new wallet (without previous transactions).
                         </h4>
                         <FormControlLabel
                             label={<h4>I verify this is a new wallet address with no transaction history</h4>}
@@ -112,7 +112,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         />
                         <TextField className="ClaimAddressInput"
                             value={newTerraAddress}
-                            label="New Terra 2 address"
+                            label="New Terra address"
                             disabled={!acceptedWarning}
                             onChange={onChangeAddress}
                             variant="outlined"
@@ -163,7 +163,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                     <a href="https://discord.com/invite/sTmERSFnYW"
                                         target="_blank"
                                         rel="noreferrer">
-                                        Check Terra 2 Discord for help
+                                        Check Terra Discord for help
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>
