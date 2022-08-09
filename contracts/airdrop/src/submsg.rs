@@ -24,24 +24,38 @@ pub fn create_fund_community_pool_response(
 
 pub fn create_claim_response(
     env: Env,
+    sender: String,
     denom: String,
     claimer: String,
     recipient: String,
     vested: u128,
     periods: Vec<(i64, String)>,
     start_time: Option<i64>,
+    refund_amount: Uint128,
 ) -> StdResult<Response> {
-    create_vesting_account(env, denom, claimer, recipient, vested, periods, start_time)
+    create_vesting_account(
+        env,
+        sender,
+        denom,
+        claimer,
+        recipient,
+        vested,
+        periods,
+        start_time,
+        refund_amount,
+    )
 }
 
 pub fn create_vesting_account(
     env: Env,
+    sender: String,
     denom: String,
     claimer: String,
     recipient: String,
     vested: u128,
     periods: Vec<(i64, String)>,
     start_time: Option<i64>,
+    refund_amount: Uint128,
 ) -> StdResult<Response> {
     let mut msg = MsgCreatePeriodicVestingAccount::new();
     msg.from_address = env.contract.address.to_string();
@@ -67,34 +81,30 @@ pub fn create_vesting_account(
         })
         .collect::<Vec<Period>>();
     let bytes = Message::write_to_bytes(&msg).unwrap();
-    match total_vesting {
-        0 => Ok(Response::new()
-            .add_message(CosmosMsg::Bank(BankMsg::Send {
-                to_address: recipient.clone(),
-                amount: coins(vested, denom.clone()),
-            }))
-            .add_attributes(vec![
-                ("action", "claim"),
-                ("address", &claimer.to_string()),
-                ("new_address", &recipient.to_string()),
-                ("vested", &vested.to_string()),
-                ("vesting", &total_vesting.to_string()),
-            ])),
-        _ => Ok(Response::new()
-            .add_message(CosmosMsg::Stargate {
-                type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
-                value: Binary(bytes),
-            })
-            .add_message(CosmosMsg::Bank(BankMsg::Send {
-                to_address: recipient.clone(),
-                amount: coins(vested, denom.clone()),
-            }))
-            .add_attributes(vec![
-                ("action", "claim"),
-                ("address", &claimer.to_string()),
-                ("new_address", &recipient.to_string()),
-                ("vested", &vested.to_string()),
-                ("vesting", &total_vesting.to_string()),
-            ])),
+    let mut msgs: Vec<CosmosMsg> = vec![];
+    if vested > 0 {
+        msgs.push(CosmosMsg::Bank(BankMsg::Send {
+            to_address: recipient.clone(),
+            amount: coins(vested, denom.clone()),
+        }))
     }
+    if total_vesting > 0 {
+        msgs.push(CosmosMsg::Stargate {
+            type_url: "/cosmos.vesting.v1beta1.MsgCreatePeriodicVestingAccount".to_string(),
+            value: Binary(bytes),
+        });
+    }
+    if !refund_amount.is_zero() {
+        msgs.push(CosmosMsg::Bank(BankMsg::Send {
+            to_address: sender.clone(),
+            amount: coins(refund_amount.u128(), denom.clone()),
+        }));
+    }
+    Ok(Response::new().add_messages(msgs).add_attributes(vec![
+        ("action", "claim"),
+        ("address", &claimer.to_string()),
+        ("new_address", &recipient.to_string()),
+        ("vested", &vested.to_string()),
+        ("vesting", &total_vesting.to_string()),
+    ]))
 }

@@ -27,8 +27,8 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
     const [claimResponse, setClaimResponse] = useState<ClaimAllocationResponse | null>(null);
     const [acceptedWarning, setAcceptedWarning] = useState<boolean>(false)
 
-    const { enqueueSnackbar } = useSnackbar();
-    const { signClaimAllocation, isNewValidAccount } = useWallets();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { signClaimAllocation, isNewValidAccount, getAddress } = useWallets();
     const { claimAllocation } = useAirdropApi();
 
     const onChangeAddress = (event: any) => {
@@ -83,9 +83,15 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     enqueueSnackbar("Something went wrong claiming the airdrop. Try again or check discord", { variant: "error" });
                 }
             }
-            catch (e) {
+            catch (e: any) {
                 console.log(e)
-                enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
+                // Happens when the user has switched wallets in Station, but we're using the previous account sequence.
+                if (e.toString().includes('account sequence mismatch')) {
+                    const address = await getAddress(wallet);
+                    enqueueSnackbar(<div style={{ maxWidth: '600px'}} onClick={() => closeSnackbar('wrong-address')}>Unable to submit claim, verify that your active Terra Station wallet address matches the address of the previously connected wallet:<br /><br />{address}</div>, { key: 'wrong-address', variant: "error", persist: true });
+                } else {
+                    enqueueSnackbar("Something went wrong signing the transaction. Try again or check discord", { variant: "error" });
+                }
             }
         }
         setAcceptedWarning(false);
@@ -98,7 +104,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 ? <>{claimResponse === null
                     ? <div className="ClaimForm">
                         <h4 className="ClaimAirdropTitle">
-                            Enter a Terra 2 address where you'd like to receive your airdrop. This address must be for a new wallet (without previous transactions).
+                            Enter a Terra address where you'd like to receive your airdrop. This address must be for a new wallet (without previous transactions).
                         </h4>
                         <FormControlLabel
                             label={<h4>I verify this is a new wallet address with no transaction history</h4>}
@@ -106,7 +112,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         />
                         <TextField className="ClaimAddressInput"
                             value={newTerraAddress}
-                            label="New Terra 2 address"
+                            label="New Terra address"
                             disabled={!acceptedWarning}
                             onChange={onChangeAddress}
                             variant="outlined"
@@ -157,7 +163,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                                     <a href="https://discord.com/invite/sTmERSFnYW"
                                         target="_blank"
                                         rel="noreferrer">
-                                        Check Terra 2 Discord for help
+                                        Check Terra Discord for help
                                     </a>
                                     <div className="icon external-link"></div>
                                 </h3>
@@ -166,7 +172,16 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                     </div>}
                 </>
                 : <div className="LoadingAllocation">
-                    <Loader bottomElement={<h4 className="ClaimAirdropTitle">Signing transaction to claim the airdrop</h4>} />
+                    <Loader bottomElement={
+                        <>
+                            <h4 className="ClaimAirdropTitle" style={{color: 'red'}}>
+                                Before you sign this transaction check 
+                                that you have custody of the address 
+                                to avoid loss of funds.
+                            </h4>
+                            <h4 className="ClaimAirdropTitle">{newTerraAddress}</h4>
+                        </>
+                    } />
                 </div>}
         </div>
     )

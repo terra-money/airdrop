@@ -19,6 +19,7 @@ export const AllocationValidation = Joi.object({
   amount2: Joi.string().default("0"),
   amount3: Joi.string().default("0"),
   amount4: Joi.string().default("0"),
+  amount5: Joi.string().default("0"),
 });
 
 export const validateAndClean = <T>(obj: T, schema: Joi.Schema): T => {

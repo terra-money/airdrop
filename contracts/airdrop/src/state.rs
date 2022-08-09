@@ -1,3 +1,4 @@
+use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -9,8 +10,10 @@ pub struct Config {
     pub denom: String,
     pub prefix: Option<String>,
     pub start_time: Option<i64>,
-    pub vesting_periods: [i64; 4],
+    pub vesting_periods: [i64; 5],
     pub claim_end_time: u64,
+    pub fee_refund: Option<Uint128>,
+    pub enabled: bool,
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");

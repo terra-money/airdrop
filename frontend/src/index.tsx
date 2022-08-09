@@ -28,8 +28,8 @@ getChainOptions().then((chainOptions) => {
         <React.StrictMode>
             <ThemeProvider theme={darkTheme}>
                 <SnackbarProvider
-                    autoHideDuration={2000}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right'}}>
+                    autoHideDuration={5000}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center'}}>
                     <MetaMaskProvider>
                         <WalletProvider {...chainOptions}>
                             <BrowserRouter>

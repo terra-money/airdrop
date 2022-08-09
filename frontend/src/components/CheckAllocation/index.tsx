@@ -78,7 +78,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
             <>
               <DoneAllIcon className="AllocationIcon success" />
               <h5>The corresponding airdrop of</h5>
-              <h4>{allocationResponse.allocation} LUNA</h4>
+              <h4>{parseAllocationRow(allocationResponse)}</h4>
               <h5>was already processed for address</h5>
               <h4>{address}</h4>
             </>
@@ -123,7 +123,7 @@ export const CheckAllocation = (props: CheckAllocationType) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Check Terra 2 Discord for help
+                  Check Terra Discord for help
                 </a>
                 <div className="icon external-link"></div>
               </h4>

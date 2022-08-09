@@ -11,7 +11,7 @@ export class MainController {
     private airdropService: AirdropService,
     private verificationService: VerificationService,
     private claimService: ClaimService
-  ) { }
+  ) {}
 
   public registerRoutes(app: Application) {
     app.get("/healthcheck", this.healthCheck.bind(this));
@@ -27,9 +27,9 @@ export class MainController {
   }
 
   private getConfig(_req: Request, res: Response) {
-    const blackListedKeys = ["mnemonic"]
+    const blackListedKeys = ["mnemonic"];
     const config = {
-      ...Config
+      ...Config,
     } as any;
     for (let k of blackListedKeys) {
       delete config[k];
@@ -130,10 +130,11 @@ export class MainController {
     const response: Record<string, any> = {
       allocation: String(
         parseInt(allocation.amount0) +
-        parseInt(allocation.amount1) +
-        parseInt(allocation.amount2) +
-        parseInt(allocation.amount3) +
-        parseInt(allocation.amount4)
+          parseInt(allocation.amount1) +
+          parseInt(allocation.amount2) +
+          parseInt(allocation.amount3) +
+          parseInt(allocation.amount4) +
+          parseInt(allocation.amount5)
       ),
       has_claimed: isClaimed,
       chain,

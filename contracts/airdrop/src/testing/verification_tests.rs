@@ -1,10 +1,6 @@
 use crate::verification::{verify_signature_cosmos, verify_signature_eth, verify_signature_solana};
-use cosmwasm_std::testing::{
-    mock_dependencies, mock_env, mock_info, MockApi, MockQuerier, MockStorage,
-};
-use cosmwasm_std::{
-    from_slice, Binary, OwnedDeps, RecoverPubkeyError, StdError, VerificationError,
-};
+use cosmwasm_std::testing::{mock_dependencies, MockApi, MockQuerier, MockStorage};
+use cosmwasm_std::OwnedDeps;
 
 fn setup() -> OwnedDeps<MockStorage, MockApi, MockQuerier> {
     mock_dependencies()
@@ -12,9 +8,9 @@ fn setup() -> OwnedDeps<MockStorage, MockApi, MockQuerier> {
 
 #[test]
 fn verify_correct_eth_signature() {
-    let signer_address = "0x78864CE3E53A439ae0A8e15622aA0d21675ad4Cd";
-    let message = "terra1lxc6c5rnvcfx94x2ejarsr55cmcec6apklkdpw";
-    let signature = "93a37e1a568cdcba6454e24cc8f31a57e8d947b147adf4c16ff67c4c12112c0700adf75abbfa00f5bfbf8d5057cdaf0b6ca11572c4d3a1064b5e967a5b39e53f1c";
+    let signer_address = "0x08ac9f754d73fcd3cf7b0fad738668d3474c5040";
+    let message = "terra1352nvukmex9ax4c329cp7ln9jfgjf0z7whvfca";
+    let signature = "91057d9ea8fe7dc18a54ebd0c397772595f3884d533f68678f292cde896d4cb75f8c64004accaed85b0e7adceebf722cd12ea7590666923058d296154cb5bb791b";
 
     let deps = setup();
     let verified = verify_signature_eth(deps.as_ref(), message, signature, signer_address).unwrap();
@@ -31,6 +27,7 @@ fn verify_wrong_eth_message() {
     let verified = verify_signature_eth(deps.as_ref(), message, signature, signer_address).unwrap();
     assert_eq!(verified, false);
 }
+
 #[test]
 fn verify_wrong_eth_signer() {
     let signer_address = "0x8898702932F9e10c696146AA8DC6dD0E6F524b87";
@@ -83,6 +80,15 @@ fn verify_correct_cosmos_signer() {
     let signer_address = "kava1xy25akmlyu2qexzpy62h6c67lnf8tap74wsa2d";
     let message = "terra1jq3dg9ggzqngp3hhjzr8tug6h8q35e5p63y7ae";
     let signature = "4b26d9728140e5ce720b045e02b5cec7beca4d2efe511b30cd35ae6eada02cf9011a58600deda9d03c1dd1369df5e356a9c62b114042285d32ec984369aeb1cd";
+
+    let deps = setup();
+    let verified =
+        verify_signature_cosmos(deps.as_ref(), message, signature, signer_address, "kava").unwrap();
+    assert_eq!(verified, true);
+
+    let signer_address = "kava1myp8uav2hazdw79ldvruc96wcdf74dekva9qqu";
+    let message = "terra1jh4th9u5zk4wa38wgtmxjmpsvwnsjevjqaz8h9";
+    let signature = "fca7363243143ad4b0350beb18bdf1c9bba6ebb5667892e652197e5f3bd0b4646b4ea3d6856bf35dcba919b6f96557541fe9ab78858d5790ac363b51ac6cec06";
 
     let deps = setup();
     let verified =

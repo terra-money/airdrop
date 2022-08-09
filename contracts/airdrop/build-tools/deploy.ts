@@ -47,7 +47,7 @@ const init = async () => {
     {
       admin: wallet.key.accAddress,
       denom: "uluna",
-      vesting_periods: [15552000, 46656000, 15552000, 62208000],
+      vesting_periods: [15552000, 15552000, 46656000, 15552000, 62208000],
       start_time: 1669269600, // genesis + 6 months
       prefix: "kava",
       claim_end_time: 1655870000,
