@@ -14,9 +14,9 @@ export class VerificationService {
     this.verifiers.set("fantom", new EthVerifier());
     this.verifiers.set("cronos", new EthVerifier());
     this.verifiers.set("polygon", new EthVerifier());
+    this.verifiers.set("injective", new EthVerifier());
     this.verifiers.set("terraclassic", new TerraVerifier());
     this.verifiers.set("kava", new KelprVerifier("kava"));
-    this.verifiers.set("injective", new KelprVerifier("inj"));
   }
 
   public verify(

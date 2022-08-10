@@ -29,12 +29,6 @@
         "icon": "keplr",
         "chains": [
             {
-                "id": "injective",
-                "name": "Injective Network",
-                "keplrChainId" : "injective-1",
-                "icon": "injective"
-            },
-            {
                 "id": "kava",
                 "name": "Kava",
                 "keplrChainId" : "kava_2222-10",
@@ -71,6 +65,11 @@
                 "id": "fantom",
                 "name": "Fantom",
                 "icon": "fantom"
+            },
+            {
+                "id": "injective",
+                "name": "Injective Network",
+                "icon": "injective"
             }
         ]
     }
