@@ -95,7 +95,7 @@ pub fn update_config(
     }
 
     if let Some(admin) = admin {
-        config.admin = admin;
+        config.admin = deps.api.addr_validate(&admin)?.to_string();
     }
     if let Some(fee_refund) = fee_refund {
         config.fee_refund = Some(fee_refund);

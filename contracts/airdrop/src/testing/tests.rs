@@ -156,6 +156,44 @@ fn update_config() {
 }
 
 #[test]
+fn update_invalid_config() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: None,
+        prefix: None,
+        claim_end_time: 1955870000u64,
+        fee_refund: None,
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::UpdateConfig {
+        admin: Some("".to_string()),
+        fee_refund: Some(Uint128::new(10000)),
+        enabled: None,
+    };
+
+    assert_eq!(
+        execute(deps.as_mut(), mock_env(), info, msg),
+        Err(StdError::generic_err(
+            "Invalid input: human address too short"
+        ))
+    );
+}
+
+#[test]
 fn disable_airdrop_contract() {
     let mut deps = mock_dependencies();
 
