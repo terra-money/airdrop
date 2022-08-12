@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "11.9.0",
     "@emotion/styled": "11.8.1",
-    "@keplr-wallet/cosmos": "0.10.5",
+    "@keplr-wallet/cosmos": "0.10.16",
     "@mui/icons-material": "5.8.2",
     "@mui/material": "5.8.2",
     "@solana/web3.js": "1.43.6",
