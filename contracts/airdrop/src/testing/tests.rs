@@ -429,6 +429,57 @@ fn claim_eth() {
     }
 }
 
+#[cfg(feature = "eth")]
+#[test]
+fn claim_eth_incorrect_signature() {
+    let mut deps = mock_dependencies();
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: None,
+        prefix: None,
+        claim_end_time: 1955870000u64,
+        fee_refund: Some(Uint128::new(100)),
+    };
+
+    let info = mock_info("addr0000", &[]);
+    let env = mock_env();
+    let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    // Register merkle roots
+    let info = mock_info("admin0000", &[]);
+    let msg = ExecuteMsg::RegisterMerkleRoot {
+        merkle_root: "aef38d9db282ffdcf070ea04c771442f64e6a93d93aa9dd0f2a25a52ea57e48d".to_string(),
+    };
+    let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+    let msg = ExecuteMsg::Claim {
+        allocation: "0x78864ce3e53a439ae0a8e15622aa0d21675ad4cd,0,1000,12000,0,100000,0".to_string(),
+        proofs: vec![
+            "cbcae9860f77d0d6a3ba13892c8de9daf7a5505878fd35a4f82ce161bdbf4ae8".to_string(),
+            "47e6a6ada4d2a53b6b78835a73d194758694968e9f17be7260acf3f12dee1d42".to_string(),
+            "e677d3688a7cc4aaedc4c49aa510f8a1b01553f02b4524bbf79bc3cef6ac47ea".to_string(),
+        ],
+        message: "terra1gtf24wp9fvpupaykl6sskkc6mw8c5l4wny5fhk".to_string(),
+        // original: cac2f150692e11a108ff05a75f364d245cf7e322cdc847555cdada5b3ba7dfc7200f37110b48752e6813b2f02361e26edf3e129ba7930ab60b996daa6f7dd9b11c
+        signature: "cac2f150692e11a108ff05a75f364d245cf1e322cdc847555cdada5b3ba7dfc7200f37110b48752e6813b2f02361e26edf3e129ba7930ab60b996daa6f7dd9b11c".to_string(),
+    };
+
+    let info = mock_info("terra1qfqa2eu9wp272ha93lj4yhcenrc6ymng079nu8", &[]);
+    assert_eq!(
+        execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()),
+        Err(StdError::generic_err("signature verification error"))
+    )
+}
+
 #[cfg(feature = "cosmos")]
 #[test]
 fn is_claimed_cosmos() {
@@ -891,7 +942,7 @@ fn claim_terra_fail() {
     let info = mock_info("terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtaps8", &[]);
     let res = execute(deps.as_mut(), mock_env(), info.clone(), msg.clone());
     match res {
-        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signature verification error. Expected: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtaps8 Received: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"),
+        Err(StdError::GenericErr { msg, .. }) => assert_eq!(msg, "signer address does not match claim. Expected: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtaps8 Received: terra1dcegyrekltswvyy0xy69ydgxn9x8x32zdtapd8"),
         _ => panic!("DO NOT ENTER HERE"),
     }
 

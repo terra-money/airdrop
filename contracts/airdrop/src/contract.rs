@@ -29,13 +29,6 @@ pub fn instantiate(
             return Err(StdError::generic_err("start_time must be greater than 0"));
         }
     }
-    if let claim_end_time = msg.claim_end_time {
-        if claim_end_time < 0 {
-            return Err(StdError::generic_err(
-                "claim_end_time must be greater than 0",
-            ));
-        }
-    }
 
     for periods in msg.vesting_periods {
         if periods < 0 {
@@ -164,20 +157,13 @@ pub fn claim(
     }
 
     // Verify signature
-    let (verified, verified_terra_address) = verify_signature(
+    let verified_terra_address = verify_signature(
         deps.as_ref(),
         String::from(&info.sender),
         new_terra_address,
         signature,
         signer.clone(),
     )?;
-    if !verified {
-        return Err(StdError::generic_err(&format!(
-            "signature verification error. Expected: {} Received: {}",
-            info.sender.into_string(),
-            signer
-        )));
-    };
 
     // Parse vested component from claim string
     let amount0 = values
