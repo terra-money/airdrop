@@ -46,6 +46,54 @@ fn proper_instantiate() {
 }
 
 #[test]
+fn invalid_instantiation() {
+    let mut deps = mock_dependencies();
+    let info = mock_info("addr0000", &[]);
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            -15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: None,
+        prefix: None,
+        claim_end_time: 1955870000u64,
+        fee_refund: None,
+    };
+
+    assert_eq!(
+        instantiate(deps.as_mut(), mock_env(), info.clone(), msg),
+        Err(StdError::generic_err("periods must be greater than 0"))
+    );
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: Some(-15552000i64),
+        prefix: None,
+        claim_end_time: 1955870000u64,
+        fee_refund: None,
+    };
+
+    assert_eq!(
+        instantiate(deps.as_mut(), mock_env(), info.clone(), msg),
+        Err(StdError::generic_err("start_time must be greater than 0"))
+    );
+}
+
+#[test]
 fn update_config() {
     let mut deps = mock_dependencies();
 

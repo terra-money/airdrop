@@ -24,6 +24,25 @@ pub fn instantiate(
     _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> StdResult<Response> {
+    if let Some(start_time) = msg.start_time {
+        if start_time < 0 {
+            return Err(StdError::generic_err("start_time must be greater than 0"));
+        }
+    }
+    if let claim_end_time = msg.claim_end_time {
+        if claim_end_time < 0 {
+            return Err(StdError::generic_err(
+                "claim_end_time must be greater than 0",
+            ));
+        }
+    }
+
+    for periods in msg.vesting_periods {
+        if periods < 0 {
+            return Err(StdError::generic_err("periods must be greater than 0"));
+        }
+    }
+
     CONFIG.save(
         deps.storage,
         &Config {
