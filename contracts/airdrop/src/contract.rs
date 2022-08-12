@@ -68,9 +68,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             fee_refund,
             enabled,
         } => update_config(deps, env, info, admin, fee_refund, enabled),
-        ExecuteMsg::UpdateMerkleRoot { merkle_root } => {
-            update_merkle_root(deps, env, info, merkle_root)
-        }
         ExecuteMsg::RegisterMerkleRoot { merkle_root } => {
             register_merkle_root(deps, env, info, merkle_root)
         }
@@ -82,25 +79,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
         } => claim(deps, env, info, allocation, proofs, message, signature),
         ExecuteMsg::End {} => end_airdrop(deps, env, info),
     }
-}
-
-pub fn update_merkle_root(
-    deps: DepsMut,
-    _env: Env,
-    info: MessageInfo,
-    merkle_root: String,
-) -> StdResult<Response> {
-    let config: Config = CONFIG.load(deps.storage)?;
-    if info.sender != config.admin {
-        return Err(StdError::generic_err("unauthorized"));
-    }
-
-    MERKLE_ROOT.save(deps.storage, &merkle_root)?;
-
-    Ok(Response::new().add_attributes(vec![
-        ("action", "update_merkle_root"),
-        ("merkle_root", &merkle_root),
-    ]))
 }
 
 pub fn update_config(

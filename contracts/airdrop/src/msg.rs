@@ -26,9 +26,6 @@ pub enum ExecuteMsg {
         fee_refund: Option<Uint128>,
         enabled: Option<bool>,
     },
-    UpdateMerkleRoot {
-        merkle_root: String,
-    },
     RegisterMerkleRoot {
         merkle_root: String,
     },

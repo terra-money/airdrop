@@ -267,67 +267,6 @@ fn register_merkle_root() {
     );
 }
 
-#[test]
-fn update_merkle_root() {
-    let mut deps = mock_dependencies();
-
-    let msg = InstantiateMsg {
-        admin: "admin0000".to_string(),
-        denom: "uluna".to_string(),
-        vesting_periods: [
-            15552000i64,
-            15552000i64,
-            46656000i64,
-            15552000i64,
-            62208000i64,
-        ],
-        start_time: None,
-        prefix: None,
-        claim_end_time: 1955870000u64,
-        fee_refund: None,
-    };
-
-    let info = mock_info("addr0000", &[]);
-    let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
-
-    // register new merkle root
-    let info = mock_info("admin0000", &[]);
-    let msg = ExecuteMsg::RegisterMerkleRoot {
-        merkle_root: "634de21cde1044f41d90373733b0f0fb1c1c71f9652b905cdf159e73c4cf0d37".to_string(),
-    };
-
-    let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
-    assert_eq!(
-        res.attributes,
-        vec![
-            attr("action", "register_merkle_root"),
-            attr(
-                "merkle_root",
-                "634de21cde1044f41d90373733b0f0fb1c1c71f9652b905cdf159e73c4cf0d37"
-            )
-        ]
-    );
-
-    // register new merkle root
-    let info = mock_info("admin0000", &[]);
-    let msg = ExecuteMsg::UpdateMerkleRoot {
-        merkle_root: "12345678".to_string(),
-    };
-
-    let res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
-    assert_eq!(
-        res.attributes,
-        vec![
-            attr("action", "update_merkle_root"),
-            attr("merkle_root", "12345678")
-        ]
-    );
-
-    let res = query(deps.as_ref(), mock_env(), QueryMsg::MerkleRoot {}).unwrap();
-    let merkle_root: MerkleRootResponse = from_binary(&res).unwrap();
-    assert_eq!("12345678".to_string(), merkle_root.merkle_root);
-}
-
 #[cfg(feature = "eth")]
 #[test]
 fn claim_eth() {
