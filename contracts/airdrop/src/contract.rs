@@ -24,6 +24,18 @@ pub fn instantiate(
     _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> StdResult<Response> {
+    if let Some(start_time) = msg.start_time {
+        if start_time < 0 {
+            return Err(StdError::generic_err("start_time must be greater than 0"));
+        }
+    }
+
+    for periods in msg.vesting_periods {
+        if periods < 0 {
+            return Err(StdError::generic_err("periods must be greater than 0"));
+        }
+    }
+
     CONFIG.save(
         deps.storage,
         &Config {
@@ -49,9 +61,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
             fee_refund,
             enabled,
         } => update_config(deps, env, info, admin, fee_refund, enabled),
-        ExecuteMsg::UpdateMerkleRoot { merkle_root } => {
-            update_merkle_root(deps, env, info, merkle_root)
-        }
         ExecuteMsg::RegisterMerkleRoot { merkle_root } => {
             register_merkle_root(deps, env, info, merkle_root)
         }
@@ -63,25 +72,6 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> S
         } => claim(deps, env, info, allocation, proofs, message, signature),
         ExecuteMsg::End {} => end_airdrop(deps, env, info),
     }
-}
-
-pub fn update_merkle_root(
-    deps: DepsMut,
-    _env: Env,
-    info: MessageInfo,
-    merkle_root: String,
-) -> StdResult<Response> {
-    let config: Config = CONFIG.load(deps.storage)?;
-    if info.sender != config.admin {
-        return Err(StdError::generic_err("unauthorized"));
-    }
-
-    MERKLE_ROOT.save(deps.storage, &merkle_root)?;
-
-    Ok(Response::new().add_attributes(vec![
-        ("action", "update_merkle_root"),
-        ("merkle_root", &merkle_root),
-    ]))
 }
 
 pub fn update_config(
@@ -98,7 +88,7 @@ pub fn update_config(
     }
 
     if let Some(admin) = admin {
-        config.admin = admin;
+        config.admin = deps.api.addr_validate(&admin)?.to_string();
     }
     if let Some(fee_refund) = fee_refund {
         config.fee_refund = Some(fee_refund);
@@ -167,20 +157,13 @@ pub fn claim(
     }
 
     // Verify signature
-    let (verified, verified_terra_address) = verify_signature(
+    let verified_terra_address = verify_signature(
         deps.as_ref(),
         String::from(&info.sender),
         new_terra_address,
         signature,
         signer.clone(),
     )?;
-    if !verified {
-        return Err(StdError::generic_err(&format!(
-            "signature verification error. Expected: {} Received: {}",
-            info.sender.into_string(),
-            signer
-        )));
-    };
 
     // Parse vested component from claim string
     let amount0 = values
