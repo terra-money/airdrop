@@ -94,7 +94,6 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                 }
             }
         }
-        setAcceptedWarning(false);
         setLoading(false);
     };
 
@@ -108,7 +107,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                         </h4>
                         <FormControlLabel
                             label={<h4>I verify this is a new wallet address with no transaction history</h4>}
-                            control={<Checkbox onChange={onChangeWarning}/>}
+                            control={<Checkbox onChange={onChangeWarning} checked={acceptedWarning}/>}
                         />
                         <TextField className="ClaimAddressInput"
                             value={newTerraAddress}
@@ -132,7 +131,7 @@ export const ClaimAirdrop = (props: ClaimAirdropType) => {
                             </Alert>
                         </>}
                         <Button
-                            disabled={!newTerraAddress || isValidAccount === false }
+                            disabled={!newTerraAddress || isValidAccount === false}
                             variant="contained"
                             onClick={() => onSignTransaction()}>
                             Sign transaction and claim airdrop

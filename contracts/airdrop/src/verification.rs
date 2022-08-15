@@ -16,9 +16,14 @@ pub fn verify_signature(
     message: String,
     signature: String,
     signer_address: String,
-) -> StdResult<(bool, String)> {
+) -> StdResult<String> {
     let verified = verify_signature_eth(deps, &message, &signature, &signer_address)?;
-    Ok((verified, message))
+    if !verified {
+        return Err(StdError::generic_err(&format!(
+            "signature verification error",
+        )));
+    }
+    Ok(message)
 }
 
 #[cfg(feature = "solana")]
@@ -28,9 +33,14 @@ pub fn verify_signature(
     message: String,
     signature: String,
     signer_address: String,
-) -> StdResult<(bool, String)> {
+) -> StdResult<String> {
     let verified = verify_signature_solana(deps, &message, &signature, &signer_address)?;
-    Ok((verified, message))
+    if !verified {
+        return Err(StdError::generic_err(&format!(
+            "signature verification error",
+        )));
+    }
+    Ok(message)
 }
 
 #[cfg(feature = "terra")]
@@ -40,10 +50,16 @@ pub fn verify_signature(
     message: String,
     _signature: String,
     signer_address: String,
-) -> StdResult<(bool, String)> {
+) -> StdResult<String> {
     // No signature for terra
-    let verified = verify_terra(sender, signer_address);
-    Ok((verified, message))
+    let verified = verify_terra(sender.clone(), signer_address.clone());
+    if !verified {
+        return Err(StdError::generic_err(&format!(
+            "signer address does not match claim. Expected: {} Received: {}",
+            sender, signer_address
+        )));
+    }
+    Ok(message)
 }
 
 #[cfg(feature = "cosmos")]
@@ -53,14 +69,19 @@ pub fn verify_signature(
     message: String,
     signature: String,
     signer_address: String,
-) -> StdResult<(bool, String)> {
+) -> StdResult<String> {
     let config = CONFIG.load(deps.storage)?;
     let prefix: String = match config.prefix {
         Some(p) => Ok(p),
         None => Err(StdError::generic_err("prefix missing for cosmos airdrop")),
     }?;
     let verified = verify_signature_cosmos(deps, &message, &signature, &signer_address, &prefix)?;
-    Ok((verified, message))
+    if !verified {
+        return Err(StdError::generic_err(&format!(
+            "signature verification error",
+        )));
+    }
+    Ok(message)
 }
 
 #[inline]

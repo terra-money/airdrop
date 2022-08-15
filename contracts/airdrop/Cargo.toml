@@ -3,7 +3,7 @@ name = "airdrop"
 version = "0.0.0"
 authors = ["Terraform Labs, PTE."]
 edition = "2018"
-description = "A Airdrop contract for Terra 2.0 - allow users to claim rewards with Merkle Tree based proof"
+description = "Airdrop contract for Terra Phoenix - allow users to claim rewards with Merkle Tree based proof"
 license = "Apache-2.0"
 
 exclude = [
