@@ -1,10 +1,129 @@
+<% if (process.env.REACT_APP_IS_IT_ALIVE === "FALSE") { %>
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terra Airdrop</title>
+    <link
+      href="https://assets.website-files.com/611153e7af981472d8da199c/6291aaf97d502b85e8c4797d_01_Tarra_color.png"
+      rel="shortcut icon"
+      type="image/x-icon"
+    />
+    <style>
+      @font-face {
+        font-family: 'Gotham book';
+        src: url('https://assets.website-files.com/611153e7af981472d8da199c/618d13b9edde405c59e4bb52_Gotham-Book_Web.woff')
+          format('woff');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
 
-<head>
+      body {
+        display: grid;
+        grid-template-rows: 1fr auto;
+        font-size: 14px;
+        margin: 0;
+        font-family: 'Gotham book', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: radial-gradient(ellipse at bottom, #0a2549 0, #02041a 100%);
+        color: #dbdbdb;
+        min-height: 100vh;
+      }
+
+      .Content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .Content h1 {
+          text-align: center;
+      }
+        
+      .Content button {
+        color: #dbdbdb;
+        display: inline-flex;
+        box-sizing: border-box;
+        outline: 0px;
+        border: 0px;
+        margin: 0px;
+        cursor: pointer;
+        user-select: none;
+        vertical-align: middle;
+        appearance: none;
+        text-decoration: none;
+        font-family: Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.75;
+        letter-spacing: 0.02857em;
+        text-transform: uppercase;
+        min-width: 64px;
+        padding: 6px 16px;
+        border-radius: 4px;
+        transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+          box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+          border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+          color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+        color: rgb(255, 255, 255);
+        background-color: rgb(43, 50, 178);
+        box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px,
+          rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px;
+      }
+
+      .Content a{
+          color: inherit;
+          text-decoration: none;
+      }
+
+      .Footer {
+        margin: 2em;
+      }
+
+      .Footer a {
+        color: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="Content">
+        <h1>Airdrop Discussion in Progress</h1>
+        <a href="https://agora.terra.money" target="_blank">
+        <button>Join Agora Discussion</button></a>
+    </div>
+
+    <div class="Footer">
+      <b>Disclaimer:</b>
+      <span
+        >TFL is providing support to the community through the provision of
+        indexing services to support the airdrop, as outlined in the
+      </span>
+      <a
+        href="https://classic-agora.terra.money/t/terra-ecosystem-revival-plan-2-passed-gov/18498"
+        target="_blank"
+        >Governance Proposal 1623 on Terra Classic.</a
+      >
+      TFL is contributing as part of the community, and is not responsible for
+      operating Terra or providing airdrops.
+    </div>
+  </body>
+</html>
+<% } %> <% if (process.env.REACT_APP_IS_IT_ALIVE == "TRUE") { %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
     <link rel="icon" id="favicon" href="%PUBLIC_URL%/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
@@ -13,9 +132,9 @@
     <title>Terra Phoenix Airdrop</title>
 </head>
 
-<body>
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-</body>
-
+  </body>
 </html>
+<% } %>
