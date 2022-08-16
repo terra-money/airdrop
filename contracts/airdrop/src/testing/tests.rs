@@ -91,6 +91,29 @@ fn invalid_instantiation() {
         instantiate(deps.as_mut(), mock_env(), info.clone(), msg),
         Err(StdError::generic_err("start_time must be greater than 0"))
     );
+
+    let msg = InstantiateMsg {
+        admin: "admin0000".to_string(),
+        denom: "uluna".to_string(),
+        vesting_periods: [
+            15552000i64,
+            15552000i64,
+            46656000i64,
+            15552000i64,
+            62208000i64,
+        ],
+        start_time: Some(15552000i64),
+        prefix: None,
+        claim_end_time: mock_env().block.time.seconds() - 100,
+        fee_refund: None,
+    };
+
+    assert_eq!(
+        instantiate(deps.as_mut(), mock_env(), info.clone(), msg),
+        Err(StdError::generic_err(
+            "claim_end_time must be in the future"
+        ))
+    );
 }
 
 #[test]

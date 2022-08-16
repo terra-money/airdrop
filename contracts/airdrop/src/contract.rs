@@ -20,7 +20,7 @@ use std::str::FromStr;
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> StdResult<Response> {
@@ -28,6 +28,11 @@ pub fn instantiate(
         if start_time < 0 {
             return Err(StdError::generic_err("start_time must be greater than 0"));
         }
+    }
+    if msg.claim_end_time < env.block.time.seconds() {
+        return Err(StdError::generic_err(
+            "claim_end_time must be in the future",
+        ));
     }
 
     for periods in msg.vesting_periods {
