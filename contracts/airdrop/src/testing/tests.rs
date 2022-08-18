@@ -13,6 +13,23 @@ use cosmwasm_std::{
 };
 use protobuf::Message;
 
+fn to_period(v: &(i64, String)) -> Period {
+    let coins: Vec<VestingCoin> = if v.1.eq("0") {
+        vec![]
+    } else {
+        let mut coin = VestingCoin::new();
+        coin.denom = "uluna".to_string();
+        coin.amount = v.1.clone();
+        vec![coin]
+    };
+
+    let mut period = Period::new();
+    period.length = v.0;
+    period.amount = coins;
+
+    period
+}
+
 #[test]
 fn proper_instantiate() {
     let mut deps = mock_dependencies();
@@ -386,17 +403,7 @@ fn claim_eth() {
         (62208000i64, "0".to_string()),
     ]
     .iter()
-    .map(|v| {
-        let mut coin = VestingCoin::new();
-        coin.denom = "uluna".to_string();
-        coin.amount = v.1.clone();
-
-        let mut period = Period::new();
-        period.length = v.0;
-        period.amount = vec![coin];
-
-        period
-    })
+    .map(to_period)
     .collect::<Vec<Period>>();
 
     let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
@@ -600,17 +607,7 @@ fn claim_cosmos() {
         (62208000i64, "0".to_string()),
     ]
     .iter()
-    .map(|v| {
-        let mut coin = VestingCoin::new();
-        coin.denom = "uluna".to_string();
-        coin.amount = v.1.clone();
-
-        let mut period = Period::new();
-        period.length = v.0;
-        period.amount = vec![coin];
-
-        period
-    })
+    .map(to_period)
     .collect::<Vec<Period>>();
 
     let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
@@ -733,17 +730,7 @@ fn claim_terra() {
         (62208000i64, "1".to_string()),
     ]
     .iter()
-    .map(|v| {
-        let mut coin = VestingCoin::new();
-        coin.denom = "uluna".to_string();
-        coin.amount = v.1.clone();
-
-        let mut period = Period::new();
-        period.length = v.0;
-        period.amount = vec![coin];
-
-        period
-    })
+    .map(to_period)
     .collect::<Vec<Period>>();
 
     let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
@@ -852,17 +839,7 @@ fn claim_terra_with_vested() {
         (62208000i64, "0".to_string()),
     ]
     .iter()
-    .map(|v| {
-        let mut coin = VestingCoin::new();
-        coin.denom = "uluna".to_string();
-        coin.amount = v.1.clone();
-
-        let mut period = Period::new();
-        period.length = v.0;
-        period.amount = vec![coin];
-
-        period
-    })
+    .map(to_period)
     .collect::<Vec<Period>>();
 
     let bytes = Message::write_to_bytes(&vesting_msg).unwrap();
