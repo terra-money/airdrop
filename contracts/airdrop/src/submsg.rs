@@ -68,14 +68,19 @@ pub fn create_vesting_account(
     msg.vesting_periods = periods
         .iter()
         .map(|v| {
-            let mut coin = VestingCoin::new();
-            coin.denom = denom.clone();
-            coin.amount = v.1.clone();
+            let coins: Vec<VestingCoin> = if v.1.eq("0") {
+                vec![]
+            } else {
+                let mut coin = VestingCoin::new();
+                coin.denom = denom.clone();
+                coin.amount = v.1.clone();
+                vec![coin]
+            };
             let amount_u128 = u128::from_str_radix(&v.1.clone(), 10).unwrap_or_else(|_| 0u128);
             total_vesting += amount_u128;
             let mut period = Period::new();
             period.length = v.0;
-            period.amount = vec![coin];
+            period.amount = coins;
 
             period
         })
