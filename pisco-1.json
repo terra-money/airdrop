@@ -1,61 +1,61 @@
 {
     "code_ids": {
-        "./contracts/airdrop/artifacts/airdrop-eth.wasm": 3091,
-        "./contracts/airdrop/artifacts/airdrop-terra.wasm": 3092,
-        "./contracts/airdrop/artifacts/airdrop-cosmos.wasm": 3093
+        "./contracts/airdrop/artifacts/airdrop-eth.wasm": 3222,
+        "./contracts/airdrop/artifacts/airdrop-terra.wasm": 3223,
+        "./contracts/airdrop/artifacts/airdrop-cosmos.wasm": 3224
     },
     "contracts": {
         "eth": {
             "denom": "uluna",
-            "contract_addr": "terra1cmv6q8lkuy8kgq9vfcjsf2q9cc3crn4x4ezrktx2vn42l02dldfqd7gk3u",
+            "contract_addr": "terra1280l99alc798v64d7m9xyx8f4xvp89qs7a902hrv9mftq2ff8wdsnx42td",
             "chain": "eth",
             "merkle_root": "78377318931caafeb95743ca0b288b0ff7a5a187285738e1d171d5e572d34ff8"
         },
         "bsc": {
             "denom": "uluna",
-            "contract_addr": "terra1rfmfrjyys72n800xl9xlkfml5dz9hvxhumdwlluusvuhy2puacesy9r5tc",
+            "contract_addr": "terra1mqw9kvnp6926yqxwqdhrtqqt2zm066r3sgqn43wkx87wzn9fdnmstxmskg",
             "chain": "bsc",
             "merkle_root": "9b0e37d9486de83f78a172a80a15c548241f5572f62b53e90e7e314f9743f0e3"
         },
         "polygon": {
             "denom": "uluna",
-            "contract_addr": "terra1kk9gkpmeua82ayls8epp5x7uss57raj5rywur0nxt830l7mn6d0qqa5yky",
+            "contract_addr": "terra1xwfva5tdw6ma5wpnk6qwjwdqmj2cxsc9tw4fvxwrtdr8ru50yzaqyhnvpw",
             "chain": "polygon",
             "merkle_root": "c8ce36518d1f729dfb4421ec09a9f20791498f8422bbeeb58ae169911f003b54"
         },
         "fantom": {
             "denom": "uluna",
-            "contract_addr": "terra1szwk7kdrxjtg466resv5e50t7sjdstgzspl4j4u4jlv66pth8p5qs00y6t",
+            "contract_addr": "terra1tgg2s4l0ta076zktv78crqdlrnzych9v6sxrptdke7v4nh9q0heswty7hn",
             "chain": "fantom",
             "merkle_root": "25e52062992e8df94c807f565a1451aff668b0d4981329f16c27472487cd1dfe"
         },
         "cronos": {
             "denom": "uluna",
-            "contract_addr": "terra1gn7r5eh6ysw0mw0wxf7n8qexnf9kcfrm53f3l3e69n2awn9myluqty7uv2",
+            "contract_addr": "terra19ztjl5a9ry0hhx357u48u8ft6505sct4lyht0ee2qhzryal6sfsqr6zrlu",
             "chain": "cronos",
             "merkle_root": "5d1b0afa15af554a2e1667029c065e785c7be0de09d5331fe46eab2ce639d935"
         },
         "avax": {
             "denom": "uluna",
-            "contract_addr": "terra1jcyjtk5k6ffae95s8yzgk372ph2vecuxl569azs3u8wz52e9jajszj4qw5",
+            "contract_addr": "terra13yea3s4faqngcpyg0ct76kaamka34m6qh2zrt0nleellvkrx2k0qkw7yty",
             "chain": "avax",
             "merkle_root": "dfd4dcca2aed33a54e56f5b65d9a7bc2cc65c48e5da246c86cffee79a8adbe73"
         },
         "injective": {
             "denom": "uluna",
-            "contract_addr": "terra19l38cp2my3er6aawlfqa5hy4vgw79mtplnmqg5ht0uyds8r4dtyqj57qf0",
+            "contract_addr": "terra1zpw4h48ud73s79gqv3z43s6nl3ux4ms7v6y4u2sq763ywd366vvq9klacd",
             "chain": "injective",
             "merkle_root": "39ad065c7a7ca0ba4e6c1756addc38b4d40df292a210ce581d23b84a028b6b4e"
         },
         "terraclassic": {
             "denom": "uluna",
-            "contract_addr": "terra1e8gg463hzvuma8uaycejks929d6fd9enlt40panh3pzk06uxwr2qf09644",
+            "contract_addr": "terra182f04d32e3msc664anmywt3nmlgwgmd74xgyv34syfx8rxqpch5q86gsdd",
             "chain": "terraclassic",
             "merkle_root": "c2d24d79e36147721c54bb2ad31c51d0db7cc9b654a285bff74a3aa5d4840f5d"
         },
         "kava": {
             "denom": "uluna",
-            "contract_addr": "terra1yx6l3suhz2e2tq7lhchlrct2gh8mulswztrlpaqu6f59t62esxvq77yq2m",
+            "contract_addr": "terra1xzcjf0mf68qsvs79mzjwt8kj2ced2ysawk4pgtvd4gwym4gq9upqjmumhz",
             "chain": "kava",
             "merkle_root": "c845b7fab032a016c869dc0250dec494cf04c081ed616d6de1bde684118bca0a"
         }
