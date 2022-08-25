@@ -40,7 +40,7 @@ export class ClaimService {
       "bsc.uluna": Config.bscAirdropContract,
       "kava.uluna": Config.kavaAirdropContract,
       "avax.uluna": Config.avaxAirdropContract,
-      "phantom.uluna": Config.fantomAirdropContract,
+      "fantom.uluna": Config.fantomAirdropContract,
       "polygon.uluna": Config.polygonAirdropContract,
       "injective.uluna": Config.injectiveAirdropContract,
       "cronos.uluna": Config.cronosAirdropContract,

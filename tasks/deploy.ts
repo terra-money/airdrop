@@ -1,10 +1,6 @@
 import {
   LCDClient,
-  MsgStoreCode,
   MnemonicKey,
-  isTxError,
-  MsgInstantiateContract,
-  MsgExecuteContract,
 } from "@terra-money/terra.js";
 import {
   getMerkleRoot,
@@ -35,7 +31,7 @@ const CONTRACTS: { [key: string]: string } = {
 };
 const CHAINS_WITH_PREFIX = ["kava"];
 const CHAINS_WITHOUT_FEE_REFUND = ["terraclassic"];
-const WALLET_MNEMONIC = "";
+const WALLET_MNEMONIC = "satisfy adjust timber high purchase tuition stool faith fine install that you unaware feed domain license impose boss human eager hat rent enjoy dawn";
 
 const DENOM = "uluna";
 const VESTING_START_TIME = 1669269600;
