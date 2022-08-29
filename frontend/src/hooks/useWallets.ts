@@ -67,6 +67,10 @@ const useWallets = () => {
         }
     }
 
+    const disconnectStation = () => {
+        return station?.disconnect();
+    }
+
     /**
         * This method uses the LCD implemented into Wallet Provider 
         * validate if the account exist in the selected network. 
@@ -225,6 +229,7 @@ const useWallets = () => {
         isNewValidAccount,
         isStationConnectedToMainnent,
         connect,
+        disconnectStation,
         getAddress,
         signClaimAllocation
     }

@@ -32,9 +32,13 @@ export const ConnectWallet = (props: ConnectWalletType) => {
   const [walletInstalled, setWalletInstalled] = useState<boolean>();
 
   const { enqueueSnackbar } = useSnackbar();
-  const { isInstalled, isConnected, connect } = useWallets();
+  const { isInstalled, isConnected, connect, disconnectStation } = useWallets();
   const connectedWallet = useConnectedWallet();
 
+  useEffect(() => {
+    console.log("disconnect");
+    disconnectStation()
+  },[]);
   // Imperative way to detect if station is connected
   useEffect(() => {
     if (connectedWallet && wallet && chain) {
