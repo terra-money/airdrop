@@ -36,9 +36,9 @@ export const ConnectWallet = (props: ConnectWalletType) => {
   const connectedWallet = useConnectedWallet();
 
   useEffect(() => {
-    console.log("disconnect");
     disconnectStation()
   },[]);
+  
   // Imperative way to detect if station is connected
   useEffect(() => {
     if (connectedWallet && wallet && chain) {
