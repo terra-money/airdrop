@@ -29,25 +29,40 @@ export const ConnectWallet = (props: ConnectWalletType) => {
   const [chain, setChain] = useState<Chain | null>();
   const [chainId, setChainId] = useState("");
 
+  const [warnSwitchNetwork, setWarnSwitchNetwork] = useState<boolean>();
+
   const [walletInstalled, setWalletInstalled] = useState<boolean>();
 
   const { enqueueSnackbar } = useSnackbar();
-  const { isInstalled, isConnected, connect, disconnectStation } = useWallets();
+  const { isInstalled, isConnected, connect, disconnectStation, getConnectedNetwork } = useWallets();
   const connectedWallet = useConnectedWallet();
 
   useEffect(() => {
     disconnectStation()
-  },[]);
-  
+  }, []);
+
   // Imperative way to detect if station is connected
   useEffect(() => {
     if (connectedWallet && wallet && chain) {
       // Only proceed if user is attempting claim on Terra.
       if (['station', 'stationmobile'].includes(wallet.id)) {
-        onWalletConnected(wallet, chain);
+        const walletNetwork = getConnectedNetwork(wallet);
+
+        if (process.env.REACT_APP_ALLOW_STATION_MAINNET_ONLY === "TRUE"
+          && walletNetwork !== 'mainnet') {
+            setWarnSwitchNetwork(true);
+        }
+        else {
+          onWalletConnected(wallet, chain);
+        }
       }
     }
-  }, [connectedWallet, wallet, chain, onWalletConnected]);
+  }, [
+    connectedWallet,
+    wallet,
+    chain,
+    onWalletConnected
+  ]);
 
   const handleSelectWallet = (event: any) => {
     const selectedWallet = wallets.find(
@@ -70,6 +85,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
 
       const walletInstalled = isInstalled(selectedWallet);
       setWalletInstalled(walletInstalled);
+      setWarnSwitchNetwork(false);
     }
   };
 
@@ -81,6 +97,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     if (wallet) {
       setChainId(event.target.value);
       setChain(selectedChain);
+      setWarnSwitchNetwork(false);
 
       if (isConnected(wallet) && selectedChain) {
         onWalletConnected(wallet, selectedChain);
@@ -92,7 +109,7 @@ export const ConnectWallet = (props: ConnectWalletType) => {
     try {
       if (wallet && chain) {
         await connect(wallet, chain);
-
+        setWarnSwitchNetwork(false);
         // For station and wallet connect
         // the status must be checked on
         // an imperative way thru useEffect
@@ -139,11 +156,13 @@ export const ConnectWallet = (props: ConnectWalletType) => {
           ))}
         </Select>
       </FormControl>
+
       {wallet && !walletInstalled && (
-        <Alert severity="info" onClose={() => handleCleanSelections()}>
-          Install {wallet.name} to connect to select a chain
+        <Alert severity="error" onClose={() => handleCleanSelections()}>
+          Install {wallet.name} to connect and select a chain
         </Alert>
       )}
+
       {wallet && walletInstalled && (
         <FormControl className="FormControl" fullWidth>
           <InputLabel id="OriginChainDropdownLabel">Origin Chain</InputLabel>
@@ -163,9 +182,19 @@ export const ConnectWallet = (props: ConnectWalletType) => {
           </Select>
         </FormControl>
       )}
+
+      
+      {warnSwitchNetwork  && (
+        <Alert className="FormControl" severity="error">
+          Change network to mainnet (phoenix-1) and refresh 
+          the page to check your allocation
+        </Alert>
+      )}
+
       {wallet && chain && isInstalled(wallet) && (
         <div className="ConnectWalletFooter">
           <Button
+            disabled={warnSwitchNetwork}
             variant="contained"
             fullWidth
             onClick={() => handleConnectWallet()}

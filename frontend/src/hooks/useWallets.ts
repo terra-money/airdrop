@@ -50,6 +50,17 @@ const useWallets = () => {
         }
     }
 
+    const getConnectedNetwork = (wallet: Wallet) => {
+        switch (wallet.id) {
+            case "station": 
+                return station.network.name;
+            case "stationmobile": 
+                return station.network.name;
+            default:
+                throw Error(`Wallet '${wallet.id}', not implemented in getConnectedNetwork`);
+        }
+    }
+
     const connect = async (wallet: Wallet, chain: Chain): Promise<any> => {
         switch (wallet.id) {
             case "station":
@@ -226,6 +237,7 @@ const useWallets = () => {
     return {
         isInstalled,
         isConnected,
+        getConnectedNetwork,
         isNewValidAccount,
         isStationConnectedToMainnent,
         connect,
