@@ -18,6 +18,17 @@ fn verify_correct_eth_signature() {
 }
 
 #[test]
+fn verify_correct_eth_ledger_signature() {
+    let signer_address = "0x11ddd954aa0772e56bd369c629c166d5ddf1f0c1";
+    let message = "terra1vvyz34dance4v682w470x4gyl2zhjmcgg25qpt";
+    let signature = "3e573b5900fdc93c48e8d0488c19529e6bce59fcfea70facad7098a67f13fff77fef241de0205ecd744d97b4c19e3973404fb3a0d6c0e4c7850f5d6b2910213b01";
+
+    let deps = setup();
+    let verified = verify_signature_eth(deps.as_ref(), message, signature, signer_address).unwrap();
+    assert_eq!(verified, true);
+}
+
+#[test]
 fn verify_wrong_eth_message() {
     let signer_address = "0x8898702932F9e10c696146AA8DC6dD0E6F524b88";
     let message = "terra1zdpgj8am5nqqvht927k3etljyl6a52kwqup0j";
