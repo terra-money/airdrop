@@ -1,11 +1,11 @@
 {
     "code_ids": {
-        "./contracts/airdrop/artifacts/airdrop-eth.wasm": 366,
+        "./contracts/airdrop/artifacts/airdrop-eth.wasm": 382,
         "./contracts/airdrop/artifacts/airdrop-terra.wasm": 367,
         "./contracts/airdrop/artifacts/airdrop-cosmos.wasm": 368
     },
     "contracts": {
-        "eth": {
+        "eth": { 
             "denom": "uluna",
             "contract_addr": "terra14k2v508g5hq222wjjw96k8tz7jscfc6n24udqm3n48urj2lu7d2sttqz8j",
             "chain": "eth",
@@ -51,7 +51,7 @@
             "denom": "uluna",
             "contract_addr": "terra10z3szhm6g8p7jpmgfwf3mdgrgxz27p6mwhwsdhxcegd7k33u9xmqdd3l05",
             "chain": "terraclassic",
-            "merkle_root": "b984c84e6a976d7821ba163a9e1752e87842c26e33c2075a565bdb8377ea9056"
+            "merkle_root": "f1f0ef426e0576daa3e410cb71758638249e06fdabd76b5f62afc5d74ddfd3f0"
         },
         "kava": {
             "denom": "uluna",
