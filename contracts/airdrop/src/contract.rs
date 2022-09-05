@@ -6,7 +6,8 @@ use cosmwasm_std::{
 };
 
 use crate::msg::{
-    ConfigResponse, ExecuteMsg, InstantiateMsg, IsClaimedResponse, MerkleRootResponse, QueryMsg,
+    ConfigResponse, ExecuteMsg, InstantiateMsg, IsClaimedResponse, MerkleRootResponse, MigrateMsg,
+    QueryMsg,
 };
 use crate::state::{Config, CLAIM_INDEX, CONFIG, MERKLE_ROOT};
 use crate::submsg::{create_claim_response, create_fund_community_pool_response};
@@ -328,4 +329,10 @@ pub fn query_is_claimed(deps: Deps, _env: Env, address: String) -> StdResult<IsC
     };
 
     Ok(resp)
+}
+
+#[entry_point]
+pub fn migrate(_deps: DepsMut, _env: Env, _msg: MigrateMsg) -> StdResult<Response> {
+    // No state migrations performed, just returned a Response
+    Ok(Response::default())
 }

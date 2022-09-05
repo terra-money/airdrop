@@ -17,9 +17,15 @@ use std::convert::TryInto;
 /// [EIP-155]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 pub fn get_recovery_param(v: u8) -> StdResult<u8> {
     match v {
+        // Some ledger models sign with 0 and 1 instead of following (pre) EIP-155
+        0 => Ok(0),
+        1 => Ok(1),
         27 => Ok(0),
         28 => Ok(1),
-        _ => Err(StdError::generic_err("Values of v other than 27 and 28 not supported. Replay protection (EIP-155) cannot be used here."))
+        _ => Err(StdError::generic_err(format!(
+            "Values of v other than 27 and 28 not supported. Got: {}",
+            v
+        ))),
     }
 }
 
