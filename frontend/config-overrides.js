@@ -17,5 +17,6 @@ module.exports = function override(config) {
         crypto: require.resolve("crypto-browserify"),
     }
     
+    config.ignoreWarnings = [/Failed to parse source map/];
     return config;
 }
