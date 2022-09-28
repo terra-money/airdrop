@@ -14,6 +14,7 @@ import { Wallet } from './models/Wallet';
 import { Chain } from './models/Chain';
 import { StepData } from './components/AppHeader/StepComponent';
 import { AllocationResponse } from './models/Api';
+import { Countdown } from './components/Countdown';
 
 
 function App() {
@@ -99,6 +100,9 @@ function App() {
                         onClick={() => previousStep()}>
                         Back
                     </Button>
+                </CardActions>
+                <CardActions>
+                    <Countdown/>
                 </CardActions>
             </Card>
         </div>
