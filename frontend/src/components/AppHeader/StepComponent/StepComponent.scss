@@ -1,0 +1,23 @@
+.StepComponent {
+    text-align: start;
+    width: 200px;
+
+    .StepInfo {
+        margin-top: 0.5em;
+        margin-bottom: 0.25em;
+
+    }
+
+    .StepCompleted {
+        max-width: 160px;
+
+        h5 {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 0.5em 0 0;
+
+        }
+    }
+}
+

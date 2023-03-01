@@ -1,0 +1,98 @@
+.icon {
+    background: round;
+    width: 32px;
+    height: 32px;
+
+    // Wallets
+    &.metamask {
+        background-image: url("./img/wallets/metamask.svg");
+    }
+
+    &.walletconnect {
+        background-image: url("./img/wallets/walletconnect.svg");
+
+    }
+
+    &.phantom {
+        background-image: url("./img/wallets/phantom.svg");
+
+    }
+
+    &.station {
+        background-image: url("./img/wallets/station.svg");
+
+    }
+
+    &.keplr {
+        background-image: url("./img/wallets/keplr.svg");
+    }
+
+    // Chains
+    &.terraclassic {
+        background-image: url("./img/chains/terraclassic.svg");
+    }
+
+    &.ethereum {
+        background-image: url("./img/chains/ethereum.svg");
+
+    }
+
+    &.avalanche {
+        background-image: url("./img/chains/avalanche.svg");
+
+    }
+
+    &.solana {
+        background-image: url("./img/chains/solana.svg");
+
+    }
+    
+    &.axl {
+        background-image: url("./img/chains/axl.svg");
+
+    }
+    
+    &.injective {
+        background-image: url("./img/chains/injective.svg");
+
+    }
+    
+    &.juno {
+        background-image: url("./img/chains/juno.svg");
+
+    }
+    
+    &.bsc {
+        background-image: url("./img/chains/bsc.svg");
+
+    }
+    
+    &.fantom {
+        background-image: url("./img/chains/fantom.svg");
+
+    }
+    
+    &.polygon {
+        background-image: url("./img/chains/polygon.svg");
+
+    }
+    
+    &.kava {
+        background-image: url("./img/chains/kava.svg");
+
+    }
+
+    // Other Icons
+    &.external-link {
+        background-image: url("./img/external-link.svg");
+    }
+}
+
+.logo {
+    background: round;
+
+    &.terra {
+        background-image: url("./img/terra-logo.svg");
+
+    }
+}

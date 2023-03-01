@@ -1,0 +1,47 @@
+.CheckAllocationWrapper {
+    margin: 1em auto 1em auto;
+    min-width: 420px;
+    text-align: center;
+
+    .AllocationBody,
+    .LoadingAllocation {
+        margin-top: 3em;
+
+    }
+    
+    .AllocationIcon {
+        height: 60px;
+        width: 60px;
+    }
+
+
+    
+    .AllocationError {
+
+        h4 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            a {
+                color: #dbdbdb;
+                margin-right: 0.5em;
+                
+            }
+
+            .icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+    }
+
+    button {
+        margin-top: 1em;
+    }
+
+    @media only screen and (max-width: 500px) {
+        min-width: auto;
+    }
+}

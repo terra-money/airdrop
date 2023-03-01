@@ -1,0 +1,76 @@
+[
+    {
+        "id": "station",
+        "name": "Terra Station",
+        "icon": "station",
+        "chains": [
+            {
+                "id": "terraclassic",
+                "name": "Terra Mainnet",
+                "icon": "terraclassic"
+            }
+        ]
+    },
+    {
+        "id": "stationmobile",
+        "name": "Terra Station Mobile",
+        "icon": "station",
+        "chains": [
+            {
+                "id": "terraclassic",
+                "name": "Terra Mainnet",
+                "icon": "terraclassic"
+            }
+        ]
+    },
+    {
+        "id": "keplr",
+        "name": "Keplr",
+        "icon": "keplr",
+        "chains": [
+            {
+                "id": "kava",
+                "name": "Kava",
+                "keplrChainId" : "kava_2222-10",
+                "icon": "kava"
+            }
+        ]
+    },
+    {
+        "id": "metamask",
+        "name": "MetaMask",
+        "icon": "metamask",
+        "chains": [
+            {
+                "id": "eth",
+                "name": "Ethereum",
+                "icon": "ethereum"
+            },
+            {
+                "id": "avax",
+                "name": "Avalanche",
+                "icon": "avalanche"
+            },
+            {
+                "id": "bsc",
+                "name": "Binance Smart Chain",
+                "icon": "bsc"
+            },
+            {
+                "id": "polygon",
+                "name": "Polygon",
+                "icon": "polygon"
+            },
+            {
+                "id": "fantom",
+                "name": "Fantom",
+                "icon": "fantom"
+            },
+            {
+                "id": "injective",
+                "name": "Injective Network",
+                "icon": "injective"
+            }
+        ]
+    }
+]
