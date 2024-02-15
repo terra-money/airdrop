@@ -22,7 +22,7 @@ export const Countdown = () => {
     return (
         <div className='Countdown'>
             <span>
-            As laid out in <a href="https://agora.terra.money/discussion/6647-final-proposal-terra-phoenix-airdrop" target="_blank" rel="noreferrer">Agora</a>, the airdrop window will close on {END_DATE} in <b>
+            As laid out in <a href="https://commonwealth.im/terra/discussion/6647-final-proposal-terra-phoenix-airdrop" target="_blank" rel="noreferrer">Agora</a>, the airdrop window will close on {END_DATE} in <b>
                         {date.days ? ` ${date.days} day(s) ` : ""} 
                         {date.hours ? ` ${date.hours} hour(s) ` : ""}  and 
                         {date.minutes ? ` ${date.minutes} minute(s) ` : ""} 
